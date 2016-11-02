@@ -12,7 +12,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
 
     Inputs:
     img            = img to display kept objects
-    roi_type       = 'cutto' or 'partial' (for partially inside)
+    roi_type       = 'cutto' (cut off), 'partial' (partially inside), or 'massc' (for center of mass inside)
     roi_contour    = contour of roi, output from "View and Ajust ROI" function
     roi_hierarchy  = contour of roi, output from "View and Ajust ROI" function
     object_contour = contours of objects, output from "Identifying Objects" fuction
@@ -96,9 +96,39 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
         cv2.drawContours(w_back, kept_cnt, -1, (0, 0, 0), -1)
         cv2.drawContours(ori_img, kept_cnt, -1, (0, 255, 0), -1, lineType=8, hierarchy=hierarchy)
         cv2.drawContours(ori_img, roi_contour, -1, (255, 0, 0), 5, lineType=8, hierarchy=roi_hierarchy)
+        
+    # Cuts off objects that do not have their center of mass inside the ROI
+    elif roi_type == 'massc':
+        for c, cnt in enumerate( object_contour):
+            stack = np.vstack( cnt)
+            test = []
+            keep = False
+            # calculate objects Moments
+            obj_moment = cv2.moments( cnt)
+            # calculate object/contour center of mass position from Moments dictionary
+            cx, cy = int( obj_moment[ 'm10'] / obj_moment[ 'm00']), int( obj_moment[ 'm01'] / obj_moment[ 'm00'])
+            # determine whether the center of mass in in or outside the roi
+            pptest = cv2.pointPolygonTest( roi_contour[0], ( cx, cy), False)
+            # pptest = -1 if it is outside the roi
+            if int( pptest) != -1:
+                if obj_hierarchy[ 0][ c][ 3] > -1:
+                    cv2.drawContours( w_back, object_contour, c, ( 255, 255, 255), -1, lineType = 8, hierarchy = obj_hierarchy)
+                else:  
+                    cv2.drawContours( w_back, object_contour, c, ( 0, 0, 0), -1, lineType = 8, hierarchy = obj_hierarchy)
+            else:
+                cv2.drawContours( w_back, object_contour, c, ( 255, 255, 255), -1, lineType = 8, hierarchy = obj_hierarchy)
+     
+        kept = cv2.cvtColor( w_back, cv2.COLOR_RGB2GRAY )
+        kept_obj = cv2.bitwise_not( kept)
+        mask = np.copy( kept_obj)
+        obj_area = cv2.countNonZero( kept_obj)
+        kept_cnt, hierarchy = cv2.findContours( kept_obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[-2:]
+        cv2.drawContours( ori_img, kept_cnt, -1, ( 0, 255, 0), -1, lineType = 8, hierarchy = hierarchy)
+        cv2.drawContours( ori_img, roi_contour, -1, ( 255, 0, 0), 5, lineType = 8, hierarchy = roi_hierarchy)
+
 
     else:
-        fatal_error('ROI Type' + str(roi_type) + ' is not "cutto" or "partial"!')
+        fatal_error('ROI Type' + str(roi_type) + ' is not "cutto", "partial", or "massc"!')
 
     if debug == 'print':
         print_image(w_back, (str(device) + '_roi_objects.png'))
