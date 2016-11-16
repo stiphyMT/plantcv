@@ -1,4 +1,4 @@
-__all__ = ['fatal_error', 'print_image', 'plot_image', 'plot_colorbar', 'readimage', 'laplace_filter', 'sobel_filter',
+__all__ = ['fatal_error', 'constants', 'print_image', 'plot_image', 'plot_colorbar', 'readimage', 'laplace_filter','sobel_filter',
            'scharr_filter', 'HistEqualization', 'plot_hist', 'image_add', 'image_subtract', 'erode', 'dilate',
            'watershed', 'rectangle_mask', 'border_mask', 'rgb2gray_hsv', 'rgb2gray_lab', 'rgb2gray', 'binary_threshold',
            'median_blur', 'fill', 'invert', 'logical_and', 'logical_or', 'logical_xor', 'apply_mask', 'find_objects',
@@ -8,8 +8,11 @@ __all__ = ['fatal_error', 'print_image', 'plot_image', 'plot_colorbar', 'readima
            'white_balance', 'white_balance2', 'triangle_auto_threshold','acute_vertex','scale_features','turgor_proxy',
            'x_axis_pseudolandmarks', 'y_axis_pseudolandmarks','gaussian_blur', 'cluster_contours','cluster_contour_splitimg',
            'rotate_img', 'shift_img']
-
+# MOST MODULES ARE DEPENDANT ON fata_error.py
 from fatal_error import fatal_error
+
+import constants
+
 from print_image import print_image
 from plot_image import plot_image
 from plot_colorbar import plot_colorbar
