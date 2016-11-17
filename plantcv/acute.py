@@ -121,8 +121,8 @@ def acute(cont, win, thresh, debug=False):
     homolog_pts = obj[[maxpts]]        #Extract coordinates of interest as image landmarks
 
     if debug: 
-        print '[landmarks, contour scores, verbose output]'
+        print ('[landmarks, contour scores, verbose output]')
         return [homolog_pts, chain, max_dist]
     else:
-        print '[landmarks]'
+        print ('[landmarks]')
         return [homolog_pts]

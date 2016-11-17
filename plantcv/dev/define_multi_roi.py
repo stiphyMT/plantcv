@@ -55,8 +55,8 @@ def define_multi_roi(img, device, debug=False, roi_file=None, roi_input='default
     fatal_error('ROI Input' + str(roi_input) + ' is not "binary", "rgb" or "default roi"!')
   
   
-  print roi_contour
-  print v
+  print (roi_contour)
+  print (v)
   
   ##If the ROI is exactly in the 'correct' position 
   #if adjust_x==False and adjust_y==False:
