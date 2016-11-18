@@ -61,16 +61,16 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
         hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
         h, s, v = cv2.split(hsv)
         ret, v_img = cv2.threshold(v, 0, 255, cv2.THRESH_BINARY)
-        roi_contour, hierarchy = cv2.findContours(v_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        _, roi_contour, hierarchy = cv2.findContours(v_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     elif roi_input == 'binary':
-        roi_contour, hierarchy = cv2.findContours(roi, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        _, roi_contour, hierarchy = cv2.findContours(roi, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     elif roi_input == 'default':
         size = ix, iy
         roi_background = np.zeros(size, dtype=np.uint8)
         roi_size = (ix - 5), (iy - 5)
         roi = np.zeros(roi_size, dtype=np.uint8)
         roi1 = roi + 1
-        roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        _, roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         cv2.drawContours(roi_background, roi_contour[0], -1, (255, 0, 0), 5)
         if adjust == True:
             if x_adj > 0 and w_adj > 0:
@@ -91,7 +91,7 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                 x, y, w, h = cv2.boundingRect(cnt)
                 cv2.rectangle(background, (x, y), (x + w, y + h), (0, 255, 0), 5)
                 rect = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                rect_contour, hierarchy = cv2.findContours(rect, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                _, rect_contour, hierarchy = cv2.findContours(rect, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                 cv2.drawContours(ori_img, rect_contour[0], -1, (255, 0, 0), 5)
                 if debug == 'print':
                     print_image(ori_img, (str(device) + '_roi.png'))
@@ -105,7 +105,7 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                     radius = int(w / 2)
                     cv2.circle(background, center, radius, (255, 255, 255), -1)
                     circle = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                    circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                    _, circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     cv2.drawContours(ori_img, circle_contour[0], -1, (255, 0, 0), 5)
                     if debug == 'print':
                         print_image(ori_img, (str(device) + '_roi.png'))
