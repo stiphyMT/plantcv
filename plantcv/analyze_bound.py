@@ -40,6 +40,8 @@ def analyze_bound(img, imgname, obj, mask, line_position, device, debug=None, fi
     :return bound_data: tuple
     :return analysis_images: list
     """
+    #opencv2 version control
+    (major, minor, _) = cv2.__version__.split('.')
 
     device += 1
     ori_img = np.copy(img)
@@ -59,8 +61,10 @@ def analyze_bound(img, imgname, obj, mask, line_position, device, debug=None, fi
     rec_point1 = (1, rec_corner)
     rec_point2 = (x_coor - 2, y_coor - 2)
     cv2.rectangle(background, rec_point1, rec_point2, (255), 1)
-    below_contour, below_hierarchy = cv2.findContours(background, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-
+    if major > 2 and minor > 0:
+        _, below_contour, below_hierarchy = cv2.findContours(background, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    else:
+        below_contour, below_hierarchy = cv2.findContours(background, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     x, y, width, height = cv2.boundingRect(obj)
 
     if y_coor - y <= 0:

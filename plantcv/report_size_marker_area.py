@@ -55,6 +55,8 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
     :param filename: str
     :return:
     """
+    #opencv2 version control
+    (major, minor, _) = cv2.__version__.split('.')
 
     device += 1
     ori_img = np.copy(img)
@@ -68,7 +70,10 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
     roi_size = (ix - 5), (iy - 5)
     roi = np.zeros(roi_size, dtype=np.uint8)
     roi1 = roi + 1
-    roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    if major > 2 and minor > 0:
+        _, roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    else:
+        roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     cv2.drawContours(roi_background, roi_contour[0], -1, (255, 0, 0), 5)
 
     if x_adj > 0 and w_adj > 0:
@@ -116,7 +121,10 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
             fatal_error('Shape' + str(shape) + ' is not "rectangle", "circle", or "ellipse"!')
 
     markerback = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-    shape_contour, hierarchy = cv2.findContours(markerback, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    if major > 2 and minor > 0:
+        _, shape_contour, hierarchy = cv2.findContours(markerback, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    else:
+        shape_contour, hierarchy = cv2.findContours(markerback, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     cv2.drawContours(ori_img, shape_contour, -1, (255, 255, 0), 5)
     
     if debug is 'print':

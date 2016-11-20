@@ -32,6 +32,8 @@ def analyze_object(img, imgname, obj, mask, device, debug=None, filename=False):
     :param filename: str
     :return:
     """
+    #opencv2 version control
+    (major, minor, _) = cv2.__version__.split('.')
 
     device += 1
 
@@ -53,7 +55,10 @@ def analyze_object(img, imgname, obj, mask, device, debug=None, filename=False):
     # Check is object is touching image boundaries (QC)
     frame_background = np.zeros(size1, dtype=np.uint8)
     frame = frame_background + 1
-    frame_contour, frame_heirarchy = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    if major > 2 and minor > 0:
+        _, frame_contour, frame_heirarchy = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    else:
+        frame_contour, frame_heirarchy = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     ptest = []
     vobj = np.vstack(obj)
     for i, c in enumerate(vobj):
@@ -97,7 +102,10 @@ def analyze_object(img, imgname, obj, mask, device, debug=None, filename=False):
         cv2.circle(background, (int(cmx), int(cmy)), 4, (255, 255, 255), -1)
         center_p = cv2.cvtColor(background, cv2.COLOR_BGR2GRAY)
         ret, centerp_binary = cv2.threshold(center_p, 0, 255, cv2.THRESH_BINARY)
-        centerpoint, cpoint_h = cv2.findContours(centerp_binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        if major > 2 and minor > 0:
+            _, centerpoint, cpoint_h = cv2.findContours(centerp_binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        else:
+            centerpoint, cpoint_h = cv2.findContours(centerp_binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
         dist = []
         vhull = np.vstack(hull)

@@ -36,6 +36,8 @@ def crop_position_mask(img, mask, device, x, y, v_pos="top", h_pos="right", debu
     :return device: int
     :return newmask: numpy array
     """
+    #opencv2 version control
+    (major, minor, _) = cv2.__version__.split('.')
 
     ori_mask = np.copy(mask)
 
@@ -245,7 +247,10 @@ def crop_position_mask(img, mask, device, x, y, v_pos="top", h_pos="right", debu
             print_image(newmask, (str(device) + "_newmask.png"))
         elif debug == 'plot':
             plot_image(newmask, cmap='gray')
-        objects, hierarchy = cv2.findContours(newmask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        if major > 2 and minor > 0:
+            _, objects, hierarchy = cv2.findContours(newmask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        else:
+            objects, hierarchy = cv2.findContours(newmask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         for i, cnt in enumerate(objects):
             cv2.drawContours(ori_img, objects, i, (255, 102, 255), -1, lineType=8, hierarchy=hierarchy)
         if debug == 'print':

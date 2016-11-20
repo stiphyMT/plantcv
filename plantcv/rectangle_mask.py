@@ -35,6 +35,8 @@ def rectangle_mask(img, p1, p2, device, debug=None, color="black"):
     :return contour: list
     :return hierarchy: list
     """
+    #opencv2 version control
+    (major, minor, _) = cv2.__version__.split('.')
 
     # get the dimensions of the input image
     ix, iy = np.shape(img)
@@ -46,7 +48,10 @@ def rectangle_mask(img, p1, p2, device, debug=None, color="black"):
     if color == "black":
         cv2.rectangle(img=bnk, pt1=p1, pt2=p2, color=(255, 255, 255))
         ret, bnk = cv2.threshold(bnk, 127, 255, 0)
-        contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        if major > 2 and minor > 0:
+            _, contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        else:
+            contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         # make sure entire rectangle is within (visable within) plotting region or else it will not fill with
         # thickness = -1. Note that you should only print the first contour (contour[0]) if you want to fill with
         # thickness = -1. otherwise two rectangles will be drawn and the space between them will get filled
@@ -55,7 +60,10 @@ def rectangle_mask(img, p1, p2, device, debug=None, color="black"):
     if color == "gray":
         cv2.rectangle(img=bnk, pt1=p1, pt2=p2, color=(192, 192, 192))
         ret, bnk = cv2.threshold(bnk, 127, 255, 0)
-        contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        if major > 2 and minor > 0:
+            _, contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        else:
+            contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         # make sure entire rectangle is within (visable within) plotting region or else it will not fill with
         # thickness = -1. Note that you should only print the first contour (contour[0]) if you want to fill with
         # thickness = -1. otherwise two rectangles will be drawn and the space between them will get filled

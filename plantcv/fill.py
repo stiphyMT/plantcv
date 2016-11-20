@@ -29,6 +29,8 @@ def fill(img, mask, size, device, debug=None):
     :return device: int
     :return img: numpy array
     """
+    #opencv2 version control
+    (major, minor, _) = cv2.__version__.split('.')
 
     device += 1
     if len(np.shape(img)) >= 3:
@@ -39,7 +41,10 @@ def fill(img, mask, size, device, debug=None):
     background = np.zeros(size1, dtype=np.uint8)
 
     # Find contours
-    _, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    if major > 2 and minor > 0:
+        _, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    else:
+        contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
     # Loop through contours, fill contours less than or equal to size in area
     for c, cnt in enumerate(contours):

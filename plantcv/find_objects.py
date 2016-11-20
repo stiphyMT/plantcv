@@ -28,11 +28,16 @@ def find_objects(img, mask, device, debug=None):
     :return objects: list
     :return hierarchy: list
     """
+    #opencv2 version control
+    (major, minor, _) = cv2.__version__.split('.')
 
     device += 1
     mask1 = np.copy(mask)
     ori_img = np.copy(img)
-    _, objects, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    if major > 2 and minor > 0:
+        _, objects, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    else:
+        objects, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     for i, cnt in enumerate(objects):
         cv2.drawContours(ori_img, objects, i, (255, 102, 255), -1, lineType=8, hierarchy=hierarchy)
     if debug == 'print':
