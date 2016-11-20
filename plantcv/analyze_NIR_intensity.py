@@ -9,7 +9,7 @@ from . import plot_colorbar
 from . import apply_mask
 #opencv2 version control
 (  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(major), int(minor)
+(cv2major, cv2minor) = int(cv2major), int(cv2minor)
 
 
 def analyze_NIR_intensity(img, imgname, mask, bins, device, histplot=False, debug=None, filename=False):

@@ -8,7 +8,7 @@ from . import plot_image
 from . import plot_colorbar
 #opencv2 version control
 (  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(major), int(minor)
+(cv2major, cv2minor) = int(cv2major), int(cv2minor)
 
 
 def fluor_fvfm(fdark, fmin, fmax, mask, device, filename, bins=1000, debug=None):

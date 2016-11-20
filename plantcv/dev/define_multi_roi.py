@@ -5,6 +5,8 @@ import cv2
 import numpy as np
 from plantcv import print_image
 from plantcv import fatal_error
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(cv2major), int(cv2minor)
 
 def define_multi_roi(img, device, debug=False, roi_file=None, roi_input='default', rows=None, col=None, shape=None, rad=None, dist_x=None, dist_y=None, adjust_x=False, adjust_y=False):
   #If you have very irregularly spaced ROI (that stays consistent between images), it is likely easiest to provide a file with an ROI
@@ -40,7 +42,10 @@ def define_multi_roi(img, device, debug=False, roi_file=None, roi_input='default
     if debug:
       print_image(roi_file, (str(device) + '_roi.png'))
   elif roi_input== 'binary':
-    roi_contour,roi_hierarchy = cv2.findContours(roi_file,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+    if cv2major > 2 and cv2minor > 0:
+        _, roi_contour,roi_hierarchy = cv2.findContours(roi_file,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+    else:
+        roi_contour,roi_hierarchy = cv2.findContours(roi_file,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
     if debug:
       print_image(roi_file, (str(device) + '_roi.png'))
   elif roi_input=='default':
@@ -49,7 +54,10 @@ def define_multi_roi(img, device, debug=False, roi_file=None, roi_input='default
     roi_size=(ix-5),(iy-5)
     roi=np.zeros(roi_size, dtype=np.uint8)
     roi1=roi+1
-    roi_contour,roi_heirarchy=cv2.findContours(roi1,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+    if cv2major > 2 and cv2minor > 0:
+        _, roi_contour,roi_heirarchy=cv2.findContours(roi1,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+    else:
+        roi_contour,roi_heirarchy=cv2.findContours(roi1,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
     cv2.drawContours(roi_background,roi_contour[0],-1, (255,0,0),5)
   else:
     fatal_error('ROI Input' + str(roi_input) + ' is not "binary", "rgb" or "default roi"!')

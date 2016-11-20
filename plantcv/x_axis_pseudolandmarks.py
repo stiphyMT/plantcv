@@ -12,7 +12,7 @@ from . import plot_image
 from . import fatal_error
 #opencv2 version control
 (  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(major), int(minor)
+(cv2major, cv2minor) = int(cv2major), int(cv2minor)
 
 def x_axis_pseudolandmarks(obj, mask, img, device, debug = False):
   ## Divide up object contour into 20 equidistance segments and generate landmarks for each

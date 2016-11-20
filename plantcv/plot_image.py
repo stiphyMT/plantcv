@@ -2,7 +2,7 @@
 import cv2
 #opencv2 version control
 (  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(major), int(minor)
+(cv2major, cv2minor) = int(cv2major), int(cv2minor)
 
 def plot_image(img, cmap=None):
     """Plot an image to the screen.
