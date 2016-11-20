@@ -3,6 +3,9 @@
 import os
 import cv2
 from . import fatal_error
+#opencv2 version control
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(major), int(minor)
 
 
 def readimage(filename):

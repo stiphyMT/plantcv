@@ -4,6 +4,9 @@ import numpy as np
 import cv2
 from . import print_image
 from . import plot_image
+#opencv2 version control
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(major), int(minor)
 
 
 def object_composition(img, contours, hierarchy, device, debug=None):

@@ -5,6 +5,9 @@ import cv2
 from . import print_image
 from . import plot_image
 from . import fatal_error
+#opencv2 version control
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(major), int(minor)
 
 
 def fill(img, mask, size, device, debug=None):
@@ -29,8 +32,6 @@ def fill(img, mask, size, device, debug=None):
     :return device: int
     :return img: numpy array
     """
-    #opencv2 version control
-    (major, minor, _) = cv2.__version__.split('.')
 
     device += 1
     if len(np.shape(img)) >= 3:
@@ -41,7 +42,7 @@ def fill(img, mask, size, device, debug=None):
     background = np.zeros(size1, dtype=np.uint8)
 
     # Find contours
-    if major > 2 and minor > 0:
+    if cv2major > 2 and cv2minor > 0:
         _, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
         contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)

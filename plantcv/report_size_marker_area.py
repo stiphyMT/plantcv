@@ -11,6 +11,9 @@ from . import binary_threshold
 from . import define_roi
 from . import roi_objects
 from . import object_composition
+#opencv2 version control
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(major), int(minor)
 
 
 def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0, y_adj=0, w_adj=0, h_adj=0,
@@ -55,8 +58,6 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
     :param filename: str
     :return:
     """
-    #opencv2 version control
-    (major, minor, _) = cv2.__version__.split('.')
 
     device += 1
     ori_img = np.copy(img)
@@ -70,7 +71,7 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
     roi_size = (ix - 5), (iy - 5)
     roi = np.zeros(roi_size, dtype=np.uint8)
     roi1 = roi + 1
-    if major > 2 and minor > 0:
+    if cv2major > 2 and cv2minor > 0:
         _, roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
         roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -121,7 +122,7 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
             fatal_error('Shape' + str(shape) + ' is not "rectangle", "circle", or "ellipse"!')
 
     markerback = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-    if major > 2 and minor > 0:
+    if cv2major > 2 and cv2minor > 0:
         _, shape_contour, hierarchy = cv2.findContours(markerback, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
         shape_contour, hierarchy = cv2.findContours(markerback, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)

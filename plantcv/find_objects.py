@@ -4,6 +4,9 @@ import cv2
 import numpy as np
 from . import print_image
 from . import plot_image
+#opencv2 version control
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(major), int(minor)
 
 
 def find_objects(img, mask, device, debug=None):
@@ -28,13 +31,11 @@ def find_objects(img, mask, device, debug=None):
     :return objects: list
     :return hierarchy: list
     """
-    #opencv2 version control
-    (major, minor, _) = cv2.__version__.split('.')
 
     device += 1
     mask1 = np.copy(mask)
     ori_img = np.copy(img)
-    if major > 2 and minor > 0:
+    if cv2major > 2 and cv2minor > 0:
         _, objects, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
         objects, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)

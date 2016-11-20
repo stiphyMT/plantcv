@@ -7,6 +7,9 @@ from . import print_image
 from . import plot_image
 from . import fatal_error
 from . import plot_colorbar
+#opencv2 version control
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(major), int(minor)
 
 
 def _pseudocolored_image(device, histogram, bins, img, mask, background, channel, filename, resolution, analysis_images, debug):

@@ -9,6 +9,9 @@ import string
 import math
 from . import print_image
 from . import fatal_error
+#opencv2 version control
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(major), int(minor)
 
 def turgor_proxy(points_r, centroid_r, bline_r, device, debug=False):
   ## For each point in contour, get a point before (pre) and after (post) the point of interest

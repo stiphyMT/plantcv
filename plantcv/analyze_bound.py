@@ -4,6 +4,9 @@ import cv2
 import numpy as np
 from . import print_image
 from . import plot_image
+#opencv2 version control
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(major), int(minor)
 
 
 def analyze_bound(img, imgname, obj, mask, line_position, device, debug=None, filename=False):
@@ -40,8 +43,6 @@ def analyze_bound(img, imgname, obj, mask, line_position, device, debug=None, fi
     :return bound_data: tuple
     :return analysis_images: list
     """
-    #opencv2 version control
-    (major, minor, _) = cv2.__version__.split('.')
 
     device += 1
     ori_img = np.copy(img)
@@ -61,7 +62,7 @@ def analyze_bound(img, imgname, obj, mask, line_position, device, debug=None, fi
     rec_point1 = (1, rec_corner)
     rec_point2 = (x_coor - 2, y_coor - 2)
     cv2.rectangle(background, rec_point1, rec_point2, (255), 1)
-    if major > 2 and minor > 0:
+    if cv2major > 2 and cv2minor > 0:
         _, below_contour, below_hierarchy = cv2.findContours(background, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
         below_contour, below_hierarchy = cv2.findContours(background, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)

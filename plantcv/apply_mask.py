@@ -4,6 +4,9 @@ import cv2
 from . import print_image
 from . import plot_image
 from . import fatal_error
+#opencv2 version control
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(major), int(minor)
 
 
 def apply_mask(img, mask, mask_color, device, debug=None):

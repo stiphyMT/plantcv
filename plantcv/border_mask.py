@@ -4,6 +4,9 @@ import cv2
 import numpy as np
 from . import print_image
 from . import plot_image
+#opencv2 version control
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(major), int(minor)
 
 
 def border_mask(img, p1, p2, device, debug=None, color="black"):
@@ -36,8 +39,6 @@ def border_mask(img, p1, p2, device, debug=None, color="black"):
     :return contour: list
     :return hierarchy: list
     """
-    #opencv2 version control
-    (major, minor, _) = cv2.__version__.split('.')
 
     if color == "black":
         ix, iy = np.shape(img)
@@ -45,7 +46,7 @@ def border_mask(img, p1, p2, device, debug=None, color="black"):
         bnk = np.zeros(size, dtype=np.uint8)
         cv2.rectangle(img=bnk, pt1=p1, pt2=p2, color=(255, 255, 255))
         ret, bnk = cv2.threshold(bnk, 127, 255, 0)
-        if major > 2 and minor > 0:
+        if cv2major > 2 and cv2minor > 0:
             _, contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -57,7 +58,7 @@ def border_mask(img, p1, p2, device, debug=None, color="black"):
         bnk = np.zeros(size, dtype=np.uint8)
         cv2.rectangle(img=bnk, pt1=p1, pt2=p2, color=(192, 192, 192))
         ret, bnk = cv2.threshold(bnk, 127, 255, 0)
-        if major > 2 and minor > 0:
+        if cv2major > 2 and cv2minor > 0:
             _, contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)

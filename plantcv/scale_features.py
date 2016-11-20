@@ -10,6 +10,9 @@ import math
 from . import print_image
 from . import plot_image
 from . import fatal_error
+#opencv2 version control
+(  cv2major, cv2minor, _) = cv2.__version__.split('.')
+(cv2major, cv2minor) = int(major), int(minor)
 
 def scale_features(obj, mask, points, boundary_line, device, debug=False):
   ## This is a function to transform the coordinates of landmark points onto a common scale (0 - 1.0)
