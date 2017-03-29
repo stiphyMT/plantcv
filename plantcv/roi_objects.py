@@ -115,9 +115,13 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
             # calculate objects Moments
             obj_moment = cv2.moments( cnt)
             # calculate object/contour center of mass position from Moments dictionary
-            cx, cy = int( obj_moment[ 'm10'] / obj_moment[ 'm00']), int( obj_moment[ 'm01'] / obj_moment[ 'm00'])
-            # determine whether the center of mass in in or outside the roi
-            pptest = cv2.pointPolygonTest( roi_contour[0], ( cx, cy), False)
+            try:
+                cx, cy = int( obj_moment[ 'm10'] / obj_moment[ 'm00']), int( obj_moment[ 'm01'] / obj_moment[ 'm00'])
+            except ZeroDivisionError:
+                pptest = -1
+            else:
+                # determine whether the center of mass in in or outside the roi
+                pptest = cv2.pointPolygonTest( roi_contour[0], ( cx, cy), False)
             # pptest = -1 if it is outside the roi
             if int( pptest) != -1:
                 if obj_hierarchy[ 0][ c][ 3] > -1:
