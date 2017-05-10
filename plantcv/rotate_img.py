@@ -32,10 +32,10 @@ def rotate_img(img, rotation_deg, device, debug=None):
     """
     device += 1
 
-    if len(np.shape(img))==3:
+    if len(np.shape(img)) == 3:
         iy, ix, iz = np.shape(img)
     else:
-        iy,ix=np.shape(img)
+        iy, ix = np.shape(img)
 
     M = cv2.getRotationMatrix2D((ix / 2, iy / 2), rotation_deg, 1)
     rotated_img = cv2.warpAffine(img, M, (ix, iy))
@@ -44,10 +44,9 @@ def rotate_img(img, rotation_deg, device, debug=None):
         print_image(rotated_img, (str(device) + '_rotated_img.png'))
 
     elif debug == 'plot':
-        if len(np.shape(img))==3:
+        if len(np.shape(img)) == 3:
             plot_image(rotated_img)
         else:
             plot_image(rotated_img, cmap='gray')
 
     return device, rotated_img
-

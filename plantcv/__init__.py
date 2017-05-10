@@ -1,18 +1,16 @@
-__all__ = ['fatal_error', 'PCVconstants', 'print_image', 'plot_image', 'plot_colorbar', 'readimage', 'laplace_filter','sobel_filter',
-           'scharr_filter', 'HistEqualization', 'plot_hist', 'image_add', 'image_subtract', 'erode', 'dilate',
-           'watershed', 'rectangle_mask', 'border_mask', 'rgb2gray_hsv', 'rgb2gray_lab', 'rgb2gray_rgb', 'rgb2gray', 'binary_threshold',
+__all__ = ['fatal_error', 'PCVconstants','print_image', 'plot_image', 'plot_colorbar', 'readimage', 'laplace_filter',
+           'sobel_filter', 'scharr_filter', 'hist_equalization', 'plot_hist', 'image_add', 'image_subtract', 'erode', 'dilate', 'watershed', 'rectangle_mask', 'rgb2gray_hsv', 'rgb2gray_lab', 'rgb2gray', 'binary_threshold',
            'median_blur', 'fill', 'invert', 'logical_and', 'logical_or', 'logical_xor', 'apply_mask', 'find_objects',
            'define_roi', 'roi_objects', 'object_composition', 'analyze_object', 'analyze_bound', 'analyze_color',
            '_pseudocolored_image', 'analyze_NIR_intensity', 'fluor_fvfm', 'print_results', 'resize', 'flip',
            'crop_position_mask', 'get_nir', 'adaptive_threshold', 'otsu_auto_threshold', 'report_size_marker_area',
-           'white_balance', 'white_balance2', 'triangle_auto_threshold','acute_vertex','scale_features','turgor_proxy',
-           'x_axis_pseudolandmarks', 'y_axis_pseudolandmarks','gaussian_blur', 'cluster_contours','cluster_contour_splitimg',
-           'rotate_img', 'shift_img']
-# MOST MODULES ARE DEPENDANT ON fata_error.py
-from .fatal_error import fatal_error
+           'white_balance', 'triangle_auto_threshold', 'acute_vertex', 'scale_features', 'turgor_proxy',
+           'x_axis_pseudolandmarks', 'y_axis_pseudolandmarks', 'gaussian_blur', 'cluster_contours',
+           'cluster_contour_splitimg', 'rotate_img', 'shift_img', 'output_mask', 'auto_crop',
+           'background_subtraction', 'naive_bayes_classifier']
 
 from .PCVconstants import *
-
+from .fatal_error import fatal_error
 from .print_image import print_image
 from .plot_image import plot_image
 from .plot_colorbar import plot_colorbar
@@ -71,5 +69,16 @@ from .cluster_contours import cluster_contours
 from .cluster_contour_splitimg import cluster_contour_splitimg
 from .rotate_img import rotate_img
 from .shift_img import shift_img
+from .x_axis_pseudolandmarks import x_axis_pseudolandmarks
+from .y_axis_pseudolandmarks import y_axis_pseudolandmarks
+from .gaussian_blur import gaussian_blur
+from .cluster_contours import cluster_contours
+from .cluster_contour_splitimg import cluster_contour_splitimg
+from .rotate_img import rotate_img
+from .shift_img import shift_img
+from .output_mask_ori_img import output_mask
+from .auto_crop import auto_crop
+from .background_subtraction import background_subtraction
+from .naive_bayes_classifier import naive_bayes_classifier
 
-#add new functions to end of lists
+# add new functions to end of lists

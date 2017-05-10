@@ -20,6 +20,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
     roi_hierarchy  = contour of roi, output from "View and Ajust ROI" function
     object_contour = contours of objects, output from "Identifying Objects" fuction
     obj_hierarchy  = hierarchy of objects, output from "Identifying Objects" fuction
+==== BASE ====
     device         = device number.  Used to count steps in the pipeline
     debug          = None, print, or plot. Print = save to file, Plot = print to screen.
 
@@ -89,7 +90,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
         cv2.drawContours(ori_img, kept_cnt, -1, (0, 255, 0), -1, lineType=8, hierarchy=hierarchy)
         cv2.drawContours(ori_img, roi_contour, -1, (255, 0, 0), 5, lineType=8, hierarchy=roi_hierarchy)
 
-    # Allows uer to cut objects to the ROI (all objects completely outside ROI will not be kept)
+    # Allows user to cut objects to the ROI (all objects completely outside ROI will not be kept)
     elif roi_type == 'cutto':
         cv2.drawContours(background1, object_contour, -1, (255, 255, 255), -1, lineType=8, hierarchy=obj_hierarchy)
         roi_points = np.vstack(roi_contour[0])

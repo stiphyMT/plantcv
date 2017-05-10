@@ -186,7 +186,6 @@ def fluor_fvfm(fdark, fmin, fmax, mask, device, filename, bins=1000, debug=None)
         plt.clf()
         print('\t'.join(map(str, ('IMAGE', 'hist', fig_name))))
 
-
         # Pseudocolor FvFm image
         ix, iy = np.shape(fmax)
         size = ix, iy

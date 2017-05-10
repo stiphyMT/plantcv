@@ -141,6 +141,7 @@ def crop_position_mask(img, mask, device, x, y, v_pos="top", h_pos="right", debu
     if v_pos == "bottom":
         # Add rows to the bottom
         bottom = np.zeros((x, my), dtype=np.uint8)
+
         maskv = np.vstack((mask, bottom))
         # print_image(maskv,(str(device)+"_push-bottom-test.png"))
 

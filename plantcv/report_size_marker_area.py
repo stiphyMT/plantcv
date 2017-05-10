@@ -164,7 +164,7 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
     else:
         fatal_error("marker must be either in 'detect' or 'define' mode")
     
-    analysis_images=[]
+    analysis_images = []
     if filename:
         out_file = str(filename[0:-4]) + '_sizemarker.jpg'
         print_image(ori_img, out_file)

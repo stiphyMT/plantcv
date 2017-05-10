@@ -74,7 +74,7 @@ def _pseudocolored_image(device, histogram, bins, img, mask, background, channel
     if filename:
         fig_name_pseudo = str(filename[0:-4]) + '_' + str(channel) + '_pseudo_on_' + str(background) + '.jpg'
         path = os.path.dirname(filename)
-        print_image(cplant_back,fig_name_pseudo)
+        print_image(cplant_back, fig_name_pseudo)
         analysis_images.append(['IMAGE', 'pseudo', fig_name_pseudo])
         
         if debug is not None:
@@ -267,9 +267,9 @@ def analyze_color(img, imgname, mask, bins, device, debug=None, hist_plot_type=N
             analysis_images = _pseudocolored_image(device,y_bin, bins, img, mask, 'white', p_channel, filename, resolution,
                                                    analysis_images, debug)
 
-        if (pseudo_bkg == 'img' or pseudo_bkg == 'both'):
-            analysis_images = _pseudocolored_image(device,y_bin, bins, img, mask, 'img', p_channel, filename, resolution,
-                                                   analysis_images, debug)
+        if pseudo_bkg == 'img' or pseudo_bkg == 'both':
+            analysis_images = _pseudocolored_image(device, y_bin, bins, img, mask, 'img', p_channel, filename,
+                                                   resolution, analysis_images, debug)
 
     else:
         fatal_error('Pseudocolor Channel' + str(pseudo_channel) + ' is not "None", "l","m", "y", "h","s" or "v"!')

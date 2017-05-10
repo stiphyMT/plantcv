@@ -1,3 +1,4 @@
+==== BASE ====
 # Binary image auto threshold
 
 from __future__ import division, print_function
@@ -10,8 +11,8 @@ from . import plot_image
 (  cv2major, cv2minor, _) = cv2.__version__.split('.')
 (cv2major, cv2minor) = int(cv2major), int(cv2minor)
 
-def _detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising',
-                 kpsh=False, valley=False, show=False, ax=None):
+
+def _detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising', kpsh=False, valley=False, show=False, ax=None):
     """Marcos Duarte, https://github.com/demotu/BMC; version 1.0.4; license MIT
 
     Detect peaks in data based on their amplitude and other features.
@@ -60,32 +61,32 @@ def _detect_peaks(x, mph=None, mpd=1, threshold=0, edge='rising',
 
     Examples
     --------
-    >>> from detect_peaks import detect_peaks
-    >>> x = np.random.randn(100)
-    >>> x[60:81] = np.nan
-    >>> # detect all peaks and plot data
-    >>> ind = detect_peaks(x, show=True)
-    >>> print(ind)
+    from detect_peaks import detect_peaks
+    x = np.random.randn(100)
+    x[60:81] = np.nan
+    # detect all peaks and plot data
+    ind = detect_peaks(x, show=True)
+    print(ind)
 
-    >>> x = np.sin(2*np.pi*5*np.linspace(0, 1, 200)) + np.random.randn(200)/5
-    >>> # set minimum peak height = 0 and minimum peak distance = 20
-    >>> detect_peaks(x, mph=0, mpd=20, show=True)
+    x = np.sin(2*np.pi*5*np.linspace(0, 1, 200)) + np.random.randn(200)/5
+    # set minimum peak height = 0 and minimum peak distance = 20
+    detect_peaks(x, mph=0, mpd=20, show=True)
 
-    >>> x = [0, 1, 0, 2, 0, 3, 0, 2, 0, 1, 0]
-    >>> # set minimum peak distance = 2
-    >>> detect_peaks(x, mpd=2, show=True)
+    x = [0, 1, 0, 2, 0, 3, 0, 2, 0, 1, 0]
+    # set minimum peak distance = 2
+    detect_peaks(x, mpd=2, show=True)
 
-    >>> x = np.sin(2*np.pi*5*np.linspace(0, 1, 200)) + np.random.randn(200)/5
-    >>> # detection of valleys instead of peaks
-    >>> detect_peaks(x, mph=0, mpd=20, valley=True, show=True)
+    x = np.sin(2*np.pi*5*np.linspace(0, 1, 200)) + np.random.randn(200)/5
+    # detection of valleys instead of peaks
+    detect_peaks(x, mph=0, mpd=20, valley=True, show=True)
 
-    >>> x = [0, 1, 1, 0, 1, 1, 0]
-    >>> # detect both edges
-    >>> detect_peaks(x, edge='both', show=True)
+    x = [0, 1, 1, 0, 1, 1, 0]
+    # detect both edges
+    detect_peaks(x, edge='both', show=True)
 
-    >>> x = [-2, 1, -2, 2, 1, 1, 3, 0]
-    >>> # set threshold = 2
-    >>> detect_peaks(x, threshold = 2, show=True)
+    x = [-2, 1, -2, 2, 1, 1, 3, 0]
+    # set threshold = 2
+    detect_peaks(x, threshold = 2, show=True)
     """
 
     x = np.atleast_1d(x).astype('float64')
@@ -178,18 +179,19 @@ def _plot(x, mph, mpd, threshold, edge, valley, ax, ind):
         plt.show()
 
 
-def triangle_auto_threshold(img, maxvalue, object_type, device, debug=False, xstep=None):
+def triangle_auto_threshold(device, img, maxvalue, object_type, xstep=1, debug=None):
     """Creates a binary image from a grayscaled image using Zack et al.'s (1977) thresholding.
 
     Inputs:
+    device      = device number. Used to count steps in the pipeline
     img         = img object, grayscale
     maxvalue    = value to apply above threshold (usually 255 = white)
     object_type = light or dark
                   - If object is light then standard thresholding is done
                   - If object is dark then inverse thresholding is done
-    device      = device number. Used to count steps in the pipeline
+    xstep       = value to move along x-axis to determine the points from which to calculate distance
+                    recommended to start at 1 and change if needed)
     debug       = True/False. If True, print image
-    xstep       = value to move along x-axis to determine the points from which to calculate distance (default = 1)
 
     Returns:
     device      = device number
@@ -212,7 +214,8 @@ def triangle_auto_threshold(img, maxvalue, object_type, device, debug=False, xst
 
     # Make histogram one array
     newhist = []
-    for item in hist: newhist.extend(item)
+    for item in hist:
+        newhist.extend(item)
 
     # Detect peaks
     ind = _detect_peaks(newhist, mph=None, mpd=1)
@@ -237,33 +240,18 @@ def triangle_auto_threshold(img, maxvalue, object_type, device, debug=False, xst
     # Get threshold value
     peaks = []
     dists = []
-    if xstep is None:
-        for i in range(x_coords[0], x_coords[1], 1):
-            distance = (((x_coords[1] - x_coords[0]) * (y_coords[0] - hist[i])) -
-                        ((x_coords[0] - i) * (y_coords[1] - y_coords[0]))) / math.sqrt(
-                (float(x_coords[1]) - float(x_coords[0])) *
-                (float(x_coords[1]) - float(x_coords[0])) +
-                ((float(y_coords[1]) - float(y_coords[0])) *
-                (float(y_coords[1]) - float(y_coords[0]))))
-            peaks.append(i)
-            dists.append(distance)
-        autothresh = [peaks[x] for x in [i for i, x in enumerate(list(dists)) if x == max(list(dists))]]
-        autothreshval = autothresh[0]
-        print('Threshold value = {t}'.format(t=autothreshval))
 
-    else:
-        for i in range(x_coords[0], x_coords[1], xstep):
-            distance = (((x_coords[1] - x_coords[0]) * (y_coords[0] - hist[i])) -
-                        ((x_coords[0] - i) * (y_coords[1] - y_coords[0]))) / math.sqrt(
-                (float(x_coords[1]) - float(x_coords[0])) *
-                (float(x_coords[1]) - float(x_coords[0])) +
-                ((float(y_coords[1]) - float(y_coords[0])) *
-                (float(y_coords[1]) - float(y_coords[0]))))
-            peaks.append(i)
-            dists.append(distance)
-        autothresh = [peaks[x] for x in [i for i, x in enumerate(list(dists)) if x == max(list(dists))]]
-        autothreshval = autothresh[0]
-        print('Threshold value = {t}'.format(t=autothreshval))
+    for i in range(x_coords[0], x_coords[1], xstep):
+        distance = (((x_coords[1] - x_coords[0]) * (y_coords[0] - hist[i])) -
+                    ((x_coords[0] - i) * (y_coords[1] - y_coords[0]))) / math.sqrt(
+            (float(x_coords[1]) - float(x_coords[0])) *
+            (float(x_coords[1]) - float(x_coords[0])) +
+            ((float(y_coords[1]) - float(y_coords[0])) *
+             (float(y_coords[1]) - float(y_coords[0]))))
+        peaks.append(i)
+        dists.append(distance)
+    autothresh = [peaks[x] for x in [i for i, x in enumerate(list(dists)) if x == max(list(dists))]]
+    autothreshval = autothresh[0]
 
     # check whether to inverse the image or not and make an ending extension
     obj = 0
@@ -278,10 +266,34 @@ def triangle_auto_threshold(img, maxvalue, object_type, device, debug=False, xst
     # threshold the image based on the object type using triangle binarization
     t_val, t_img = cv2.threshold(img, autothreshval, maxvalue, obj)
 
+    if debug is not None:
+        import matplotlib
+        matplotlib.use('Agg')
+        from matplotlib import pyplot as plt
+
     if debug == 'print':
-        name = str(device) + '_triangle_auto_threshold_' + str(t_val) + str(extension)
+        name = str(device) + '_triangle_thresh_img_' + str(t_val) + str(extension)
         print_image(t_img, name)
+        plt.clf()
+
+        plt.plot(hist)
+        plt.title('Threshold value = {t}'.format(t=autothreshval))
+        plt.axis([0, 256, 0, max(hist)])
+        plt.grid('on')
+        fig_name_hist = str(device) + '_triangle_thresh_hist_' + str(t_val) + str(extension)
+        # write the figure to current directory
+        plt.savefig(fig_name_hist)
+        # close pyplot plotting window
+        plt.clf()
+
     elif debug == 'plot':
+        print('Threshold value = {t}'.format(t=autothreshval))
         plot_image(t_img, cmap="gray")
 
+        plt.plot(hist)
+        plt.axis([0, 256, 0, max(hist)])
+        plt.grid('on')
+        plt.show()
+
     return device, t_img
+==== BASE ====

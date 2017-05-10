@@ -179,5 +179,4 @@ def analyze_bound(img, imgname, obj, mask, line_position, device, debug=None, fi
             plot_image(wback)
             plot_image(ori_img)
 
-
     return device, bound_header, bound_data, analysis_images

@@ -38,7 +38,6 @@ def acute_vertex(obj, win, thresh, sep, img, device, debug=False):
     P12 = np.sqrt((x-pre_x)*(x-pre_x)+(y-pre_y)*(y-pre_y))
     P13 = np.sqrt((x-post_x)*(x-post_x)+(y-post_y)*(y-post_y))
     P23 = np.sqrt((pre_x-post_x)*(pre_x-post_x)+(pre_y-post_y)*(pre_y-post_y))
-    dot = (P12*P12 + P13*P13 - P23*P23)/(2*P12*P13)
     if dot > 1:              #If float excedes 1 prevent arcos error and force to equal 1
       dot = 1
     elif dot < -1:           #If float excedes -1 prevent arcos error and force to equal -1
@@ -106,7 +105,7 @@ def acute_vertex(obj, win, thresh, sep, img, device, debug=False):
   ## If flag was true (no points found as acute) reformat output appropriate type
   if flag == 1:
     acute = np.asarray(acute)
-    acute = acute.reshape(1,1,2)
+    acute = acute.reshape(1,1,2) 
   return(device, acute)
 ### End of function   
  

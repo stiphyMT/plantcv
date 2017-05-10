@@ -96,7 +96,7 @@ def cluster_contour_splitimg(device,img,grouped_contour_indexes,contours,outdir,
 
     # split image
 
-    output_path=[]
+    output_path = []
 
     for y, x in enumerate(corrected_contour_indexes):
         savename = str(outdir)+'/'+group_names[y]
@@ -126,4 +126,3 @@ def cluster_contour_splitimg(device,img,grouped_contour_indexes,contours,outdir,
                     plot_image(masked1)
 
     return device, output_path
-
