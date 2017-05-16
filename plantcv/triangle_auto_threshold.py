@@ -1,4 +1,3 @@
-==== BASE ====
 # Binary image auto threshold
 
 from __future__ import division, print_function
@@ -296,4 +295,4 @@ def triangle_auto_threshold(device, img, maxvalue, object_type, xstep=1, debug=N
         plt.show()
 
     return device, t_img
-==== BASE ====
+
