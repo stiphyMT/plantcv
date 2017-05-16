@@ -4,8 +4,8 @@ import os
 import cv2
 from . import fatal_error
 #opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
+( cv2major, cv2minor, _) = cv2.__version__.split('.')
+( cv2major, cv2minor) = int( cv2major), int( cv2minor)
 
 
 def readimage(filename):
@@ -26,11 +26,11 @@ def readimage(filename):
     """
 
     try:
-        img = cv2.imread(filename)
+        img = cv2.imread( filename)
     except:
-        fatal_error("Cannot open " + filename)
+        fatal_error( "Cannot open " + filename)
 
     # Split path from filename
-    path, img_name = os.path.split(filename)
+    path, img_name = os.path.split( filename)
 
     return img, path, img_name
