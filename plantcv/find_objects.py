@@ -5,8 +5,8 @@ import numpy as np
 from . import print_image
 from . import plot_image
 #opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
+( cv2major, cv2minor, _) = cv2.__version__.split( '.')
+( cv2major, cv2minor) = int( cv2major), int( cv2minor)
 
 
 def find_objects(img, mask, device, debug=None):
@@ -35,15 +35,15 @@ def find_objects(img, mask, device, debug=None):
     device += 1
     mask1 = np.copy(mask)
     ori_img = np.copy(img)
-    if cv2major > 2 and cv2minor > 0:
-        _, objects, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    if cv2major >= 3 and cv2minor >= 1:
+        _, objects, hierarchy = cv2.findContours( mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
-        objects, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    for i, cnt in enumerate(objects):
-        cv2.drawContours(ori_img, objects, i, (255, 102, 255), -1, lineType=8, hierarchy=hierarchy)
+        objects, hierarchy = cv2.findContours( mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    for i, cnt in enumerate( objects):
+        cv2.drawContours( ori_img, objects, i, ( 255, 102, 255), -1, lineType = 8, hierarchy = hierarchy)
     if debug == 'print':
-        print_image(ori_img, (str(device) + '_id_objects.png'))
+        print_image( ori_img, ( str( device) + '_id_objects.png'))
     elif debug == 'plot':
-        plot_image(ori_img)
+        plot_image( ori_img)
 
     return device, objects, hierarchy
