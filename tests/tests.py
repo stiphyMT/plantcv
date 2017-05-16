@@ -3,6 +3,7 @@
 import pytest
 import os
 import numpy as np
+import sys
 import cv2
 import plantcv as pcv
 
@@ -223,10 +224,16 @@ def test_plantcv_find_objects():
 
 def test_plantcv_roi_objects():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
-    roi_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_ROI))
+    if sys.version_info.major > 2:
+        roi_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_ROI), encoding = 'bytes')
+    else:
+        roi_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_ROI))
     roi_contour = roi_npz['arr_0']
     roi_hierarchy = roi_npz['arr_1']
-    contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS))
+    if sys.version_info.major > 2:
+        contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS), encoding = 'bytes')
+    else:
+        contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS))
     object_contours = contours_npz['arr_0']
     object_hierarchy = contours_npz['arr_1']
     device, kept_contours, kept_hierarchy, mask, area = pcv.roi_objects(img=img, roi_type="partial",
