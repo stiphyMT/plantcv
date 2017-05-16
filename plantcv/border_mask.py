@@ -1,4 +1,3 @@
-==== BASE ====
 # Mask border of image
 
 import cv2

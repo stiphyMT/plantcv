@@ -1,4 +1,3 @@
-==== BASE ====
 import sys
 import cv2
 import numpy as np
@@ -158,4 +157,4 @@ def cluster_contours(device, img, roi_objects, nrow=1, ncol=1, debug=None):
         plot_image(img_copy)
 
     return device, grouped_contour_indexes, contours
-==== BASE ====
+
