@@ -5,7 +5,7 @@ import re
 import numpy as np
 
 
-def get_nir(path, filename, device, debug=None):
+def get_nir( path, filename, device, debug = None):
     """Find a corresponding NIR image from the same snapshot as the VIS image.
 
     Inputs:
@@ -27,8 +27,8 @@ def get_nir(path, filename, device, debug=None):
     """
 
     device += 1
-    visname = filename.split("_")
-    allfiles = np.array(os.listdir(path))
+    visname = filename.split( "_")
+    allfiles = np.array( os.listdir( path))
     nirfiles = []
 
     targetimg = []
@@ -38,20 +38,20 @@ def get_nir(path, filename, device, debug=None):
         angle = visname[2]
 
     for n in allfiles:
-        if re.search("NIR", n) != None:
+        if re.search( "NIR", n) != None:
             nirfiles.append(n)
 
     if cam == "TV":
         for n in nirfiles:
-            if re.search("TV", n) != None:
-                nirpath = str(path) + "\\" + str(n)
+            if re.search( "TV", n) != None:
+                nirpath = os.path.join( str( path), str( n))
 
     if cam == "SV":
         for n in nirfiles:
-            if re.search("SV", n) != None:
-                nsplit = n.split("_")
+            if re.search( "SV", n) != None:
+                nsplit = n.split( "_")
                 exangle = '\\b' + str(angle) + '\\b'
-                if re.search(exangle, nsplit[2]) != None:
-                    nirpath = str(path) + "\\" + str(n)
+                if re.search( exangle, nsplit[2]) != None:
+                    nirpath = os.path.join( str( path), str( n))
 
     return device, nirpath
