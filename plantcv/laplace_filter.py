@@ -4,8 +4,8 @@ import cv2
 from . import print_image
 from . import plot_image
 #opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
+( cv2major, cv2minor, _) = cv2.__version__.split( '.')
+( cv2major, cv2minor) = int( cv2major), int( cv2minor)
 
 
 def laplace_filter(img, k, scale, device, debug=None):

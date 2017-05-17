@@ -12,13 +12,16 @@ from . import plot_image
 
 def readimage(filename, debug=None):
     """Read image from file.
+
     Inputs:
     filename = name of image file
     debug    = None, print, or plot. Print = save to file, Plot = print to screen.
+
     Returns:
     img      = image object as numpy array
     path     = path to image file
     img_name = name of image file
+
     :param filename: str
     :param debug: str
     :return img: numpy array

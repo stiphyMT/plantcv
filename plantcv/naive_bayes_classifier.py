@@ -13,14 +13,17 @@ from . import fatal_error
 
 def naive_bayes_classifier( img, pdf_file, device, debug = None):
     """Use the Naive Bayes classifier to output a plant binary mask.
+
     Inputs:
     img      = image object (NumPy ndarray), BGR colorspace
     pdf_file = filename of file containing PDFs output from the Naive Bayes training method (see plantcv-train.py)
     device   = device number. Used to count steps in the pipeline
     debug    = None, print, or plot. Print = save to file, Plot = print to screen.
+
     Returns:
     device   = device number
     mask     = binary mask (ndarray)
+
     :param img: ndarray
     :param pdf_file: str
     :param device: int

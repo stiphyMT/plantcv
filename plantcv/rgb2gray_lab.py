@@ -31,7 +31,7 @@ def rgb2gray_lab(img, channel, device, debug=None):
     """
 
     lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-    # Split HSV channels
+    # Split LAB channels
     l, a, b = cv2.split(lab)
     device += 1
     if channel == 'l':

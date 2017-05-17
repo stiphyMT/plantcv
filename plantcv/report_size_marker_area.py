@@ -12,8 +12,8 @@ from . import define_roi
 from . import roi_objects
 from . import object_composition
 #opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
+( cv2major, cv2minor, _) = cv2.__version__.split( '.')
+( cv2major, cv2minor) = int( cv2major), int( cv2minor)
 
 
 def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0, y_adj=0, w_adj=0, h_adj=0,

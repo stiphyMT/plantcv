@@ -4,8 +4,8 @@ import cv2
 import numpy as np
 from . import plot_image
 #opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
+( cv2major, cv2minor, _) = cv2.__version__.split( '.')
+( cv2major, cv2minor) = int( cv2major), int( cv2minor)
 
 
 def x_axis_pseudolandmarks(obj, mask, img, device, debug=False):

@@ -8,6 +8,7 @@ from scipy import stats
 
 def naive_bayes(imgdir, maskdir, outfile, mkplots=False):
     """Naive Bayes training function
+
     Inputs:
     imgdir  = Path to a directory of original 8-bit RGB images. 
     maskdir = Path to a directory of binary mask images. Mask images must have the same name as their corresponding
@@ -160,6 +161,7 @@ def naive_bayes_multiclass(samples_file, outfile, mkplots=False):
 
 def _split_plant_background_signal(channel, mask):
     """Split a single-channel image by foreground and background using a mask
+
     :param channel: ndarray
     :param mask: ndarray
     :return plant: ndarray
@@ -173,6 +175,7 @@ def _split_plant_background_signal(channel, mask):
 
 def _plot_pdf(channel, outdir, **kwargs):
     """Plot the probability density function of one or more classes for the given channel
+
     :param channel: str
     :param outdir: str
     :param kwargs: dict

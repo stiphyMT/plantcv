@@ -3,12 +3,12 @@ __all__ = ['fatal_error', 'PCVconstants','print_image', 'plot_image', 'plot_colo
            'dilate', 'watershed', 'rectangle_mask', 'rgb2gray_hsv', 'rgb2gray_lab', 'rgb2gray', 'binary_threshold',
            'median_blur', 'fill', 'invert', 'logical_and', 'logical_or', 'logical_xor', 'apply_mask', 'find_objects',
            'define_roi', 'roi_objects', 'object_composition', 'analyze_object', 'analyze_bound', 'analyze_color',
-           '_pseudocolored_image', 'analyze_NIR_intensity', 'fluor_fvfm', 'print_results', 'resize', 'flip',
+           'analyze_NIR_intensity', 'fluor_fvfm', 'print_results', 'resize', 'flip',
            'crop_position_mask', 'get_nir', 'adaptive_threshold', 'otsu_auto_threshold', 'report_size_marker_area',
-           'white_balance', 'triangle_auto_threshold', 'acute_vertex', 'scale_features', 'turgor_proxy',
+           'white_balance', 'triangle_auto_threshold', 'acute_vertex', 'scale_features', 'landmark_reference_pt_dist',
            'x_axis_pseudolandmarks', 'y_axis_pseudolandmarks', 'gaussian_blur', 'cluster_contours',
            'cluster_contour_splitimg', 'rotate_img', 'shift_img', 'output_mask', 'auto_crop',
-           'background_subtraction', 'naive_bayes_classifier']
+           'background_subtraction', 'naive_bayes_classifier', 'acute']
 
 from .PCVconstants import *
 from .fatal_error import fatal_error
@@ -30,7 +30,7 @@ from .rectangle_mask import rectangle_mask
 from .border_mask import border_mask
 from .rgb2gray_hsv import rgb2gray_hsv
 from .rgb2gray_lab import rgb2gray_lab
-from .rgb2gray_rgb import rgb2gray_rgb
+#from .rgb2gray_rgb import rgb2gray_rgb
 from .rgb2gray import rgb2gray
 from .binary_threshold import binary_threshold
 from .median_blur import median_blur
@@ -58,18 +58,10 @@ from .adaptive_threshold import adaptive_threshold
 from .otsu_auto_threshold import otsu_auto_threshold
 from .report_size_marker_area import report_size_marker_area
 from .white_balance import white_balance
-from .white_balance2 import white_balance2
 from .triangle_auto_threshold import triangle_auto_threshold
 from .acute_vertex import acute_vertex
 from .scale_features import scale_features
-from .turgor_proxy import turgor_proxy
-from .x_axis_pseudolandmarks import x_axis_pseudolandmarks
-from .y_axis_pseudolandmarks import y_axis_pseudolandmarks
-from .gaussian_blur import gaussian_blur
-from .cluster_contours import cluster_contours
-from .cluster_contour_splitimg import cluster_contour_splitimg
-from .rotate_img import rotate_img
-from .shift_img import shift_img
+from landmark_reference_pt_dist import landmark_reference_pt_dist
 from .x_axis_pseudolandmarks import x_axis_pseudolandmarks
 from .y_axis_pseudolandmarks import y_axis_pseudolandmarks
 from .gaussian_blur import gaussian_blur
@@ -81,5 +73,6 @@ from .output_mask_ori_img import output_mask
 from .auto_crop import auto_crop
 from .background_subtraction import background_subtraction
 from .naive_bayes_classifier import naive_bayes_classifier
+from .acute import acute
 
 # add new functions to end of lists

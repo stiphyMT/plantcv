@@ -8,12 +8,12 @@ the values out to a file. Can also print out a histogram plot of pixel intensity
 **returns** device, header of histogram, histogram values, histogram of proportion of signal/bin, pseudocolored image
 
 - **Parameters:**
-    - img - Input image
-    - rgb - Input image with 3-dimensions (pseudocolor)
-    - mask - Mask made from selected contours
-    - bins - Number of class to divide spectrum into
-    - device - Counter for image processing steps
-    - debug - None, "print", or "plot". Print = save to file, Plot = print to screen. Default = None
+    - img      - Input image
+    - rgbimg   - Input image with 3-dimensions (for pseudocolor)
+    - mask     - Mask made from selected contours
+    - bins     - Number of class to divide spectrum into
+    - device   - Counter for image processing steps
+    - debug    - None, "print", or "plot". Print = save to file, Plot = print to screen. Default = None
     - filename - Name for output images
 - **Context:**
     - Used to mask rectangluar regions of an image

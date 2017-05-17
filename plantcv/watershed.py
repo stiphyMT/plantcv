@@ -9,11 +9,11 @@ from skimage.feature import peak_local_max
 from skimage.morphology import watershed
 from . import print_image
 from . import plot_image
-from plantcv.apply_mask import apply_mask
-from plantcv.dev.color_palette import color_palette#opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
-
+from . import apply_mask
+from . import color_palette
+#opencv2 version control
+( cv2major, cv2minor, _) = cv2.__version__.split( '.')
+( cv2major, cv2minor) = int( cv2major), int( cv2minor)
 
 def watershed_segmentation(device, img, mask, distance=10, filename=False, debug=None):
     """Uses the watershed algorithm to detect boundary of objects. Needs a marker file which specifies area which is

@@ -1,31 +1,34 @@
+# Identify landmark positions within a contour for morphometric analysis
+
 import numpy as np
 import math
 import cv2
 #opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
+( cv2major, cv2minor, _) = cv2.__version__.split( '.')
+( cv2major, cv2minor) = int( cv2major), int( cv2minor)
 
 
 ### Identify landmark positions within a contour for morphometric analysis
 def acute(obj, win, thresh, mask, debug=False):
-    #Inputs:
-    #cont        = opencv contour array of interest to be scanned for landmarks
-    #win         = maximum cumulative pixel distance window for calculating angle
-    #              score; 1 cm in pixels often works well
-    #thresh      = angle score threshold to be applied for mapping out landmark
-    #              coordinate clusters within each contour
-    #mask        = binary mask used to generate contour array (necessary for ptvals)
-    #Outputs:
-    #homolog_pts = pseudo-landmarks selected from each landmark cluster
-    #start_pts   = pseudo-landmark island starting position; useful in parsing homolog_pts in downstream analyses
-    #stop_pts    = pseudo-landmark island end position ; useful in parsing homolog_pts in downstream analyses
-    #ptvals      = average values of pixel intensity from the mask used to generate cont;
-    #              useful in parsing homolog_pts in downstream analyses
-    #chain       = raw angle scores for entire contour, used to visualize landmark
-    #              clusters
-    #verbose_out = supplemental file which stores coordinates, distance from
-    #              landmark cluster edges, and angle score for entire contour.  Used
-    #              in troubleshooting.
+    """Inputs:
+    cont        = opencv contour array of interest to be scanned for landmarks
+    win         = maximum cumulative pixel distance window for calculating angle
+                  score; 1 cm in pixels often works well
+    thresh      = angle score threshold to be applied for mapping out landmark
+                  coordinate clusters within each contour
+    mask        = binary mask used to generate contour array (necessary for ptvals)
+    Outputs:
+    homolog_pts = pseudo-landmarks selected from each landmark cluster
+    start_pts   = pseudo-landmark island starting position; useful in parsing homolog_pts in downstream analyses
+    stop_pts    = pseudo-landmark island end position ; useful in parsing homolog_pts in downstream analyses
+    ptvals      = average values of pixel intensity from the mask used to generate cont;
+                  useful in parsing homolog_pts in downstream analyses
+    chain       = raw angle scores for entire contour, used to visualize landmark
+                  clusters
+    verbose_out = supplemental file which stores coordinates, distance from
+                  landmark cluster edges, and angle score for entire contour.  Used
+                  in troubleshooting.
+    """
 
     vert = obj[0]                                      #Initialize first vertex for chain scan
     chain = []                                         #Create empty chain to store angle scores
