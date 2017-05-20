@@ -2,11 +2,17 @@
 
 import pytest
 import os
+import sys
 import shutil
 import numpy as np
 import cv2
 import plantcv as pcv
 import plantcv.learn
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 # Import matplotlib and use a null Template to block plotting to screen
 # This will let us test debug = "plot"
 import matplotlib
@@ -67,7 +73,7 @@ def test_plantcv_acute():
     contours_npz = np.load(os.path.join(TEST_DATA, TEST_VIS_COMP_CONTOUR))
     obj_contour = contours_npz['arr_0']
     # Test with debug = "print"
-    _ = pcv.acute(obj=obj_contour, win=5, thresh=15, mask=mask, device=0, debug="print")
+    device, _ = pcv.acute(obj=obj_contour, win=5, thresh=15, mask=mask, device=0, debug="print")
     # Test with debug = None
     device, homology_pts = pcv.acute(obj=obj_contour, win=5, thresh=15, mask=mask, device=0, debug=None)
     assert all([i == j] for i, j in zip(np.shape(homology_pts), (29, 1, 2)))
@@ -79,7 +85,11 @@ def test_plantcv_acute_vertex():
     obj_contour = contours_npz['arr_0']
     # Test with debug = "print"
     _ = pcv.acute_vertex(obj=obj_contour, win=5, thresh=15, sep=5, img=img, device=0, debug="print")
-    os.rename("1_acute_vertices.png", os.path.join(TEST_TMPDIR, "1_acute_vertices.png"))
+    try:
+        os.rename("1_acute_vertices.png", os.path.join(TEST_TMPDIR, "1_acute_vertices.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_acute_vertices.png"))
+        os.rename("1_acute_vertices.png", os.path.join(TEST_TMPDIR, "1_acute_vertices.png"))
     # Test with debug = "plot"
     _ = pcv.acute_vertex(obj=obj_contour, win=5, thresh=15, sep=5, img=img, device=0, debug="plot")
     # Test with debug = None
@@ -101,7 +111,11 @@ def test_plantcv_adaptive_threshold():
     # Test with debug = "print"
     _ = pcv.adaptive_threshold(img=img, maxValue=255, thres_type="gaussian", object_type="light", device=0,
                                debug="print")
-    os.rename("1_adaptive_threshold_gaussian.png", os.path.join(TEST_TMPDIR, "1_adaptive_threshold_gaussian.png"))
+    try:
+        os.rename("1_adaptive_threshold_gaussian.png", os.path.join(TEST_TMPDIR, "1_adaptive_threshold_gaussian.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_adaptive_threshold_gaussian.png"))
+        os.rename("1_adaptive_threshold_gaussian.png", os.path.join(TEST_TMPDIR, "1_adaptive_threshold_gaussian.png"))
     # Test with debug = "plot"
     _ = pcv.adaptive_threshold(img=img, maxValue=255, thres_type="gaussian", object_type="light", device=0,
                                debug="plot")
@@ -134,14 +148,22 @@ def test_plantcv_adaptive_threshold_incorrect_object_type():
 def test_plantcv_analyze_bound():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
-    contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS))
+    contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS), encoding = 'bytes')
     object_contours = contours_npz['arr_0']
     # Test with debug = "print"
     outfile = os.path.join(TEST_TMPDIR, TEST_INPUT_COLOR)
     _ = pcv.analyze_bound(img=img, imgname="img", obj=object_contours[0], mask=mask, line_position=300, device=0,
                           debug="print", filename=outfile)
-    os.rename("1_boundary_on_img.jpg", os.path.join(TEST_TMPDIR, "1_boundary_on_img.jpg"))
-    os.rename("1_boundary_on_white.jpg", os.path.join(TEST_TMPDIR, "1_boundary_on_white.jpg"))
+    try:
+        os.rename("1_boundary_on_img.jpg", os.path.join(TEST_TMPDIR, "1_boundary_on_img.jpg"))
+    except WindowsError:
+        os.rename("1_boundary_on_img.jpg", os.path.join(TEST_TMPDIR, "1_boundary_on_img.jpg"))
+        os.rename("1_boundary_on_img.jpg", os.path.join(TEST_TMPDIR, "1_boundary_on_img.jpg"))
+    try:
+        os.rename("1_boundary_on_white.jpg", os.path.join(TEST_TMPDIR, "1_boundary_on_white.jpg"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_boundary_on_white.jpg"))
+        os.rename("1_boundary_on_white.jpg", os.path.join(TEST_TMPDIR, "1_boundary_on_white.jpg"))
     # Test with debug = "plot"
     _ = pcv.analyze_bound(img=img, imgname="img", obj=object_contours[0], mask=mask, line_position=300, device=0,
                           debug="plot", filename=False)
@@ -158,10 +180,17 @@ def test_plantcv_analyze_color():
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     outfile = os.path.join(TEST_TMPDIR, TEST_INPUT_COLOR)
-    _ = pcv.analyze_color(img=img, imgname="img", mask=mask, bins=256, device=0, debug="print", hist_plot_type="all",
-                          pseudo_channel="v", pseudo_bkg="img", resolution=300, filename=outfile)
-    os.rename("1_img_pseudocolor.jpg", os.path.join(TEST_TMPDIR, "1_img_pseudocolor.jpg"))
-    os.rename("1_all_hist.svg", os.path.join(TEST_TMPDIR, "1_all_hist.svg"))
+    _ = pcv.analyze_color(img=img, imgname="img", mask=mask, bins=256, device=0, debug="print", hist_plot_type="all", pseudo_channel="v", pseudo_bkg="img", resolution=300, filename=outfile)
+    try:
+        os.rename("1_img_pseudocolor.jpg", os.path.join(TEST_TMPDIR, "1_img_pseudocolor.jpg"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_img_pseudocolor.jpg"))
+        os.rename("1_img_pseudocolor.jpg", os.path.join(TEST_TMPDIR, "1_img_pseudocolor.jpg"))
+    try:
+        os.rename("1_all_hist.svg", os.path.join(TEST_TMPDIR, "1_all_hist.svg"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_all_hist.svg"))
+        os.rename("1_all_hist.svg", os.path.join(TEST_TMPDIR, "1_all_hist.svg"))
     # Test with debug = "plot"
     _ = pcv.analyze_color(img=img, imgname="img", mask=mask, bins=256, device=0, debug="plot", hist_plot_type=None,
                           pseudo_channel="v", pseudo_bkg="img", resolution=300, filename=False)
@@ -207,8 +236,16 @@ def test_plantcv_analyze_nir():
     outfile = os.path.join(TEST_TMPDIR, TEST_INPUT_COLOR)
     _ = pcv.analyze_NIR_intensity(img=img, rgbimg=img, mask=mask, bins=256, device=0, histplot=False, debug="print",
                                   filename=outfile)
-    os.rename("3_nir_pseudo_plant.jpg", os.path.join(TEST_TMPDIR, "3_nir_pseudo_plant.jpg"))
-    os.rename("3_nir_pseudo_plant_back.jpg", os.path.join(TEST_TMPDIR, "3_nir_pseudo_plant_back.jpg"))
+    try:
+        os.rename("3_nir_pseudo_plant.jpg", os.path.join(TEST_TMPDIR, "3_nir_pseudo_plant.jpg"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "3_nir_pseudo_plant.jpg"))
+        os.rename("3_nir_pseudo_plant.jpg", os.path.join(TEST_TMPDIR, "3_nir_pseudo_plant.jpg"))
+    try:
+        os.rename("3_nir_pseudo_plant_back.jpg", os.path.join(TEST_TMPDIR, "3_nir_pseudo_plant_back.jpg"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "3_nir_pseudo_plant_back.jpg"))
+        os.rename("3_nir_pseudo_plant_back.jpg", os.path.join(TEST_TMPDIR, "3_nir_pseudo_plant_back.jpg"))
     # Test with debug = "plot"
     _ = pcv.analyze_NIR_intensity(img=img, rgbimg=img, mask=mask, bins=256, device=0, histplot=False, debug="plot",
                                   filename=False)
@@ -222,13 +259,17 @@ def test_plantcv_analyze_nir():
 def test_plantcv_analyze_object():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
-    contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS))
+    contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS), encoding = 'bytes')
     obj_contour = contours_npz['arr_0']
     max_obj = max(obj_contour, key=len)
     # Test with debug = "print"
     outfile = os.path.join(TEST_TMPDIR, TEST_INPUT_COLOR)
     _ = pcv.analyze_object(img=img, imgname="img", obj=max_obj, mask=mask, device=0, debug="print", filename=outfile)
-    os.rename("1_shapes.jpg", os.path.join(TEST_TMPDIR, "1_shapes.jpg"))
+    try:
+        os.rename("1_shapes.jpg", os.path.join(TEST_TMPDIR, "1_shapes.jpg"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_shapes.jpg"))
+        os.rename("1_shapes.jpg", os.path.join(TEST_TMPDIR, "1_shapes.jpg"))
     # Test with debug = "plot"
     _ = pcv.analyze_object(img=img, imgname="img", obj=max_obj, mask=mask, device=0, debug="plot", filename=False)
     # Test with debug = None
@@ -242,7 +283,11 @@ def test_plantcv_apply_mask_white():
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     _ = pcv.apply_mask(img=img, mask=mask, mask_color="white", device=0, debug="print")
-    os.rename("1_wmasked.png", os.path.join(TEST_TMPDIR, "1_wmasked.png"))
+    try:
+        os.rename("1_wmasked.png", os.path.join(TEST_TMPDIR, "1_wmasked.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_wmasked.png"))
+        os.rename("1_wmasked.png", os.path.join(TEST_TMPDIR, "1_wmasked.png"))
     # Test with debug = "plot"
     _ = pcv.apply_mask(img=img, mask=mask, mask_color="white", device=0, debug="plot")
     # Test with debug = None
@@ -255,7 +300,11 @@ def test_plantcv_apply_mask_black():
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     _ = pcv.apply_mask(img=img, mask=mask, mask_color="black", device=0, debug="print")
-    os.rename("1_bmasked.png", os.path.join(TEST_TMPDIR, "1_bmasked.png"))
+    try:
+        os.rename("1_bmasked.png", os.path.join(TEST_TMPDIR, "1_bmasked.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_bmasked.png"))
+        os.rename("1_bmasked.png", os.path.join(TEST_TMPDIR, "1_bmasked.png"))
     # Test with debug = "plot"
     _ = pcv.apply_mask(img=img, mask=mask, mask_color="black", device=0, debug="plot")
     # Test with debug = None
@@ -265,13 +314,21 @@ def test_plantcv_apply_mask_black():
 
 def test_plantcv_auto_crop():
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INTPUT_MULTI), -1)
-    contours = np.load(os.path.join(TEST_DATA, TEST_INPUT_MULTI_CONTOUR))
+    contours = np.load(os.path.join(TEST_DATA, TEST_INPUT_MULTI_CONTOUR), encoding = 'bytes')
     roi_contours = contours['arr_0']
     # Test with debug = "print"
     _ = pcv.auto_crop(device=0, img=img1, objects=roi_contours[48], padding_x=20, padding_y=20, color='black',
                       debug="print")
-    os.rename("1_crop_area.png", os.path.join(TEST_TMPDIR, "1_crop_area.png"))
-    os.rename("1_auto_cropped.png", os.path.join(TEST_TMPDIR, "1_auto_cropped.png"))
+    try:
+        os.rename("1_crop_area.png", os.path.join(TEST_TMPDIR, "1_crop_area.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_crop_area.png"))
+        os.rename("1_crop_area.png", os.path.join(TEST_TMPDIR, "1_crop_area.png"))
+    try:
+        os.rename("1_auto_cropped.png", os.path.join(TEST_TMPDIR, "1_auto_cropped.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_auto_cropped.png"))
+        os.rename("1_auto_cropped.png", os.path.join(TEST_TMPDIR, "1_auto_cropped.png"))
     # Test with debug = "plot"
     _ = pcv.auto_crop(device=0, img=img1, objects=roi_contours[48], padding_x=20, padding_y=20, color='black',
                       debug="plot")
@@ -289,7 +346,11 @@ def test_plantcv_binary_threshold():
     _ = pcv.binary_threshold(img=img, threshold=25, maxValue=255, object_type="dark", device=0, debug=None)
     # Test with debug = "print"
     _ = pcv.binary_threshold(img=img, threshold=25, maxValue=255, object_type="light", device=0, debug="print")
-    os.rename("1_binary_threshold25.png", os.path.join(TEST_TMPDIR, "1_binary_threshold25.png"))
+    try:
+        os.rename("1_binary_threshold25.png", os.path.join(TEST_TMPDIR, "1_binary_threshold25.png"))
+    except WindowsError:
+        os.remove( os.path.join(TEST_TMPDIR, "1_binary_threshold25.png"))
+        os.rename("1_binary_threshold25.png", os.path.join(TEST_TMPDIR, "1_binary_threshold25.png"))
     # Test with debug = "plot"
     _ = pcv.binary_threshold(img=img, threshold=25, maxValue=255, object_type="light", device=0, debug="plot")
     # Test with debug = None
@@ -314,11 +375,15 @@ def test_plantcv_binary_threshold_incorrect_object_type():
 
 def test_plantcv_cluster_contours():
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INTPUT_MULTI), -1)
-    contours = np.load(os.path.join(TEST_DATA, TEST_INPUT_MULTI_CONTOUR))
+    contours = np.load(os.path.join(TEST_DATA, TEST_INPUT_MULTI_CONTOUR), encoding = 'bytes')
     roi_contours = contours['arr_0']
     # Test with debug = "print"
     _ = pcv.cluster_contours(device=0, img=img1, roi_objects=roi_contours, nrow=4, ncol=6, debug="print")
-    os.rename("1_clusters.png", os.path.join(TEST_TMPDIR, "1_clusters.png"))
+    try:
+        os.rename("1_clusters.png", os.path.join(TEST_TMPDIR, "1_clusters.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_clusters.png"))
+        os.rename("1_clusters.png", os.path.join(TEST_TMPDIR, "1_clusters.png"))
     # Test with debug = "plot"
     _ = pcv.cluster_contours(device=0, img=img1, roi_objects=roi_contours, nrow=4, ncol=6, debug="plot")
     # Test with debug = None
@@ -331,8 +396,8 @@ def test_plantcv_cluster_contours():
 
 def test_plantcv_cluster_contours_splitimg():
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INTPUT_MULTI), -1)
-    contours = np.load(os.path.join(TEST_DATA, TEST_INPUT_MULTI_CONTOUR))
-    clusters = np.load(os.path.join(TEST_DATA, TEST_INPUT_ClUSTER_CONTOUR))
+    contours = np.load(os.path.join(TEST_DATA, TEST_INPUT_MULTI_CONTOUR), encoding = 'bytes')
+    clusters = np.load(os.path.join(TEST_DATA, TEST_INPUT_ClUSTER_CONTOUR), encoding = 'bytes')
     roi_contours = contours['arr_0']
     cluster_contours = clusters['arr_0']
     # Test with debug = "print"
@@ -340,8 +405,16 @@ def test_plantcv_cluster_contours_splitimg():
                                      contours=roi_contours, outdir=TEST_TMPDIR, file=None, filenames=None,
                                      debug="print")
     for i in range(1, 19):
-        os.rename(str(i) + "_clusters.png", os.path.join(TEST_TMPDIR, str(i) + "_clusters.png"))
-        os.rename(str(i) + "_wmasked.png", os.path.join(TEST_TMPDIR, str(i) + "_wmasked.png"))
+        try:
+            os.rename(str(i) + "_clusters.png", os.path.join(TEST_TMPDIR, str(i) + "_clusters.png"))
+        except WindowsError:
+            os.remove(os.path.join(TEST_TMPDIR, str(i) + "_clusters.png"))
+            os.rename(str(i) + "_clusters.png", os.path.join(TEST_TMPDIR, str(i) + "_clusters.png"))
+        try:
+            os.rename(str(i) + "_wmasked.png", os.path.join(TEST_TMPDIR, str(i) + "_wmasked.png"))
+        except WindowsError:
+            os.remove(os.path.join(TEST_TMPDIR, str(i) + "_wmasked.png"))
+            os.rename(str(i) + "_wmasked.png", os.path.join(TEST_TMPDIR, str(i) + "_wmasked.png"))
     # Test with debug = "plot"
     _ = pcv.cluster_contour_splitimg(device=0, img=img1, grouped_contour_indexes=cluster_contours,
                                      contours=roi_contours, outdir=None, file=None, filenames=None, debug="plot")
@@ -375,10 +448,26 @@ def test_plantcv_crop_position_mask():
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_MASK), -1)
     # Test with debug = "print"
     _ = pcv.crop_position_mask(nir, mask, device=0, x=40, y=3, v_pos="top", h_pos="right", debug="print")
-    os.rename("1_mask_overlay.png", os.path.join(TEST_TMPDIR, "1_mask_overlay.png"))
-    os.rename("1_newmask.png", os.path.join(TEST_TMPDIR, "1_newmask.png"))
-    os.rename("1_push-right.png", os.path.join(TEST_TMPDIR, "1_push-right.png"))
-    os.rename("1_push-top_.png", os.path.join(TEST_TMPDIR, "1_push-top_.png"))
+    try:
+        os.rename("1_mask_overlay.png", os.path.join(TEST_TMPDIR, "1_mask_overlay.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_mask_overlay.png"))
+        os.rename("1_mask_overlay.png", os.path.join(TEST_TMPDIR, "1_mask_overlay.png"))
+    try:
+        os.rename("1_newmask.png", os.path.join(TEST_TMPDIR, "1_newmask.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_newmask.png"))
+        os.rename("1_newmask.png", os.path.join(TEST_TMPDIR, "1_newmask.png"))
+    try:
+        os.rename("1_push-right.png", os.path.join(TEST_TMPDIR, "1_push-right.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_push-right.png"))
+        os.rename("1_push-right.png", os.path.join(TEST_TMPDIR, "1_push-right.png"))
+    try:
+        os.rename("1_push-top_.png", os.path.join(TEST_TMPDIR, "1_push-top_.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_push-top_.png"))
+        os.rename("1_push-top_.png", os.path.join(TEST_TMPDIR, "1_push-top_.png"))
     # Test with debug = "plot"
     _ = pcv.crop_position_mask(nir, mask, device=0, x=40, y=3, v_pos="top", h_pos="right", debug="plot")
     # Test with debug = None
@@ -391,7 +480,11 @@ def test_plantcv_define_roi_rectangle():
     # Test with debug = "print"
     _ = pcv.define_roi(img=img, shape="rectangle", device=0, roi=None, roi_input="default", debug="print", adjust=True,
                        x_adj=600, y_adj=300, w_adj=-500, h_adj=-600)
-    os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    try:
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_roi.png"))
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
     # Test with debug = "plot"
     _ = pcv.define_roi(img=img, shape="rectangle", device=0, roi=None, roi_input="default", debug="plot", adjust=True,
                        x_adj=600, y_adj=300, w_adj=-500, h_adj=-600)
@@ -410,7 +503,11 @@ def test_plantcv_define_roi_rectangle_no_adjust():
     # Test with debug = "print"
     _ = pcv.define_roi(img=img, shape="rectangle", device=0, roi=None, roi_input="default", debug="print", adjust=False,
                        x_adj=0, y_adj=0, w_adj=0, h_adj=0)
-    os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    try:
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_roi.png"))
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
     # Test with debug = "plot"
     _ = pcv.define_roi(img=img, shape="rectangle", device=0, roi=None, roi_input="default", debug="plot", adjust=False,
                        x_adj=0, y_adj=0, w_adj=0, h_adj=0)
@@ -429,7 +526,11 @@ def test_plantcv_define_roi_circle():
     # Test with debug = "print"
     _ = pcv.define_roi(img=img, shape="circle", device=0, roi=None, roi_input="default", debug="print", adjust=True,
                        x_adj=0, y_adj=300, w_adj=0, h_adj=-900)
-    os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    try:
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_roi.png"))
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
     # Test with debug = "plot"
     _ = pcv.define_roi(img=img, shape="circle", device=0, roi=None, roi_input="default", debug="plot", adjust=True,
                        x_adj=0, y_adj=300, w_adj=0, h_adj=-900)
@@ -448,7 +549,11 @@ def test_plantcv_define_roi_circle_no_adjust():
     # Test with debug = "print"
     _ = pcv.define_roi(img=img, shape="circle", device=0, roi=None, roi_input="default", debug="print", adjust=False,
                        x_adj=0, y_adj=0, w_adj=0, h_adj=0)
-    os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    try:
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_roi.png"))
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
     # Test with debug = "plot"
     _ = pcv.define_roi(img=img, shape="circle", device=0, roi=None, roi_input="default", debug="plot", adjust=False,
                        x_adj=0, y_adj=0, w_adj=0, h_adj=0)
@@ -467,7 +572,11 @@ def test_plantcv_define_roi_ellipse():
     # Test with debug = "print"
     _ = pcv.define_roi(img=img, shape="ellipse", device=0, roi=None, roi_input="default", debug="print", adjust=True,
                        x_adj=0, y_adj=300, w_adj=-1000, h_adj=-900)
-    os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    try:
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    except WindowsError:   
+        os.remove(os.path.join(TEST_TMPDIR, "1_roi.png"))
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
     # Test with debug = "plot"
     _ = pcv.define_roi(img=img, shape="ellipse", device=0, roi=None, roi_input="default", debug="plot", adjust=True,
                        x_adj=0, y_adj=300, w_adj=-1000, h_adj=-900)
@@ -486,7 +595,11 @@ def test_plantcv_define_roi_ellipse_no_adjust():
     # Test with debug = "print"
     _ = pcv.define_roi(img=img, shape="ellipse", device=0, roi=None, roi_input="default", debug="print", adjust=False,
                        x_adj=0, y_adj=0, w_adj=0, h_adj=0)
-    os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    try:
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_roi.png"))
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
     # Test with debug = "plot"
     _ = pcv.define_roi(img=img, shape="ellipse", device=0, roi=None, roi_input="default", debug="plot", adjust=False,
                        x_adj=0, y_adj=0, w_adj=0, h_adj=0)
@@ -518,7 +631,11 @@ def test_plantcv_dilate():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     _ = pcv.dilate(img=img, kernel=5, i=1, device=0, debug="print")
-    os.rename("1_dil_image_itr_1.png", os.path.join(TEST_TMPDIR, "1_dil_image_itr_1.png"))
+    try:
+        os.rename("1_dil_image_itr_1.png", os.path.join(TEST_TMPDIR, "1_dil_image_itr_1.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_dil_image_itr_1.png"))
+        os.rename("1_dil_image_itr_1.png", os.path.join(TEST_TMPDIR, "1_dil_image_itr_1.png"))
     # Test with debug = "plot"
     _ = pcv.dilate(img=img, kernel=5, i=1, device=0, debug="plot")
     # Test with debug = None
@@ -538,7 +655,11 @@ def test_plantcv_erode():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     _ = pcv.erode(img=img, kernel=5, i=1, device=0, debug="print")
-    os.rename("1_er_image_itr_1.png", os.path.join(TEST_TMPDIR, "1_er_image_itr_1.png"))
+    try:
+        os.rename("1_er_image_itr_1.png", os.path.join(TEST_TMPDIR, "1_er_image_itr_1.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_er_image_itr_1.png"))
+        os.rename("1_er_image_itr_1.png", os.path.join(TEST_TMPDIR, "1_er_image_itr_1.png"))
     # Test with debug = "plot"
     _ = pcv.erode(img=img, kernel=5, i=1, device=0, debug="plot")
     # Test with debug = None
@@ -565,7 +686,11 @@ def test_plantcv_fill():
     # Test with debug = "print"
     mask = np.copy(img)
     _ = pcv.fill(img=img, mask=mask, size=1, device=0, debug="print")
-    os.rename("1_fill1.png", os.path.join(TEST_TMPDIR, "1_fill1.png"))
+    try:
+        os.rename("1_fill1.png", os.path.join(TEST_TMPDIR, "1_fill1.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_fill1.png"))
+        os.rename("1_fill1.png", os.path.join(TEST_TMPDIR, "1_fill1.png"))
     # Test with debug = "plot"
     mask = np.copy(img)
     _ = pcv.fill(img=img, mask=mask, size=1, device=0, debug="plot")
@@ -581,7 +706,11 @@ def test_plantcv_find_objects():
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     _ = pcv.find_objects(img=img, mask=mask, device=0, debug="print")
-    os.rename("1_id_objects.png", os.path.join(TEST_TMPDIR, "1_id_objects.png"))
+    try:
+        os.rename("1_id_objects.png", os.path.join(TEST_TMPDIR, "1_id_objects.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_id_objects.png"))
+        os.rename("1_id_objects.png", os.path.join(TEST_TMPDIR, "1_id_objects.png"))
     # Test with debug = "plot"
     _ = pcv.find_objects(img=img, mask=mask, device=0, debug="plot")
     # Test with debug = None
@@ -594,7 +723,11 @@ def test_plantcv_flip():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
     _ = pcv.flip(img=img, direction="horizontal", device=0, debug="print")
-    os.rename("1_flipped.png", os.path.join(TEST_TMPDIR, "1_flipped.png"))
+    try:
+        os.rename("1_flipped.png", os.path.join(TEST_TMPDIR, "1_flipped.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_flipped.png"))
+        os.rename("1_flipped.png", os.path.join(TEST_TMPDIR, "1_flipped.png"))
     # Test with debug = "plot"
     _ = pcv.flip(img=img, direction="vertical", device=0, debug="plot")
     # Test with debug = None
@@ -617,9 +750,21 @@ def test_plantcv_fluor_fvfm():
     outfile = os.path.join(TEST_TMPDIR, TEST_INPUT_FMAX)
     _ = pcv.fluor_fvfm(fdark=fdark, fmin=fmin, fmax=fmax, mask=fmask, device=0, filename=outfile, bins=1000,
                        debug="print")
-    os.rename("1_fmin_mask.png", os.path.join(TEST_TMPDIR, "1_fmin_mask.png"))
-    os.rename("1_fmax_mask.png", os.path.join(TEST_TMPDIR, "1_fmax_mask.png"))
-    os.rename("1_fv_convert.png", os.path.join(TEST_TMPDIR, "1_fv_convert.png"))
+    try:
+        os.rename("1_fmin_mask.png", os.path.join(TEST_TMPDIR, "1_fmin_mask.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_fmin_mask.png"))
+        os.rename("1_fmin_mask.png", os.path.join(TEST_TMPDIR, "1_fmin_mask.png"))
+    try:
+        os.rename("1_fmax_mask.png", os.path.join(TEST_TMPDIR, "1_fmax_mask.png"))
+    except WindowsError:
+        os.remove( os.path.join(TEST_TMPDIR, "1_fmax_mask.png"))
+        os.rename("1_fmax_mask.png", os.path.join(TEST_TMPDIR, "1_fmax_mask.png"))
+    try:
+        os.rename("1_fv_convert.png", os.path.join(TEST_TMPDIR, "1_fv_convert.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_fv_convert.png"))
+        os.rename("1_fv_convert.png", os.path.join(TEST_TMPDIR, "1_fv_convert.png"))        
     # Test with debug = "plot"
     _ = pcv.fluor_fvfm(fdark=fdark, fmin=fmin, fmax=fmax, mask=fmask, device=0, filename=False, bins=1000, debug="plot")
     # Test with debug = None
@@ -632,7 +777,12 @@ def test_plantcv_gaussian_blur():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     _ = pcv.gaussian_blur(device=0, img=img, ksize=(51, 51), sigmax=0, sigmay=None, debug="print")
-    os.rename("1_gaussian_blur.png", os.path.join(TEST_TMPDIR, "1_gaussian_blur.png"))
+    try:
+        os.rename("1_gaussian_blur.png", os.path.join(TEST_TMPDIR, "1_gaussian_blur.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_gaussian_blur.png"))
+        os.rename("1_gaussian_blur.png", os.path.join(TEST_TMPDIR, "1_gaussian_blur.png"))
+
     # Test with debug = "plot"
     _ = pcv.gaussian_blur(device=0, img=img, ksize=(51, 51), sigmax=0, sigmay=None, debug="plot")
     # Test with debug = None
@@ -658,7 +808,11 @@ def test_plantcv_hist_equalization():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with debug = "print"
     _ = pcv.hist_equalization(img=img, device=0, debug="print")
-    os.rename("1_hist_equal_img.png", os.path.join(TEST_TMPDIR, "1_hist_equal_img.png"))
+    try:
+        os.rename("1_hist_equal_img.png", os.path.join(TEST_TMPDIR, "1_hist_equal_img.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_hist_equal_img.png"))
+        os.rename("1_hist_equal_img.png", os.path.join(TEST_TMPDIR, "1_hist_equal_img.png"))
     # Test with debug = "plot"
     _ = pcv.hist_equalization(img=img, device=0, debug="plot")
     # Test with debug = None
@@ -673,7 +827,11 @@ def test_plantcv_image_add():
     img2 = np.copy(img1)
     # Test with debug = "print"
     _ = pcv.image_add(img1=img1, img2=img2, device=0, debug="print")
-    os.rename("1_added.png", os.path.join(TEST_TMPDIR, "1_added.png"))
+    try:
+        os.rename("1_added.png", os.path.join(TEST_TMPDIR, "1_added.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_added.png"))
+        os.rename("1_added.png", os.path.join(TEST_TMPDIR, "1_added.png"))
     # Test with debug = "plot"
     _ = pcv.image_add(img1=img1, img2=img2, device=0, debug="plot")
     # Test with debug = None
@@ -686,7 +844,11 @@ def test_plantcv_image_subtract():
     img2 = np.copy(img1)
     # Test with debug = "print"
     _ = pcv.image_subtract(img1=img1, img2=img2, device=0, debug="print")
-    os.rename("1_subtracted.png", os.path.join(TEST_TMPDIR, "1_subtracted.png"))
+    try:
+        os.rename("1_subtracted.png", os.path.join(TEST_TMPDIR, "1_subtracted.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_subtracted.png"))
+        os.rename("1_subtracted.png", os.path.join(TEST_TMPDIR, "1_subtracted.png"))
     # Test with debug = "plot"
     _ = pcv.image_subtract(img1=img1, img2=img2, device=0, debug="plot")
     # Test with debug = None
@@ -698,7 +860,11 @@ def test_plantcv_invert():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     _ = pcv.invert(img=img, device=0, debug="print")
-    os.rename("1_invert.png", os.path.join(TEST_TMPDIR, "1_invert.png"))
+    try:
+        os.rename("1_invert.png", os.path.join(TEST_TMPDIR, "1_invert.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_invert.png"))
+        os.rename("1_invert.png", os.path.join(TEST_TMPDIR, "1_invert.png"))
     # Test with debug = "plot"
     _ = pcv.invert(img=img, device=0, debug="plot")
     # Test with debug = None
@@ -731,7 +897,11 @@ def test_plantcv_laplace_filter():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with debug = "print"
     _ = pcv.laplace_filter(img=img, k=1, scale=1, device=0, debug="print")
-    os.rename("1_lp_out_k1_scale1.png", os.path.join(TEST_TMPDIR, "1_lp_out_k1_scale1.png"))
+    try:
+        os.rename("1_lp_out_k1_scale1.png", os.path.join(TEST_TMPDIR, "1_lp_out_k1_scale1.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_lp_out_k1_scale1.png"))
+        os.rename("1_lp_out_k1_scale1.png", os.path.join(TEST_TMPDIR, "1_lp_out_k1_scale1.png"))
     # Test with debug = "plot"
     _ = pcv.laplace_filter(img=img, k=1, scale=1, device=0, debug="plot")
     # Test with debug = None
@@ -745,7 +915,11 @@ def test_plantcv_logical_and():
     img2 = np.copy(img1)
     # Test with debug = "print"
     _ = pcv.logical_and(img1=img1, img2=img2, device=0, debug="print")
-    os.rename("1_and_joined.png", os.path.join(TEST_TMPDIR, "1_and_joined.png"))
+    try:
+        os.rename("1_and_joined.png", os.path.join(TEST_TMPDIR, "1_and_joined.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_and_joined.png"))
+        os.rename("1_and_joined.png", os.path.join(TEST_TMPDIR, "1_and_joined.png"))
     # Test with debug = "plot"
     _ = pcv.logical_and(img1=img1, img2=img2, device=0, debug="plot")
     # Test with debug = None
@@ -758,7 +932,11 @@ def test_plantcv_logical_or():
     img2 = np.copy(img1)
     # Test with debug = "print"
     _ = pcv.logical_or(img1=img1, img2=img2, device=0, debug="print")
-    os.rename("1_or_joined.png", os.path.join(TEST_TMPDIR, "1_or_joined.png"))
+    try:
+        os.rename("1_or_joined.png", os.path.join(TEST_TMPDIR, "1_or_joined.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_or_joined.png"))
+        os.rename("1_or_joined.png", os.path.join(TEST_TMPDIR, "1_or_joined.png"))
     # Test with debug = "plot"
     _ = pcv.logical_or(img1=img1, img2=img2, device=0, debug="plot")
     # Test with debug = None
@@ -771,7 +949,11 @@ def test_plantcv_logical_xor():
     img2 = np.copy(img1)
     # Test with debug = "print"
     _ = pcv.logical_xor(img1=img1, img2=img2, device=0, debug="print")
-    os.rename("1_xor_joined.png", os.path.join(TEST_TMPDIR, "1_xor_joined.png"))
+    try:
+        os.rename("1_xor_joined.png", os.path.join(TEST_TMPDIR, "1_xor_joined.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_xor_joined.png"))
+        os.rename("1_xor_joined.png", os.path.join(TEST_TMPDIR, "1_xor_joined.png"))
     # Test with debug = "plot"
     _ = pcv.logical_xor(img1=img1, img2=img2, device=0, debug="plot")
     # Test with debug = None
@@ -783,7 +965,11 @@ def test_plantcv_median_blur():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     _ = pcv.median_blur(img=img, ksize=5, device=0, debug="print")
-    os.rename("1_median_blur5.png", os.path.join(TEST_TMPDIR, "1_median_blur5.png"))
+    try:
+        os.rename("1_median_blur5.png", os.path.join(TEST_TMPDIR, "1_median_blur5.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_median_blur5.png"))
+        os.rename("1_median_blur5.png", os.path.join(TEST_TMPDIR, "1_median_blur5.png"))
     # Test with debug = "plot"
     _ = pcv.median_blur(img=img, ksize=5, device=0, debug="plot")
     # Test with debug = None
@@ -803,8 +989,16 @@ def test_plantcv_naive_bayes_classifier():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
     _ = pcv.naive_bayes_classifier(img=img, pdf_file=os.path.join(TEST_DATA, TEST_PDFS), device=0, debug="print")
-    os.rename("1_naive_bayes_plant_mask.jpg", os.path.join(TEST_TMPDIR, "1_naive_bayes_plant_mask.jpg"))
-    os.rename("1_naive_bayes_background_mask.jpg", os.path.join(TEST_TMPDIR, "1_naive_bayes_background_mask.jpg"))
+    try:
+        os.rename("1_naive_bayes_plant_mask.jpg", os.path.join(TEST_TMPDIR, "1_naive_bayes_plant_mask.jpg"))
+    except WindowError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_naive_bayes_plant_mask.jpg"))
+        os.rename("1_naive_bayes_plant_mask.jpg", os.path.join(TEST_TMPDIR, "1_naive_bayes_plant_mask.jpg"))
+    try:
+        os.rename("1_naive_bayes_background_mask.jpg", os.path.join(TEST_TMPDIR, "1_naive_bayes_background_mask.jpg"))
+    except WindowsError:
+        os.remove( os.path.join(TEST_TMPDIR, "1_naive_bayes_background_mask.jpg"))
+        os.rename("1_naive_bayes_background_mask.jpg", os.path.join(TEST_TMPDIR, "1_naive_bayes_background_mask.jpg"))
     # Test with debug = "plot"
     _ = pcv.naive_bayes_classifier(img=img, pdf_file=os.path.join(TEST_DATA, TEST_PDFS), device=0, debug="plot")
     # Test with debug = None
@@ -824,13 +1018,21 @@ def test_plantcv_naive_bayes_classifier():
 
 def test_plantcv_object_composition():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
-    contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS))
+    contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS), encoding = 'bytes')
     object_contours = contours_npz['arr_0']
     object_hierarchy = contours_npz['arr_1']
     # Test with debug = "print"
     _ = pcv.object_composition(img=img, contours=object_contours, hierarchy=object_hierarchy, device=0, debug="print")
-    os.rename("1_objcomp.png", os.path.join(TEST_TMPDIR, "1_objcomp.png"))
-    os.rename("1_objcomp_mask.png", os.path.join(TEST_TMPDIR, "1_objcomp_mask.png"))
+    try:
+        os.rename("1_objcomp.png", os.path.join(TEST_TMPDIR, "1_objcomp.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_objcomp.png"))
+        os.rename("1_objcomp.png", os.path.join(TEST_TMPDIR, "1_objcomp.png"))
+    try:
+        os.rename("1_objcomp_mask.png", os.path.join(TEST_TMPDIR, "1_objcomp_mask.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_objcomp_mask.png"))
+        os.rename("1_objcomp_mask.png", os.path.join(TEST_TMPDIR, "1_objcomp_mask.png"))
     # Test with debug = "plot"
     _ = pcv.object_composition(img=img, contours=object_contours, hierarchy=object_hierarchy, device=0, debug="plot")
     # Test with debug = None
@@ -847,7 +1049,11 @@ def test_plantcv_otsu_threshold():
     _ = pcv.otsu_auto_threshold(img=img, maxValue=255, object_type="light", device=0, debug=None)
     # Test with debug = "print"
     _ = pcv.otsu_auto_threshold(img=img, maxValue=255, object_type='dark', device=0, debug="print")
-    os.rename("1_otsu_auto_threshold_125.0_inv.png", os.path.join(TEST_TMPDIR, "1_otsu_auto_threshold_125.0_inv.png"))
+    try:        
+        os.rename("1_otsu_auto_threshold_125.0_inv.png", os.path.join(TEST_TMPDIR, "1_otsu_auto_threshold_125.0_inv.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_otsu_auto_threshold_125.0_inv.png"))
+        os.rename("1_otsu_auto_threshold_125.0_inv.png", os.path.join(TEST_TMPDIR, "1_otsu_auto_threshold_125.0_inv.png"))
     # Test with debug = "plot"
     _ = pcv.otsu_auto_threshold(img=img, maxValue=255, object_type='dark', device=0, debug="plot")
     # Test with debug = None
@@ -861,8 +1067,16 @@ def test_plantcv_output_mask():
     # Test with debug = "print"
     _ = pcv.output_mask(device=0, img=img, mask=mask, filename='test.png', outdir=TEST_TMPDIR, mask_only=False,
                         debug="print")
-    os.rename("1_mask-img.png", os.path.join(TEST_TMPDIR, "1_mask-img.png"))
-    os.rename("1_ori-img.png", os.path.join(TEST_TMPDIR, "1_ori-img.png"))
+    try:
+        os.rename("1_mask-img.png", os.path.join(TEST_TMPDIR, "1_mask-img.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_mask-img.png"))
+        os.rename("1_mask-img.png", os.path.join(TEST_TMPDIR, "1_mask-img.png"))
+    try:
+        os.rename("1_ori-img.png", os.path.join(TEST_TMPDIR, "1_ori-img.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_ori-img.png"))
+        os.rename("1_ori-img.png", os.path.join(TEST_TMPDIR, "1_ori-img.png"))
     # Test with debug = "plot"
     _ = pcv.output_mask(device=0, img=img, mask=mask, filename='test.png', outdir=TEST_TMPDIR, mask_only=False,
                         debug="plot")
@@ -929,7 +1143,11 @@ def test_plantcv_rectangle_mask():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with debug = "print"
     _ = pcv.rectangle_mask(img=img, p1=(0, 0), p2=(2454, 2056), device=0, debug="print", color="white")
-    os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    try:
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_roi.png"))
+        os.rename("1_roi.png", os.path.join(TEST_TMPDIR, "1_roi.png"))
     # Test with debug = "plot"
     _ = pcv.rectangle_mask(img=img, p1=(0, 0), p2=(2454, 2056), device=0, debug="plot", color="gray")
     # Test with debug = None
@@ -950,7 +1168,11 @@ def test_plantcv_report_size_marker():
     for filename in ["1_marker_roi.png", "2_hsv_saturation.png", "3_binary_threshold120.png", "4_id_objects.png",
                      "5_roi.png", "6_obj_on_img.png", "6_roi_mask.png", "6_roi_objects.png", "7_marker_shape.png",
                      "7_objcomp.png", "7_objcomp_mask.png"]:
-        os.rename(filename, os.path.join(TEST_TMPDIR, filename))
+        try:
+            os.rename(filename, os.path.join(TEST_TMPDIR, filename))
+        except WindowsError:
+            os.remove(os.path.join(TEST_TMPDIR, filename))
+            os.rename(filename, os.path.join(TEST_TMPDIR, filename))
 
     # Test with debug = "plot"
     _ = pcv.report_size_marker_area(img=img, shape='rectangle', device=0, debug="plot", marker='detect', x_adj=3500,
@@ -970,7 +1192,11 @@ def test_plantcv_resize():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
     _ = pcv.resize(img=img, resize_x=0.5, resize_y=0.5, device=0, debug="print")
-    os.rename("1_resize1.png", os.path.join(TEST_TMPDIR, "1_resize1.png"))
+    try:
+        os.rename("1_resize1.png", os.path.join(TEST_TMPDIR, "1_resize1.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_resize1.png"))
+        os.rename("1_resize1.png", os.path.join(TEST_TMPDIR, "1_resize1.png"))
     # Test with debug = "plot"
     _ = pcv.resize(img=img, resize_x=0.5, resize_y=0.5, device=0, debug="plot")
     # Test with debug = None
@@ -984,7 +1210,11 @@ def test_plantcv_rgb2gray_hsv():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
     _ = pcv.rgb2gray_hsv(img=img, channel="s", device=0, debug="print")
-    os.rename("1_hsv_saturation.png", os.path.join(TEST_TMPDIR, "1_hsv_saturation.png"))
+    try:
+        os.rename("1_hsv_saturation.png", os.path.join(TEST_TMPDIR, "1_hsv_saturation.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_hsv_saturation.png"))
+        os.rename("1_hsv_saturation.png", os.path.join(TEST_TMPDIR, "1_hsv_saturation.png"))
     # Test with debug = "plot"
     _ = pcv.rgb2gray_hsv(img=img, channel="s", device=0, debug="plot")
     # Test with debug = None
@@ -997,7 +1227,11 @@ def test_plantcv_rgb2gray_lab():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
     _ = pcv.rgb2gray_lab(img=img, channel='b', device=0, debug="print")
-    os.rename("1_lab_blue-yellow.png", os.path.join(TEST_TMPDIR, "1_lab_blue-yellow.png"))
+    try:
+        os.rename("1_lab_blue-yellow.png", os.path.join(TEST_TMPDIR, "1_lab_blue-yellow.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_lab_blue-yellow.png"))
+        os.rename("1_lab_blue-yellow.png", os.path.join(TEST_TMPDIR, "1_lab_blue-yellow.png"))
     # Test with debug = "plot"
     _ = pcv.rgb2gray_lab(img=img, channel='b', device=0, debug="plot")
     # Test with debug = None
@@ -1010,7 +1244,11 @@ def test_plantcv_rgb2gray():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
     _ = pcv.rgb2gray(img=img, device=0, debug="print")
-    os.rename("1_gray.png", os.path.join(TEST_TMPDIR, "1_gray.png"))
+    try:
+        os.rename("1_gray.png", os.path.join(TEST_TMPDIR, "1_gray.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_gray.png"))
+        os.rename("1_gray.png", os.path.join(TEST_TMPDIR, "1_gray.png"))
     # Test with debug = "plot"
     _ = pcv.rgb2gray(img=img, device=0, debug="plot")
     # Test with debug = None
@@ -1021,18 +1259,30 @@ def test_plantcv_rgb2gray():
 
 def test_plantcv_roi_objects():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
-    roi_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_ROI))
+    roi_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_ROI), encoding = 'bytes')
     roi_contour = roi_npz['arr_0']
     roi_hierarchy = roi_npz['arr_1']
-    contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS))
+    contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS), encoding = 'bytes')
     object_contours = contours_npz['arr_0']
     object_hierarchy = contours_npz['arr_1']
     # Test with debug = "print"
     _ = pcv.roi_objects(img=img, roi_type="partial", roi_contour=roi_contour, roi_hierarchy=roi_hierarchy,
                         object_contour=object_contours, obj_hierarchy=object_hierarchy, device=0, debug="print")
-    os.rename("1_obj_on_img.png", os.path.join(TEST_TMPDIR, "1_obj_on_img.png"))
-    os.rename("1_roi_mask.png", os.path.join(TEST_TMPDIR, "1_roi_mask.png"))
-    os.rename("1_roi_objects.png", os.path.join(TEST_TMPDIR, "1_roi_objects.png"))
+    try:
+        os.rename("1_obj_on_img.png", os.path.join(TEST_TMPDIR, "1_obj_on_img.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_obj_on_img.png"))
+        os.rename("1_obj_on_img.png", os.path.join(TEST_TMPDIR, "1_obj_on_img.png"))
+    try:
+        os.rename("1_roi_mask.png", os.path.join(TEST_TMPDIR, "1_roi_mask.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_roi_mask.png"))
+        os.rename("1_roi_mask.png", os.path.join(TEST_TMPDIR, "1_roi_mask.png"))
+    try:
+        os.rename("1_roi_objects.png", os.path.join(TEST_TMPDIR, "1_roi_objects.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_roi_objects.png"))
+        os.rename("1_roi_objects.png", os.path.join(TEST_TMPDIR, "1_roi_objects.png"))
     # Test with debug = "plot"
     _ = pcv.roi_objects(img=img, roi_type="partial", roi_contour=roi_contour, roi_hierarchy=roi_hierarchy,
                         object_contour=object_contours, obj_hierarchy=object_hierarchy, device=0, debug="plot")
@@ -1054,7 +1304,11 @@ def test_plantcv_rotate_img():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
     _ = pcv.rotate_img(img=img, rotation_deg=45, device=0, debug="print")
-    os.rename("1_rotated_img.png", os.path.join(TEST_TMPDIR, "1_rotated_img.png"))
+    try:
+        os.rename("1_rotated_img.png", os.path.join(TEST_TMPDIR, "1_rotated_img.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_rotated_img.png"))
+        os.rename("1_rotated_img.png", os.path.join(TEST_TMPDIR, "1_rotated_img.png"))
     # Test with debug = "plot"
     _ = pcv.rotate_img(img=img, rotation_deg=45, device=0, debug="plot")
     # Test with debug = None
@@ -1082,7 +1336,11 @@ def test_plantcv_scale_features():
     # Test with debug = "print"
     _ = pcv.scale_features(obj=obj_contour, mask=mask, points=TEST_ACUTE_RESULT, boundary_line=50, device=0,
                            debug="print")
-    os.rename("1_feature_scaled.png", os.path.join(TEST_TMPDIR, "1_feature_scaled.png"))
+    try:
+        os.rename("1_feature_scaled.png", os.path.join(TEST_TMPDIR, "1_feature_scaled.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_feature_scaled.png"))
+        os.rename("1_feature_scaled.png", os.path.join(TEST_TMPDIR, "1_feature_scaled.png"))
     # Test with debug = "plot"
     _ = pcv.scale_features(obj=obj_contour, mask=mask, points=TEST_ACUTE_RESULT, boundary_line=50, device=0,
                            debug="plot")
@@ -1106,7 +1364,11 @@ def test_plantcv_scharr_filter():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with debug = "print"
     _ = pcv.scharr_filter(img=img, dX=1, dY=0, scale=1, device=0, debug="print")
-    os.rename("1_sr_img_dx1_dy0_scale1.png", os.path.join(TEST_TMPDIR, "1_sr_img_dx1_dy0_scale1.png"))
+    try:
+        os.rename("1_sr_img_dx1_dy0_scale1.png", os.path.join(TEST_TMPDIR, "1_sr_img_dx1_dy0_scale1.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_sr_img_dx1_dy0_scale1.png"))
+        os.rename("1_sr_img_dx1_dy0_scale1.png", os.path.join(TEST_TMPDIR, "1_sr_img_dx1_dy0_scale1.png"))
     # Test with debug = "plot"
     _ = pcv.scharr_filter(img=img, dX=1, dY=0, scale=1, device=0, debug="plot")
     # Test with debug = None
@@ -1132,22 +1394,38 @@ def test_plantcv_shift_img():
 def test_plantcv_sobel_filter():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with debug = "print"
-    _ = pcv.sobel_filter(img=img, dx=1, dy=0, k=1, device=0, debug="print")
-    os.rename("1_sb_img_dx1_dy0_k1.png", os.path.join(TEST_TMPDIR, "1_sb_img_dx1_dy0_k1.png"))
+    _ = pcv.sobel_filter(img=img, dx=1, dy=0, k=1, scale=0.8, device=0, debug="print")
+    try:
+        os.rename("1_sb_img_dx1_dy0_k1_scale_0.8.png", os.path.join(TEST_TMPDIR, "1_sb_img_dx1_dy0_k1_scale_0.8.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_sb_img_dx1_dy0_k1_scale_0.8.png"))
+        os.rename("1_sb_img_dx1_dy0_k1_scale_0.8.png", os.path.join(TEST_TMPDIR, "1_sb_img_dx1_dy0_k1_scale_0.8.png"))
     # Test with debug = "plot"
-    _ = pcv.sobel_filter(img=img, dx=1, dy=0, k=1, device=0, debug="plot")
+    _ = pcv.sobel_filter(img=img, dx=1, dy=0, k=1, scale = 0.8, device=0, debug="plot")
     # Test with debug = None
-    device, sobel_img = pcv.sobel_filter(img=img, dx=1, dy=0, k=1, device=0, debug=None)
+    device, sobel_img = pcv.sobel_filter(img=img, dx=1, dy=0, k=1, scale = 0.8, device=0, debug=None)
     # Assert that the output image has the dimensions of the input image
     assert all([i == j] for i, j in zip(np.shape(sobel_img), TEST_GRAY_DIM))
 
 
 def test_plantcv_triangle_threshold():
+    
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
+    # i'm not sure what the hist (t_val) should be 30.0? but Python 3.6 and opencv3.2 give 21.0
     # Test with debug = "print"
     _ = pcv.triangle_auto_threshold(device=0, img=img1, maxvalue=255, object_type="light", xstep=10, debug="print")
-    os.rename("1_triangle_thresh_hist_30.0.png", os.path.join(TEST_TMPDIR, "1_triangle_thresh_hist_30.0.png"))
-    os.rename("1_triangle_thresh_img_30.0.png", os.path.join(TEST_TMPDIR, "1_triangle_thresh_img_30.0.png"))
+    t_value = 21.0 * ( cv2major == 3) + 30.0 * ( cv2major < 3)
+    f_name1, f_name2 = "1_triangle_thresh_hist_" + str(t_value) + ".png", "1_triangle_thresh_img_" + str( t_value) + ".png"
+    try:
+        os.rename(f_name1, os.path.join(TEST_TMPDIR, f_name1))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, f_name1))
+        os.rename(f_name1, os.path.join(TEST_TMPDIR, f_name1))
+    try:
+        os.rename(f_name2, os.path.join(TEST_TMPDIR, f_name2))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, f_name2))
+        os.rename(f_name2, os.path.join(TEST_TMPDIR, f_name2))
     # Test with debug = "plot"
     _ = pcv.triangle_auto_threshold(device=0, img=img1, maxvalue=255, object_type="light", xstep=10, debug="plot")
     # Test with debug = None
@@ -1163,9 +1441,13 @@ def test_plantcv_watershed_segmentation():
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_CROPPED_MASK), -1)
     # Test with debug = "print"
     outfile = os.path.join(TEST_TMPDIR, TEST_INPUT_CROPPED)
+    # this function goes through 2 devices not just one, there is an internal call to another device
     _ = pcv.watershed_segmentation(device=0, img=img, mask=mask, distance=10, filename=outfile, debug="print")
-    os.rename("1_watershed_dist_img.png", os.path.join(TEST_TMPDIR, "1_watershed_dist_img.png"))
-    os.rename("1_watershed_img.png", os.path.join(TEST_TMPDIR, "1_watershed_img.png"))
+    try:
+        os.rename("1_watershed_dist_10_img.png", os.path.join(TEST_TMPDIR, "1_watershed_dist_10_img.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_watershed_dist_10_img.png"))
+        os.rename("1_watershed_dist_10_img.png", os.path.join(TEST_TMPDIR, "2_watershed_dist_10_img.png"))
     # Test with debug = "plot"
     _ = pcv.watershed_segmentation(device=0, img=img, mask=mask, distance=10, filename=False, debug="plot")
     # Test with debug = None
@@ -1179,8 +1461,16 @@ def test_plantcv_white_balance_gray_16bit():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_NIR_MASK), -1)
     # Test with debug = "print"
     _ = pcv.white_balance(device=0, img=img, debug="print", roi=(5, 5, 80, 80))
-    os.rename("1_whitebalance_roi.png", os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
-    os.rename("1_whitebalance.png", os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
+    try:
+        os.rename("1_whitebalance_roi.png", os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
+        os.rename("1_whitebalance_roi.png", os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
+    try:
+        os.rename("1_whitebalance.png", os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
+        os.rename("1_whitebalance.png", os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
     # Test with debug = "plot"
     _ = pcv.white_balance(device=0, img=img, debug="plot", roi=(5, 5, 80, 80))
     # Test without an ROI
@@ -1197,8 +1487,16 @@ def test_plantcv_white_balance_gray_8bit():
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Test with debug = "print"
     _ = pcv.white_balance(device=0, img=img, debug="print", roi=(5, 5, 80, 80))
-    os.rename("1_whitebalance_roi.png", os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
-    os.rename("1_whitebalance.png", os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
+    try:
+        os.rename("1_whitebalance_roi.png", os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
+        os.rename("1_whitebalance_roi.png", os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
+    try:
+        os.rename("1_whitebalance.png", os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
+        os.rename("1_whitebalance.png", os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
     # Test with debug = "plot"
     _ = pcv.white_balance(device=0, img=img, debug="plot", roi=(5, 5, 80, 80))
     # Test without an ROI
@@ -1214,8 +1512,16 @@ def test_plantcv_white_balance_rgb():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_MARKER))
     # Test with debug = "print"
     _ = pcv.white_balance(device=0, img=img, debug="print", roi=(5, 5, 80, 80))
-    os.rename("1_whitebalance_roi.png", os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
-    os.rename("1_whitebalance.png", os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
+    try:
+        os.rename("1_whitebalance_roi.png", os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
+        os.rename("1_whitebalance_roi.png", os.path.join(TEST_TMPDIR, "1_whitebalance_roi.png"))
+    try:
+        os.rename("1_whitebalance.png", os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
+        os.rename("1_whitebalance.png", os.path.join(TEST_TMPDIR, "1_whitebalance.png"))
     # Test with debug = "plot"
     _ = pcv.white_balance(device=0, img=img, debug="plot", roi=(5, 5, 80, 80))
     # Test without an ROI
@@ -1327,7 +1633,11 @@ def test_plantcv_background_subtraction_debug():
     device, fgmask = pcv.background_subtraction(background_image=bg_img, foreground_image=fg_img, device=0,
                                                 debug="print")
     truths.append(np.sum(fgmask) > 0)
-    os.rename("1_background_subtraction.png", os.path.join(TEST_TMPDIR, "1_background_subtraction.png"))
+    try:
+        os.rename("1_background_subtraction.png", os.path.join(TEST_TMPDIR, "1_background_subtraction.png"))
+    except WindowsError:
+        os.remove(os.path.join(TEST_TMPDIR, "1_background_subtraction.png"))
+        os.rename("1_background_subtraction.png", os.path.join(TEST_TMPDIR, "1_background_subtraction.png"))
     # Test with debug = "plot"
     device, fgmask = pcv.background_subtraction(background_image=bg_img, foreground_image=fg_img, device=0,
                                                 debug="plot")
@@ -1347,7 +1657,7 @@ def test_plantcv_background_subtraction_different_sizes():
     fg_img = cv2.imread(os.path.join(TEST_DATA, TEST_FOREGROUND))
     bg_img = cv2.imread(os.path.join(TEST_DATA, TEST_BACKGROUND))
     bg_shp = np.shape(bg_img)
-    bg_img_resized = cv2.resize(bg_img, (bg_shp[0] / 2, bg_shp[1] / 2), interpolation=cv2.INTER_AREA)
+    bg_img_resized = cv2.resize(bg_img, (bg_shp[0] // 2, bg_shp[1] // 2), interpolation=cv2.INTER_AREA)
     device, fgmask = pcv.background_subtraction(background_image=bg_img_resized, foreground_image=fg_img, device=0,
                                                 debug=None)
     assert np.sum(fgmask > 0)
