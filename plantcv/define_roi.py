@@ -6,10 +6,12 @@ import numpy as np
 from . import print_image
 from . import plot_image
 from . import fatal_error
-#opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
-
+## collet cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, adjust=False, x_adj=0, y_adj=0,
                w_adj=0, h_adj=0):
@@ -64,12 +66,12 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
         hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
         h, s, v = cv2.split(hsv)
         ret, v_img = cv2.threshold(v, 0, 255, cv2.THRESH_BINARY)
-        if cv2major > 2 and cv2minor > 0:
+        if cv2major >= 3 and cv2minor >= 1:
             _, roi_contour, hierarchy = cv2.findContours(v_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             roi_contour, hierarchy = cv2.findContours(v_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     elif roi_input == 'binary':
-        if cv2major > 2 and cv2minor > 0:
+        if cv2major >= 3 and cv2minor >= 1:
             _, roi_contour, hierarchy = cv2.findContours(roi, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             roi_contour, hierarchy = cv2.findContours(roi, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -103,7 +105,7 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                 x, y, w, h = cv2.boundingRect(cnt)
                 cv2.rectangle(background, (x, y), (x + w, y + h), (0, 255, 0), 5)
                 rect = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                if cv2major > 2 and cv2minor > 0:
+                if cv2major >= 3 and cv2minor >= 1:
                     _, rect_contour, hierarchy = cv2.findContours(rect, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                 else:
                     rect_contour, hierarchy = cv2.findContours(rect, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -120,7 +122,7 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                     radius = int(w / 2)
                     cv2.circle(background, center, radius, (255, 255, 255), -1)
                     circle = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                    if cv2major > 2 and cv2minor > 0:
+                    if cv2major >= 3 and cv2minor >= 1:
                         _, circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     else:
                         circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -134,7 +136,10 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                     radius = int(h / 2)
                     cv2.circle(background, center, radius, (255, 255, 255), -1)
                     circle = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                    circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                    if cv2major >= 3 and cv2minor >= 1:
+                        _, circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                    else:
+                        circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     cv2.drawContours(ori_img, circle_contour[0], -1, (255, 0, 0), 5)
                     if debug == 'print':
                         print_image(ori_img, (str(device) + '_roi.png'))
@@ -145,9 +150,9 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                 x, y, w, h = cv2.boundingRect(cnt)
                 center = (int(w / 2), int(h / 2))
                 if w > h:
-                    cv2.ellipse(background, center, (w / 2, h / 2), 0, 0, 360, (0, 255, 0), 2)
+                    cv2.ellipse(background, center, (w // 2, h // 2), 0, 0, 360, (0, 255, 0), 2)
                     ellipse = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                    if cv2major > 2 and cv2minor > 0:
+                    if cv2major >= 3 and cv2minor >= 1:
                         _, ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     else:
                         ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -158,10 +163,10 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                         plot_image(ori_img)
                     return device, ellipse_contour, hierarchy
                 else:
-                    cv2.ellipse(ori_img, center, (h / 2, w / 2), 0, 0, 360, (0, 255, 0), 2)
-                    cv2.ellipse(background, center, (h / 2, w / 2), 0, 0, 360, (0, 255, 0), 2)
+                    cv2.ellipse(ori_img, center, (h // 2, w // 2), 0, 0, 360, (0, 255, 0), 2)
+                    cv2.ellipse(background, center, (h // 2, w // 2), 0, 0, 360, (0, 255, 0), 2)
                     ellipse = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                    if cv2major > 2 and cv2minor > 0:
+                    if cv2major >= 3 and cv2minor >= 1:
                         _, ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     else:
                         ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -193,7 +198,7 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                     h1 = h + h_adj
                     cv2.rectangle(background, (x1, y1), (x + w1, y + h1), (0, 255, 0), 1)
                     rect = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                    if cv2major > 2 and cv2minor > 0:
+                    if cv2major >= 3 and cv2minor >= 1:
                         _, rect_contour, hierarchy = cv2.findContours(rect, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     else:
                         rect_contour, hierarchy = cv2.findContours(rect, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -228,7 +233,7 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                         radius = int(h1 / 2)
                         cv2.circle(background, center, radius, (255, 255, 255), -1)
                         circle = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                        if cv2major > 2 and cv2minor > 0:
+                        if cv2major >= 3 and cv2minor >= 1:
                             _, circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                         else:
                             circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -246,7 +251,7 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                     h1 = h + h_adj
                     center = (int((w + x1) / 2), int((h + y1) / 2))
                     if w > h:
-                        cv2.ellipse(background, center, (w1 / 2, h1 / 2), 0, 0, 360, (0, 255, 0), 2)
+                        cv2.ellipse(background, center, ( w1 // 2, h1 // 2), 0, 0, 360, (0, 255, 0), 2)
                         ellipse = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
                         if cv2major > 2 and cv2minor > 0:
                             _, ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -259,9 +264,9 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                             plot_image(ori_img)
                         return device, ellipse_contour, hierarchy
                     else:
-                        cv2.ellipse(background, center, (h1 / 2, w1 / 2), 0, 0, 360, (0, 255, 0), 2)
+                        cv2.ellipse(background, center, (h1 // 2, w1 // 2), 0, 0, 360, (0, 255, 0), 2)
                         ellipse = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                        if cv2major > 2 and cv2minor > 0:
+                        if cv2major >= 3 and cv2minor >= 1:
                             _, ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                         else:
                             ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
