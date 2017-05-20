@@ -4,10 +4,12 @@ import cv2
 import numpy as np
 from . import print_image
 from . import plot_image
-#opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
-
+## collet cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def border_mask(img, p1, p2, device, debug=None, color="black"):
     """By using rectangle_mask to mask the edge of plotting regions you end up missing the border of the images by

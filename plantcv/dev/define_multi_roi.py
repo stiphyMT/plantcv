@@ -5,8 +5,12 @@ import cv2
 import numpy as np
 from plantcv import print_image
 from plantcv import fatal_error
-( cv2major, cv2minor, _) = cv2.__version__.split( '.')
-( cv2major, cv2minor) = int( cv2major), int( cv2minor)
+## collect cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def define_multi_roi(img, device, debug=False, roi_file=None, roi_input='default', rows=None, col=None, shape=None, rad=None, dist_x=None, dist_y=None, adjust_x=False, adjust_y=False):
   #If you have very irregularly spaced ROI (that stays consistent between images), it is likely easiest to provide a file with an ROI

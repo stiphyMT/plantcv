@@ -5,10 +5,12 @@ import cv2
 from . import print_image
 from . import plot_image
 from . import fatal_error
-#opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
-
+## collet cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def fill(img, mask, size, device, debug=None):
     """Identifies objects and fills objects that are less than size.

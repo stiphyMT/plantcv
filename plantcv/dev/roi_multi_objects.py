@@ -1,8 +1,12 @@
 import cv2
 import numpy as np
 from plantcv import print_image
-( cv2major, cv2minor, _) = cv2.__version__.split( '.')
-( cv2major, cv2minor) = int( cv2major), int( cv2minor)
+## collect cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 ### Find Objects Partially Inside Region of Interest or Cut Objects to Region of Interest
 def roi_objects(img,roi_type,roi_contour, roi_hierarchy,object_contour, obj_hierarchy, device, debug=False):

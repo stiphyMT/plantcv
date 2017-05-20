@@ -1,9 +1,11 @@
 # Plot image to screen
 import cv2
-#opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
-
+## collet cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def plot_image(img, cmap=None):
     """Plot an image to the screen.
