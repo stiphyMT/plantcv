@@ -4,6 +4,12 @@ import os
 import cv2
 import numpy as np
 from scipy import stats
+## collect cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 
 def naive_bayes(imgdir, maskdir, outfile, mkplots=False):
@@ -52,7 +58,8 @@ def naive_bayes(imgdir, maskdir, outfile, mkplots=False):
                         fg, bg = _split_plant_background_signal(channels[channel], mask)
 
                         # Randomly sample from the plant class (sample 10% of the pixels)
-                        fg = fg[np.random.random_integers(0, len(fg) - 1, len(fg) / 10)]
+                        # use explicit interger division not Python 2 implied
+                        fg = fg[np.random.random_integers(0, len(fg) - 1, len(fg) // 10)]
                         # Randomly sample from the background class the same n as the plant class
                         bg = bg[np.random.random_integers(0, len(bg) - 1, len(fg))]
                         plant[channel] = np.append(plant[channel], fg)
