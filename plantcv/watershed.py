@@ -11,9 +11,12 @@ from . import print_image
 from . import plot_image
 from . import apply_mask
 from . import color_palette
-#opencv2 version control
-( cv2major, cv2minor, _) = cv2.__version__.split( '.')
-( cv2major, cv2minor) = int( cv2major), int( cv2minor)
+## collect cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def watershed_segmentation(device, img, mask, distance=10, filename=False, debug=None):
     """Uses the watershed algorithm to detect boundary of objects. Needs a marker file which specifies area which is
@@ -45,8 +48,10 @@ def watershed_segmentation(device, img, mask, distance=10, filename=False, debug
     :return analysis_images: list
     """
     device += 1
-
-    dist_transform = cv2.distanceTransform(mask, cv2.cv.CV_DIST_L2, maskSize=0)
+    if cv2major >= 3:
+        dist_transform = cv2.distanceTransform(mask, cv2.DIST_L2, maskSize=0)
+    else:
+        dist_transform = cv2.distanceTransform(mask, cv2.cv.CV_DIST_L2, maskSize=0)
 
     localMax = peak_local_max(dist_transform, indices=False, min_distance=distance, labels=mask)
 
@@ -55,12 +60,13 @@ def watershed_segmentation(device, img, mask, distance=10, filename=False, debug
     labels = watershed(dist_transform1, markers, mask=mask)
 
     img1 = np.copy(img)
-
+    rand_color = color_palette.color_palette(len(np.unique(labels)))
     for x in np.unique(labels):
-        rand_color = color_palette(len(np.unique(labels)))
         img1[labels == x] = rand_color[x]
 
-    device, img2 = apply_mask(img1, mask, 'black', device, debug=None)
+    device, img2 = apply_mask.apply_mask(img1, mask, 'black', device, debug=None)
+    # to count the watershed as only one device you need to subtract one after this call
+    device -= 1
 
     joined = np.concatenate((img2, img), axis=1)
 
@@ -83,7 +89,7 @@ def watershed_segmentation(device, img, mask, distance=10, filename=False, debug
     )
 
     if debug == 'print':
-        print_image(dist_transform, str(device) + '_watershed_dist_img.png')
+        print_image(dist_transform, str(device) + '_watershed_dist_' + str( distance) + '_img.png')
         print_image(joined, str(device) + '_watershed_img.png')
     elif debug == 'plot':
         plot_image(dist_transform, cmap='gray')
