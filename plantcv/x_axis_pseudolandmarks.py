@@ -3,10 +3,13 @@
 import cv2
 import numpy as np
 from . import plot_image
-#opencv2 version control
-( cv2major, cv2minor, _) = cv2.__version__.split( '.')
-( cv2major, cv2minor) = int( cv2major), int( cv2minor)
-
+import sys
+## collet cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def x_axis_pseudolandmarks(obj, mask, img, device, debug=False):
     """Divide up object contour into 20 equidistance segments and generate landmarks for each
@@ -43,7 +46,7 @@ def x_axis_pseudolandmarks(obj, mask, img, device, debug=False):
     extent = width
     # If width is greater than 21 pixels make 20 increments (5% intervals)
     if extent >= 21:
-        inc = extent / 21
+        inc = extent // 21
         # Define variable for max points and min points
         pts_max = []
         pts_min = []
@@ -134,7 +137,7 @@ def x_axis_pseudolandmarks(obj, mask, img, device, debug=False):
         # median_value = col_median[indice_median]
         # ave_value = col_ave[indice_ave]
         # max_value = max_width[indice_ave]
-        top = zip(x_vals, top_points)
+        top = list( zip(x_vals, top_points))
         top = np.array(top)
         top.shape = (20, 1, 2)
         bottom = list(zip(x_vals, bottom_points))
