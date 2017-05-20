@@ -3,10 +3,12 @@
 import cv2
 from . import print_image
 from . import plot_image
-#opencv2 version control
-( cv2major, cv2minor, _) = cv2.__version__.split( '.')
-( cv2major, cv2minor) = int( cv2major), int( cv2minor)
-
+## collet cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def laplace_filter(img, k, scale, device, debug=None):
     """This is a filtering method used to identify and highlight fine edges based on the 2nd derivative. A very
@@ -37,7 +39,9 @@ def laplace_filter(img, k, scale, device, debug=None):
     lp_filtered = cv2.Laplacian(src=img, ddepth=-1, ksize=k, scale=scale)
     device += 1
     if debug == 'print':
-        print_image(lp_filtered, str(device) + '_lp_out' + '_k_' + str(k) + '_scale_' + str(scale) + '_.png')
+# again test name was not updated with respect to pcv function, made function agree with test
+#        print_image(lp_filtered, str(device) + '_lp_out' + '_k_' + str(k) + '_scale_' + str(scale) + '_.png')
+        print_image(lp_filtered, str(device) + '_lp_out' + '_k' + str(k) + '_scale' + str(scale) + '.png')
     elif debug == 'plot':
         plot_image(lp_filtered, cmap='gray')
     return device, lp_filtered

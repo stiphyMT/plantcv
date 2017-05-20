@@ -3,9 +3,12 @@
 import cv2
 from . import print_image
 from . import plot_image
-#opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
+## collect cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 
 def scharr_filter(img, dX, dY, scale, device, debug=None):
@@ -40,7 +43,9 @@ def scharr_filter(img, dX, dY, scale, device, debug=None):
     device += 1
     if debug == 'print':
         print_image(sr_img,
-                    str(device) + '_sr_img' + '_dx_' + str(dX) + '_dy_' + str(dY) + '_scale_' + str(scale) + '.png')
+ # test filename mismatch from actual function
+ #                   str(device) + '_sr_img' + '_dx_' + str(dX) + '_dy_' + str(dY) + '_scale_' + str(scale) + '.png')
+                    str(device) + '_sr_img' + '_dx' + str(dX) + '_dy' + str(dY) + '_scale' + str(scale) + '.png')
     elif debug == 'plot':
         plot_image(sr_img, cmap='gray')
     return device, sr_img

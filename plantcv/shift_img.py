@@ -6,9 +6,12 @@ import math
 from . import print_image
 from . import plot_image
 from . import fatal_error
-#opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
+## collect cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 
 def shift_img(img, device, number, side="right", debug=None):
@@ -69,7 +72,7 @@ def shift_img(img, device, number, side="right", debug=None):
     if len(np.shape(img)) == 2:
         adjusted_img, channel2, channel3 = np.dsplit(adjusted_img, 3)
     if debug == 'print':
-        print_image(adjusted_img, (str(device) + "_shifted img.png"))
+        print_image(adjusted_img, (str(device) + "_shifted_img.png"))
     elif debug == 'plot':
         if len(np.shape(adjusted_img)) == 3:
             plot_image(adjusted_img)
