@@ -3,7 +3,7 @@ __all__ = ['fatal_error', 'PCVconstants','print_image', 'plot_image', 'plot_colo
            'dilate', 'watershed', 'rectangle_mask', 'rgb2gray_hsv', 'rgb2gray_lab', 'rgb2gray', 'binary_threshold',
            'median_blur', 'fill', 'invert', 'logical_and', 'logical_or', 'logical_xor', 'apply_mask', 'find_objects',
            'define_roi', 'roi_objects', 'object_composition', 'analyze_object', 'analyze_bound', 'analyze_color',
-           'analyze_NIR_intensity', 'fluor_fvfm', 'print_results', 'resize', 'flip',
+           'analyze_NIR_intensity', 'fluor_fvfm', 'print_results', 'resize', 'flip', 'color_pallete',
            'crop_position_mask', 'get_nir', 'adaptive_threshold', 'otsu_auto_threshold', 'report_size_marker_area',
            'white_balance', 'triangle_auto_threshold', 'acute_vertex', 'scale_features', 'landmark_reference_pt_dist',
            'x_axis_pseudolandmarks', 'y_axis_pseudolandmarks', 'gaussian_blur', 'cluster_contours',
@@ -25,7 +25,7 @@ from .image_add import image_add
 from .image_subtract import image_subtract
 from .erode import erode
 from .dilate import dilate
-from .watershed import watershed
+from .watershed import watershed_segmentation
 from .rectangle_mask import rectangle_mask
 from .border_mask import border_mask
 from .rgb2gray_hsv import rgb2gray_hsv
@@ -52,6 +52,7 @@ from .fluor_fvfm import fluor_fvfm
 from .print_results import print_results
 from .resize import resize
 from .flip import flip
+from .color_palette import color_palette
 from .crop_position_mask import crop_position_mask
 from .get_nir import get_nir
 from .adaptive_threshold import adaptive_threshold
@@ -61,7 +62,7 @@ from .white_balance import white_balance
 from .triangle_auto_threshold import triangle_auto_threshold
 from .acute_vertex import acute_vertex
 from .scale_features import scale_features
-from landmark_reference_pt_dist import landmark_reference_pt_dist
+from .landmark_reference_pt_dist import landmark_reference_pt_dist
 from .x_axis_pseudolandmarks import x_axis_pseudolandmarks
 from .y_axis_pseudolandmarks import y_axis_pseudolandmarks
 from .gaussian_blur import gaussian_blur
