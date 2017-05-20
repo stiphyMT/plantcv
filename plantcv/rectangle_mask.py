@@ -4,10 +4,12 @@ import cv2
 import numpy as np
 from . import print_image
 from . import plot_image
-#opencv2 version control
-(  cv2major, cv2minor, _) = cv2.__version__.split('.')
-(cv2major, cv2minor) = int(cv2major), int(cv2minor)
-
+## collet cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def rectangle_mask(img, p1, p2, device, debug=None, color="black"):
     """Takes an input image and returns a binary image masked by a rectangular area denoted by p1 and p2. Note that
@@ -55,7 +57,10 @@ def rectangle_mask(img, p1, p2, device, debug=None, color="black"):
 
     cv2.rectangle( img=bnk, pt1 = p1, pt2 = p2, color = (255, 255, 255), thickness = -1)
     ret, bnk = cv2.threshold(bnk, 127, 255, 0)
-    contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    if cv2major >= 3 and cv2minor >= 1:
+        _, contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    else:
+        contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     # make sure entire rectangle is within (visable within) plotting region or else it will not fill with
     # thickness = -1. Note that you should only print the first contour (contour[0]) if you want to fill with
     # thickness = -1. otherwise two rectangles will be drawn and the space between them will get filled
