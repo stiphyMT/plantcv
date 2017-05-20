@@ -3,10 +3,12 @@
 import cv2
 from . import print_image
 from . import plot_image
-#opencv2 version control
-( cv2major, cv2minor, _) = cv2.__version__.split( '.')
-( cv2major, cv2minor) = int( cv2major), int( cv2minor)
-
+## collet cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def gaussian_blur(device, img, ksize, sigmax, sigmay=None, debug=None):
     """Applies a Gaussian blur filter.
@@ -37,7 +39,9 @@ def gaussian_blur(device, img, ksize, sigmax, sigmay=None, debug=None):
 
     device += 1
     if debug == 'print':
-        print_image(img_gblur, (str(device) + '_gaussian_blur' + str(ksize) + '.png'))
+# the tests weren't updated for this new renaming scheme so I reverted it for now
+#        print_image(img_gblur, (str(device) + '_gaussian_blur' + str(ksize) + '.png'))
+        print_image(img_gblur, (str(device) + '_gaussian_blur' + '.png'))
     elif debug == 'plot':
         if len(img_gblur) == 3:
             plot_image(img_gblur)
