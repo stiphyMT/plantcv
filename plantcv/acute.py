@@ -3,13 +3,16 @@
 import numpy as np
 import math
 import cv2
-#opencv2 version control
-( cv2major, cv2minor, _) = cv2.__version__.split( '.')
-( cv2major, cv2minor) = int( cv2major), int( cv2minor)
+## collet cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 
 ### Identify landmark positions within a contour for morphometric analysis
-def acute(obj, win, thresh, mask, debug=False):
+def acute(obj, win, thresh, mask, device, debug=False):
     """Inputs:
     cont        = opencv contour array of interest to be scanned for landmarks
     win         = maximum cumulative pixel distance window for calculating angle
@@ -29,7 +32,7 @@ def acute(obj, win, thresh, mask, debug=False):
                   landmark cluster edges, and angle score for entire contour.  Used
                   in troubleshooting.
     """
-
+    device += 1
     vert = obj[0]                                      #Initialize first vertex for chain scan
     chain = []                                         #Create empty chain to store angle scores
     for k in list(range(len(obj))):                    #Coordinate-by-coordinate 3-point assignments
@@ -185,17 +188,17 @@ def acute(obj, win, thresh, mask, debug=False):
         stop_pts    = obj[TSpts]
 
         if debug: 
-            print '[landmarks, concavity-convexity ratios, contour scores, verbose output]'
-            return [homolog_pts, start_pts, stop_pts, ptvals, chain, max_dist]
+            print('[landmarks, concavity-convexity ratios, contour scores, verbose output]')
+            return device, [homolog_pts, start_pts, stop_pts, ptvals, chain, max_dist]
         else:
-            print '[landmarks]'
-            return [homolog_pts]
+            print('[landmarks]')
+            return device, [homolog_pts]
 
     else: 
         if debug: 
-            print '[landmarks, concavity-convexity ratios, contour scores, verbose output]'
-            return [[], [], [], [], [], []]
+            print('[landmarks, concavity-convexity ratios, contour scores, verbose output]')
+            return device, [[], [], [], [], [], []]
         else:
-            print '[landmarks]'
-            return [[]]        
+            print('[landmarks]')
+            return device, [[]]        
 
