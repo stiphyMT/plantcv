@@ -6,7 +6,12 @@ import numpy as np
 from . import print_image
 from . import plot_image
 from . import fatal_error
-
+## collet cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def background_subtraction(background_image, foreground_image, device, debug=None):
     """Creates a binary image from a background subtraction of the foreground using cv2.BackgroundSubtractorMOG().
@@ -55,7 +60,15 @@ def background_subtraction(background_image, foreground_image, device, debug=Non
             fg_img = cv2.resize(fg_img, (width, height), interpolation=cv2.INTER_AREA)
 
     # Instantiating the background subtractor, for a single history no default parameters need to be changed.
-    bgsub = cv2.BackgroundSubtractorMOG()
+    if cv2major >= 3:
+    # BackgroundSubtractorMOG is now available only in the extra contrib modules
+    # cv2.bgsegm.
+        try:
+            bgsub = cv2.bgsegm.createBackgroundSubtractorMOG()
+        except AttributeError:
+            fatal_error( 'With OpenCV 3.x the external contributions are required')
+    else:
+        bgsub = cv2.BackgroundSubtractorMOG()
     # Applying the background image to the background subtractor first.
     # Anything added after is subtracted from the previous iterations.
     fgmask = bgsub.apply(bg_img)
