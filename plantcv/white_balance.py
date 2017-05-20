@@ -6,10 +6,12 @@ from . import print_image
 from . import plot_image
 from . import apply_mask
 from . import fatal_error
-#opencv2 version control
-( cv2major, cv2minor, _) = cv2.__version__.split( '.')
-( cv2major, cv2minor) = int( cv2major), int( cv2minor)
-
+## collect cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def white_balance(device, img, debug=None, roi=None):
     """Corrects the exposure of an image based on its histogram.
@@ -67,6 +69,8 @@ def white_balance(device, img, debug=None, roi=None):
         retval, mask_binary = cv2.threshold(mask_binary, 254, 255, cv2.THRESH_BINARY)
 
         device, masked = apply_mask(ori_img2, mask_binary, 'black', device, debug)
+        # to count the whitebalance as only one device you need to subtract one after this call
+        device -= 1
 
         channel1 = np.amax(masked[:, :, 0])
         channel2 = np.amax(masked[:, :, 1])
