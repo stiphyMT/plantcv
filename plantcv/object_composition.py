@@ -4,10 +4,12 @@ import numpy as np
 import cv2
 from . import print_image
 from . import plot_image
-#opencv2 version control
-( cv2major, cv2minor, _) = cv2.__version__.split( '.')
-( cv2major, cv2minor) = int( cv2major), int( cv2minor)
-
+## collect cv2 version info
+try:
+    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
+except:
+    cv2major, cv2minor, _ = cv2.__version__.split('.')
+cv2major, cv2minor = int( cv2major), int( cv2minor)
 
 def object_composition(img, contours, hierarchy, device, debug=None):
     """Groups objects into a single object, usually done after object filtering.
@@ -38,7 +40,6 @@ def object_composition(img, contours, hierarchy, device, debug=None):
     stack = np.zeros((len(contours), 1))
     r, g, b = cv2.split(ori_img)
     mask = np.zeros(g.shape, dtype=np.uint8)
-
     for c, cnt in enumerate(contours):
         # if hierarchy[0][c][3] == -1:
         if hierarchy[0][c][2] == -1 and hierarchy[0][c][3] > -1:
@@ -54,7 +55,6 @@ def object_composition(img, contours, hierarchy, device, debug=None):
     if len(ids) > 0:
         group = np.vstack(contours[i] for i in ids)
         cv2.drawContours(mask, contours, -1, (255), -1, hierarchy=hierarchy)
-
         if debug is not None:
             for cnt in contours:
                 cv2.drawContours(ori_img, cnt, -1, (255, 0, 0), 4)
