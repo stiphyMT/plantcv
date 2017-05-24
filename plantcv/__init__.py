@@ -1,13 +1,12 @@
 __all__ = ['fatal_error', 'PCVconstants','print_image', 'plot_image', 'plot_colorbar', 'readimage', 'laplace_filter',
            'sobel_filter', 'scharr_filter', 'hist_equalization', 'plot_hist', 'image_add', 'image_subtract', 'erode', 
-           'dilate', 'watershed', 'rectangle_mask', 'rgb2gray_hsv', 'rgb2gray_lab', 'rgb2gray', 'binary_threshold',
-           'median_blur', 'fill', 'invert', 'logical_and', 'logical_or', 'logical_xor', 'apply_mask', 'find_objects',
-           'define_roi', 'roi_objects', 'object_composition', 'analyze_object', 'analyze_bound', 'analyze_color',
-           'analyze_NIR_intensity', 'fluor_fvfm', 'print_results', 'resize', 'flip', 'color_pallete',
-           'crop_position_mask', 'get_nir', 'adaptive_threshold', 'otsu_auto_threshold', 'report_size_marker_area',
-           'white_balance', 'triangle_auto_threshold', 'acute_vertex', 'scale_features', 'landmark_reference_pt_dist',
-           'x_axis_pseudolandmarks', 'y_axis_pseudolandmarks', 'gaussian_blur', 'cluster_contours',
-           'cluster_contour_splitimg', 'rotate_img', 'shift_img', 'output_mask', 'auto_crop',
+           'dilate', 'watershed', 'rectangle_mask', 'rgb2gray_hsv', 'rgb2gray_lab', 'rgb2gray_rgb','rgb2gray', 
+           'binary_threshold', 'median_blur', 'fill', 'invert', 'logical_and', 'logical_or', 'logical_xor', 
+           'apply_mask', 'find_objects', 'define_roi', 'roi_objects', 'object_composition', 'analyze_object', 
+           'analyze_bound', 'analyze_color', 'analyze_NIR_intensity', 'fluor_fvfm', 'print_results', 'resize', 
+           'flip', 'color_pallete', 'crop_position_mask', 'get_nir', 'adaptive_threshold', 'otsu_auto_threshold', 
+           'report_size_marker_area', 'white_balance', 'triangle_auto_threshold', 'acute_vertex', 'scale_features', 'landmark_reference_pt_dist', 'x_axis_pseudolandmarks', 'y_axis_pseudolandmarks', 'gaussian_blur', 
+           'cluster_contours', 'cluster_contour_splitimg', 'rotate_img', 'shift_img', 'output_mask', 'auto_crop',
            'background_subtraction', 'naive_bayes_classifier', 'acute']
 
 from .PCVconstants import *
@@ -30,7 +29,7 @@ from .rectangle_mask import rectangle_mask
 from .border_mask import border_mask
 from .rgb2gray_hsv import rgb2gray_hsv
 from .rgb2gray_lab import rgb2gray_lab
-#from .rgb2gray_rgb import rgb2gray_rgb
+from .rgb2gray_rgb import rgb2gray_rgb
 from .rgb2gray import rgb2gray
 from .binary_threshold import binary_threshold
 from .median_blur import median_blur
