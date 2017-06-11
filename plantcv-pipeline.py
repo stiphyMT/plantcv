@@ -30,7 +30,6 @@ def options():
         ValueError: if a metadata field is not supported.
     """
     # Job start time
-    start_time = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
     print("Starting run " + start_time + '\n', file=sys.stderr)
 
     # These are metadata types that PlantCV deals with.
@@ -634,7 +633,7 @@ def process_images_multiproc(jobs):
 def exe_multiproc(jobs, cpus):
     try:
         p = mp.Pool(processes=cpus)
-        p.map_async(process_images_multiproc, jobs).get(9999999)
+        p.map_async(process_images_multiproc, jobs).get(99999)
     except KeyboardInterrupt:
         p.terminate()
         p.join()
