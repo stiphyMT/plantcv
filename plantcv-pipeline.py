@@ -293,11 +293,21 @@ def main():
 
     # Load database
     ###########################################
-    call("sqlite3 " + args.db + " \".import " + runinfo_file.name + " runinfo\"", shell=True)
-    call("sqlite3 " + args.db + " \".import " + args.metadata_file.name + " metadata\"", shell=True)
-    call("sqlite3 " + args.db + " \".import " + args.features_file.name + " features\"", shell=True)
-    call("sqlite3 " + args.db + " \".import " + args.analysis_images_file.name + " analysis_images\"", shell=True)
-    call("sqlite3 " + args.db + " \".import " + args.signal_file.name + " signal\"", shell=True)
+    if sys.platform.lower() == 'linux' or sys.platform.lower() == 'linux2':
+        call("sqlite3 " + args.db + " \".import " + runinfo_file.name + " runinfo\"", shell = True)
+        call("sqlite3 " + args.db + " \".import " + args.metadata_file.name + " metadata\"", shell = True)
+        call("sqlite3 " + args.db + " \".import " + args.features_file.name + " features\"", shell = True)
+        call("sqlite3 " + args.db + " \".import " + args.analysis_images_file.name + " analysis_images\"", shell = True)
+        call("sqlite3 " + args.db + " \".import " + args.signal_file.name + " signal\"", shell = True)
+    elif sys.platform.lower().startswith( 'win'):
+        try:
+            call("sqlite3.exe " + args.db + " \".import " + runinfo_file.name + " runinfo\"", shell = True)
+            call("sqlite3.exe " + args.db + " \".import " + args.metadata_file.name + " metadata\"", shell = True)
+            call("sqlite3.exe " + args.db + " \".import " + args.features_file.name + " features\"", shell = True)
+            call("sqlite3.exe " + args.db + " \".import " + args.analysis_images_file.name + " analysis_images\"", shell = True)
+            call("sqlite3.exe " + args.db + " \".import " + args.signal_file.name + " signal\"", shell = True)
+        except FileNotFoundError:
+            print( "'sqlite.exe' tool must be present in Windows environmetal path.")   
     ###########################################
 
 
