@@ -726,19 +726,21 @@ def job_builder(args, meta):
         for j in range(0, jobs_per_cpu):
             # Add job to list
             if args.coprocess is not None and ('coimg' in meta[images[job]]):
-                job_str = "python {0} --image {1}/{2} --outdir {3} --result ./{4}/{5}.txt --coresult ./{6}/{7}.txt".format(
-                    args.pipeline, meta[images[job]]['path'], images[job], args.outdir, args.jobdir, images[job],
-                    args.jobdir, meta[images[job]]['coimg'])
+                if sys.platform.lower() == 'linux' or sys.platform.lower() == 'linux2':
+                    job_str = "python {0} --image {1}/{2} --outdir {3} --result ./{4}/{5}.txt --coresult ./{6}/{7}.txt".format( args.pipeline, meta[images[job]]['path'], images[job], args.outdir, args.jobdir, images[job],args.jobdir, meta[images[job]]['coimg'])
+                elif sys.platform.lower().startswith( 'win'):
+                    job_str = "python \"{0}\" --image \"{1}/{2}\" --outdir \"{3}\" --result \"./{4}/{5}.txt\" --coresult \"./{6}/{7}.txt\"".format(args.pipeline, meta[images[job]]['path'], images[job], args.outdir, args.jobdir, images[job], args.jobdir, meta[images[job]]['coimg'])
+
                 if args.writeimg:
                     job_str += ' --writeimg'
                 if args.other_args:
                     job_str += ' ' + args.other_args
                 jobs.append(job_str)
             else:
-                job_str = "python {0} --image {1}/{2} --outdir {3} --result ./{4}/{5}.txt".format(args.pipeline,
-                                                                                           meta[images[job]]['path'],
-                                                                                           images[job], args.outdir,
-                                                                                           args.jobdir, images[job])
+                if sys.platform.lower() == 'linux' or sys.platform.lower() == 'linux2':
+                    job_str = "python {0} --image {1}/{2} --outdir {3} --result ./{4}/{5}.txt".format(args.pipeline,meta[images[job]]['path'], images[job], args.outdir, args.jobdir, images[job])
+                elif sys.platform.lower().startswith( 'win'):
+                    job_str = "python \"{0}\" --image \"{1}/{2}\" --outdir \"{3}\" --result \"./{4}/{5}.txt\"".format(args.pipeline,meta[images[job]]['path'], images[job], args.outdir, args.jobdir, images[job])
                 if args.writeimg:
                     job_str += ' --writeimg'
                 if args.other_args:
