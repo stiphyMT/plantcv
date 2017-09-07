@@ -27,7 +27,8 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
     shape           = 'rectangle', 'circle', 'ellipse'
     device          = device number. Used to count steps in the pipeline
     debug           = None, print, or plot. Print = save to file, Plot = print to screen.
-    marker          = define or detect, if define it means you set an area, if detect it means you want to detect within an area
+    marker          = define or detect, if define it means you set an area, if detect it means you want to
+                      detect within an area
     x_adj           = x position of shape, integer
     y_adj           = y position of shape, integer
     w_adj           = width
@@ -55,10 +56,14 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
     :param h_adj:int
     :param h_adj:int
     :param base:str
+    :param objcolor: str
     :param thresh_channel:str
     :param thresh:int
     :param filename: str
-    :return:
+    :return: device: int
+    :return: marker_header: str
+    :return: marker_data: int
+    :return: analysis_images: list
     """
 
     device += 1
@@ -79,17 +84,13 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
         roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     cv2.drawContours(roi_background, roi_contour[0], -1, (255, 0, 0), 5)
 
-    if x_adj > 0 and w_adj > 0:
-        fatal_error('Adjusted ROI position is out of frame, this will cause problems in detecting objects')
-    elif y_adj > 0 and h_adj > 0:
-        fatal_error('Adjusted ROI position is out of frame, this will cause problems in detecting objects')
-    elif x_adj < 0 or y_adj < 0:
+    if (x_adj > 0 and w_adj > 0) or (y_adj > 0 and h_adj > 0):
         fatal_error('Adjusted ROI position is out of frame, this will cause problems in detecting objects')
 
     for cnt in roi_contour:
         size1 = ix, iy, 3
         background = np.zeros(size1, dtype=np.uint8)
-        if shape == 'rectangle':
+        if shape == 'rectangle' and (x_adj >= 0 and y_adj >= 0):
             x, y, w, h = cv2.boundingRect(cnt)
             x1 = x + x_adj
             y1 = y + y_adj
@@ -138,6 +139,14 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
     if marker == 'define':
         m = cv2.moments(markerback, binaryImage=True)
         area = m['m00']
+        device, id_objects, obj_hierarchy = find_objects(img, markerback, device, debug)
+        device, obj, mask = object_composition(img, id_objects, obj_hierarchy, device, debug)
+        center, axes, angle = cv2.fitEllipse(obj)
+        major_axis = np.argmax(axes)
+        minor_axis = 1 - major_axis
+        major_axis_length = axes[major_axis]
+        minor_axis_length = axes[minor_axis]
+        eccentricity = np.sqrt(1 - (axes[minor_axis] / axes[major_axis]) ** 2)
 
     elif marker == 'detect':
         if thresh_channel is not None and thresh is not None:
@@ -161,6 +170,14 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
             cv2.drawContours(ori_img, roi_o, -1, (0, 255, 0), -1, lineType=8, hierarchy=hierarchy3)
             m = cv2.moments(mask, binaryImage=True)
             area = m['m00']
+
+            center, axes, angle = cv2.fitEllipse(obj)
+            major_axis = np.argmax(axes)
+            minor_axis = 1 - major_axis
+            major_axis_length = axes[major_axis]
+            minor_axis_length = axes[minor_axis]
+            eccentricity = np.sqrt(1 - (axes[minor_axis] / axes[major_axis]) ** 2)
+
         else:
             fatal_error('thresh_channel and thresh must be defined in detect mode')
     else:
@@ -178,12 +195,18 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
 
     marker_header = (
         'HEADER_MARKER',
-        'area'
+        'marker_area',
+        'marker_major_axis_length',
+        'marker_minor_axis_length',
+        'marker_eccentricity'
     )
 
     marker_data = (
         'MARKER_DATA',
-        area
+        area,
+        major_axis_length,
+        minor_axis_length,
+        eccentricity
     )
 
     return device, marker_header, marker_data, analysis_images
