@@ -10,7 +10,7 @@ import plantcv as pcv
 import plantcv.learn
 try:
     cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
+except ValueError:
     cv2major, cv2minor, _ = cv2.__version__.split('.')
 cv2major, cv2minor = int(cv2major), int(cv2minor)
 # Import matplotlib and use a null Template to block plotting to screen
@@ -20,6 +20,8 @@ matplotlib.use('Template')
 
 TEST_DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 TEST_TMPDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".cache")
+#TEST_DATA = os.path.join("C:\\Users\\Scanalyzer Admin\\Documents\\GitHub\\plantcv\\tests", "data")
+#TEST_TMPDIR = os.path.join("C:\\Users\\Scanalyzer Admin\\Documents\\GitHub\\plantcv\\tests", "..", ".cache")
 TEST_COLOR_DIM = (2056, 2454, 3)
 TEST_GRAY_DIM = (2056, 2454)
 TEST_BINARY_DIM = TEST_GRAY_DIM
@@ -87,7 +89,8 @@ def test_plantcv_acute():
 def test_plantcv_acute_vertex():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_acute_vertex")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_VIS_SMALL))
     contours_npz = np.load(os.path.join(TEST_DATA, TEST_VIS_COMP_CONTOUR))
@@ -116,7 +119,8 @@ def test_plantcv_acute_vertex_bad_obj():
 def test_plantcv_adaptive_threshold():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_adaptive_threshold")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with threshold type = "mean"
@@ -161,7 +165,8 @@ def test_plantcv_adaptive_threshold_incorrect_object_type():
 def test_plantcv_analyze_bound():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_analyze_bound")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
@@ -174,7 +179,7 @@ def test_plantcv_analyze_bound():
     try:
         os.rename("1_boundary_on_img.jpg", os.path.join(cache_dir, "1_boundary_on_img.jpg"))
     except WindowsError:
-        os.rename("1_boundary_on_img.jpg", os.path.join(cache_dir, "1_boundary_on_img.jpg"))
+        os.remove(os.path.join(cache_dir, "1_boundary_on_img.jpg"))
         os.rename("1_boundary_on_img.jpg", os.path.join(cache_dir, "1_boundary_on_img.jpg"))
     try:
         os.rename("1_boundary_on_white.jpg", os.path.join(cache_dir, "1_boundary_on_white.jpg"))
@@ -195,7 +200,8 @@ def test_plantcv_analyze_bound():
 def test_plantcv_analyze_color():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_analyze_color")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
@@ -253,7 +259,8 @@ def test_plantcv_analyze_color_incorrect_hist_plot_type():
 def test_plantcv_analyze_nir():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_analyze_nir")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR), 0)
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
@@ -284,7 +291,8 @@ def test_plantcv_analyze_nir():
 def test_plantcv_analyze_object():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_analyze_object")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
@@ -310,7 +318,8 @@ def test_plantcv_analyze_object():
 def test_plantcv_apply_mask_white():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_apply_mask_white")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
@@ -331,7 +340,8 @@ def test_plantcv_apply_mask_white():
 def test_plantcv_apply_mask_black():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_apply_mask_black")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
@@ -352,7 +362,8 @@ def test_plantcv_apply_mask_black():
 def test_plantcv_auto_crop():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_auto_crop")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INTPUT_MULTI), -1)
     contours = np.load(os.path.join(TEST_DATA, TEST_INPUT_MULTI_CONTOUR), encoding = 'bytes')
@@ -384,7 +395,8 @@ def test_plantcv_auto_crop():
 def test_plantcv_binary_threshold():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_binary_threshold")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with object type = dark
@@ -421,7 +433,8 @@ def test_plantcv_binary_threshold_incorrect_object_type():
 def test_plantcv_cluster_contours():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_cluster_contours")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INTPUT_MULTI), -1)
     contours = np.load(os.path.join(TEST_DATA, TEST_INPUT_MULTI_CONTOUR), encoding = 'bytes')
@@ -446,7 +459,8 @@ def test_plantcv_cluster_contours():
 def test_plantcv_cluster_contours_splitimg():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_cluster_contours_splitimg")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INTPUT_MULTI), -1)
     contours = np.load(os.path.join(TEST_DATA, TEST_INPUT_MULTI_CONTOUR), encoding = 'bytes')
@@ -499,7 +513,8 @@ def test_plantcv_color_palette():
 def test_plantcv_crop_position_mask():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_crop_position_mask")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     nir, path1, filename1 = pcv.readimage(os.path.join(TEST_DATA, TEST_INPUT_NIR_MASK))
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_MASK), -1)
@@ -535,7 +550,8 @@ def test_plantcv_crop_position_mask():
 def test_plantcv_define_roi_rectangle():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_define_roi_rectangle")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -562,7 +578,8 @@ def test_plantcv_define_roi_rectangle():
 def test_plantcv_define_roi_rectangle_no_adjust():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_define_roi_rectangle_no_adjust")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -589,7 +606,8 @@ def test_plantcv_define_roi_rectangle_no_adjust():
 def test_plantcv_define_roi_circle():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_define_roi_circle")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -616,7 +634,8 @@ def test_plantcv_define_roi_circle():
 def test_plantcv_define_roi_circle_no_adjust():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_define_roi_circle_no_adjust")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -643,7 +662,8 @@ def test_plantcv_define_roi_circle_no_adjust():
 def test_plantcv_define_roi_ellipse():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_define_roi_ellipse")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -670,7 +690,8 @@ def test_plantcv_define_roi_ellipse():
 def test_plantcv_define_roi_ellipse_no_adjust():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_define_roi_ellipse_no_adjust")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -711,7 +732,8 @@ def test_plantcv_define_roi_bad_roi_input():
 def test_plantcv_dilate():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_dilate")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
@@ -739,7 +761,8 @@ def test_plantcv_dilate():
 def test_plantcv_erode():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_erode")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
@@ -773,7 +796,8 @@ def test_plantcv_fatal_error():
 def test_plantcv_fill():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_fill")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
@@ -797,7 +821,8 @@ def test_plantcv_fill():
 def test_plantcv_find_objects():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_find_objects")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
@@ -812,6 +837,7 @@ def test_plantcv_find_objects():
     _ = pcv.find_objects(img=img, mask=mask, device=0, debug="plot")
     # Test with debug = None
     device, contours, hierarchy = pcv.find_objects(img=img, mask=mask, device=0, debug=None)
+    print( str(len(contours)))
     # Assert the correct number of contours are found
     assert len(contours) == 7341
 
@@ -819,7 +845,8 @@ def test_plantcv_find_objects():
 def test_plantcv_flip():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_flip")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -845,7 +872,8 @@ def test_plantcv_flip_bad_input():
 def test_plantcv_fluor_fvfm():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_fluor_fvfm")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     fdark = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_FDARK), -1)
     fmin = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_FMIN), -1)
@@ -881,7 +909,8 @@ def test_plantcv_fluor_fvfm():
 def test_plantcv_gaussian_blur():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_gaussian_blur")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
@@ -916,7 +945,8 @@ def test_plantcv_get_nir_tv():
 def test_plantcv_hist_equalization():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_hist_equalization")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with debug = "print"
@@ -938,7 +968,8 @@ def test_plantcv_hist_equalization():
 def test_plantcv_image_add():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_image_add")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     img2 = np.copy(img1)
@@ -959,7 +990,8 @@ def test_plantcv_image_add():
 def test_plantcv_image_subtract():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_image_subtract")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     img2 = np.copy(img1)
@@ -980,7 +1012,8 @@ def test_plantcv_image_subtract():
 def test_plantcv_invert():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_invert")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
@@ -1021,7 +1054,8 @@ def test_plantcv_landmark_reference_pt_dist():
 def test_plantcv_laplace_filter():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_laplace_filter")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with debug = "print"
@@ -1042,7 +1076,8 @@ def test_plantcv_laplace_filter():
 def test_plantcv_logical_and():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_logical_and")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     img2 = np.copy(img1)
@@ -1063,7 +1098,8 @@ def test_plantcv_logical_and():
 def test_plantcv_logical_or():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_logical_or")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     img2 = np.copy(img1)
@@ -1084,7 +1120,8 @@ def test_plantcv_logical_or():
 def test_plantcv_logical_xor():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_logical_xor")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     img2 = np.copy(img1)
@@ -1105,7 +1142,8 @@ def test_plantcv_logical_xor():
 def test_plantcv_median_blur():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_median_blur")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
@@ -1133,7 +1171,8 @@ def test_plantcv_median_blur():
 def test_plantcv_naive_bayes_classifier():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_naive_bayes_classifier")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -1168,7 +1207,8 @@ def test_plantcv_naive_bayes_classifier():
 def test_plantcv_object_composition():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_object_composition")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     contours_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_CONTOURS), encoding = 'bytes')
@@ -1184,7 +1224,7 @@ def test_plantcv_object_composition():
     try:
         os.rename("1_objcomp_mask.png", os.path.join(cache_dir, "1_objcomp_mask.png"))
     except WindowsError:
-        os.remove(os.path.join(cache_dir "1_objcomp_mask.png"))
+        os.remove(os.path.join(cache_dir, "1_objcomp_mask.png"))
         os.rename("1_objcomp_mask.png", os.path.join(cache_dir, "1_objcomp_mask.png"))
     # Test with debug = "plot"
     _ = pcv.object_composition(img=img, contours=object_contours, hierarchy=object_hierarchy, device=0, debug="plot")
@@ -1199,7 +1239,8 @@ def test_plantcv_object_composition():
 def test_plantcv_otsu_threshold():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_otsu_threshold")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INTPUT_GREENMAG), -1)
     # Test with object set to light
@@ -1221,7 +1262,8 @@ def test_plantcv_otsu_threshold():
 def test_plantcv_output_mask():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_output_mask")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
@@ -1250,7 +1292,8 @@ def test_plantcv_output_mask():
 def test_plantcv_plot_hist():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_plot_hist")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Test in 16-bit image mode
     img16bit = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_NIR_MASK), -1)
     _ = pcv.plot_hist(img=img16bit, name=os.path.join(cache_dir, "hist_nir_uint16"))
@@ -1263,7 +1306,8 @@ def test_plantcv_plot_hist():
 def test_plantcv_print_image():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_print_image")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img, path, img_name = pcv.readimage(filename=os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     filename = os.path.join(cache_dir, 'plantcv_print_image.jpg')
@@ -1286,7 +1330,8 @@ def test_plantcv_print_results():
 def test_plantcv_readimage():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_readimage")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Test with debug = "print"
     _ = pcv.readimage(filename=os.path.join(TEST_DATA, TEST_INPUT_COLOR), debug="print")
     os.rename("input_image.png", os.path.join(cache_dir, "input_image.png"))
@@ -1313,7 +1358,8 @@ def test_plantcv_readimage_bad_file():
 def test_plantcv_rectangle_mask():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_rectangle_mask")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with debug = "print"
@@ -1336,7 +1382,8 @@ def test_plantcv_rectangle_mask():
 def test_plantcv_report_size_marker():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_report_size_marker")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_MARKER), -1)
     # Test with debug = "print"
@@ -1370,7 +1417,8 @@ def test_plantcv_report_size_marker():
 def test_plantcv_resize():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_resize")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -1392,7 +1440,8 @@ def test_plantcv_resize():
 def test_plantcv_rgb2gray_hsv():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_rgb2gray_hsv")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -1413,7 +1462,8 @@ def test_plantcv_rgb2gray_hsv():
 def test_plantcv_rgb2gray_lab():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_rgb2gray_lab")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -1434,7 +1484,8 @@ def test_plantcv_rgb2gray_lab():
 def test_plantcv_rgb2gray():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_rgb2gray")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -1455,7 +1506,8 @@ def test_plantcv_rgb2gray():
 def test_plantcv_roi_objects():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_roi_objects")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     roi_npz = np.load(os.path.join(TEST_DATA, TEST_INPUT_ROI), encoding = 'bytes')
@@ -1502,7 +1554,8 @@ def test_plantcv_roi_objects():
 def test_plantcv_rotate_img():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_rotate_img")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -1535,7 +1588,8 @@ def test_plantcv_rotate_img_gray():
 def test_plantcv_scale_features():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_scale_features")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_MASK_SMALL), -1)
     contours_npz = np.load(os.path.join(TEST_DATA, TEST_VIS_COMP_CONTOUR))
@@ -1570,7 +1624,8 @@ def test_plantcv_scale_features_bad_input():
 def test_plantcv_scharr_filter():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_scharr_filter")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with debug = "print"
@@ -1591,7 +1646,8 @@ def test_plantcv_scharr_filter():
 def test_plantcv_shift_img():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_shift_img")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
@@ -1609,7 +1665,8 @@ def test_plantcv_shift_img():
 def test_plantcv_sobel_filter():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_sobel_filter")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # Test with debug = "print"
@@ -1630,7 +1687,8 @@ def test_plantcv_sobel_filter():
 def test_plantcv_triangle_threshold():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_triangle_threshold")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     # i'm not sure what the hist (t_val) should be 30.0? but Python 3.6 and opencv3.2 give 21.0
@@ -1661,7 +1719,8 @@ def test_plantcv_triangle_threshold():
 def test_plantcv_watershed_segmentation():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_watershed_segmentation")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_CROPPED))
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_CROPPED_MASK), -1)
@@ -1686,7 +1745,8 @@ def test_plantcv_watershed_segmentation():
 def test_plantcv_white_balance_gray_16bit():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_white_balance_gray_16bit")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_NIR_MASK), -1)
     # Test with debug = "print"
@@ -1715,7 +1775,8 @@ def test_plantcv_white_balance_gray_16bit():
 def test_plantcv_white_balance_gray_8bit():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_white_balance_gray_8bit")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_NIR_MASK))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -1745,7 +1806,8 @@ def test_plantcv_white_balance_gray_8bit():
 def test_plantcv_white_balance_rgb():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_white_balance_rgb")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_MARKER))
     # Test with debug = "print"
@@ -1865,7 +1927,8 @@ def test_plantcv_background_subtraction():
 def test_plantcv_background_subtraction_debug():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_background_subtraction_debug")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # List to hold result of all tests.
     truths = []
     fg_img = cv2.imread(os.path.join(TEST_DATA, TEST_FOREGROUND))
@@ -1911,7 +1974,8 @@ def test_plantcv_background_subtraction_different_sizes():
 def test_plantcv_learn_naive_bayes():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_learn_naive_bayes")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Make image and mask directories in the cache directory
     imgdir = os.path.join(cache_dir, "images")
     maskdir = os.path.join(cache_dir, "masks")
@@ -1931,7 +1995,8 @@ def test_plantcv_learn_naive_bayes():
 def test_plantcv_learn_naive_bayes_multiclass():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_learn_naive_bayes_multiclass")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Run the naive Bayes multiclass training module
     outfile = os.path.join(cache_dir, "naive_bayes_multiclass_pdfs.txt")
     plantcv.learn.naive_bayes_multiclass(samples_file=os.path.join(TEST_DATA, TEST_SAMPLED_RGB_POINTS), outfile=outfile,
