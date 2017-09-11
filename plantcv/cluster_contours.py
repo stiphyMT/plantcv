@@ -89,8 +89,8 @@ def cluster_contours(device, img, roi_objects, nrow=1, ncol=1, debug=None):
         if m['m00'] == 0:
             pass
         else:
-            cx = int(m['m10'] / m['m00'])
-            cy = int(m['m01'] / m['m00'])
+            cx = m['m10'] // m['m00']
+            cy = m['m01'] // m['m00']
             # colbin = np.digitize(cx, cbreaks)
             # rowbin = np.digitize(cy, rbreaks)
             colbin = digitize(cx, cbreaks)
