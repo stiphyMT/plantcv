@@ -837,7 +837,6 @@ def test_plantcv_find_objects():
     _ = pcv.find_objects(img=img, mask=mask, device=0, debug="plot")
     # Test with debug = None
     device, contours, hierarchy = pcv.find_objects(img=img, mask=mask, device=0, debug=None)
-    print( str(len(contours)))
     # Assert the correct number of contours are found
     assert len(contours) == 7341
 
