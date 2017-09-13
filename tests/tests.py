@@ -44,6 +44,7 @@ TEST_INTPUT_GREENMAG = "input_green-magenta.jpg"
 TEST_INTPUT_MULTI = "multi_ori_image.jpg"
 TEST_INPUT_MULTI_CONTOUR = "roi_objects.npz"
 TEST_INPUT_ClUSTER_CONTOUR = "clusters_i.npz"
+TEST_INPUT_GENOTXT = "cluster_names.txt"
 TEST_INPUT_CROPPED = 'cropped_img.jpg'
 TEST_INPUT_CROPPED_MASK = 'cropped-mask.png'
 TEST_INPUT_MARKER = 'seed-image.jpg'
@@ -189,6 +190,9 @@ def test_plantcv_analyze_bound():
     # Test with debug = "plot"
     _ = pcv.analyze_bound(img=img, imgname="img", obj=object_contours[0], mask=mask, line_position=300, device=0,
                           debug="plot", filename=False)
+    # Test with debug='plot', line position that will trigger -y, and two channel object
+    _ = pcv.analyze_bound(img=img, imgname="img", obj=object_contours[0], mask=mask, line_position=1, device=0,
+                           debug="plot", filename=False)
     # Test with debug = None
     device, boundary_header, boundary_data, boundary_img1 = pcv.analyze_bound(img=img, imgname="img",
                                                                               obj=object_contours[0], mask=mask,
@@ -266,7 +270,7 @@ def test_plantcv_analyze_nir():
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     outfile = os.path.join(cache_dir, TEST_INPUT_COLOR)
-    _ = pcv.analyze_NIR_intensity(img=img, rgbimg=img, mask=mask, bins=256, device=0, histplot=False, debug="print",
+    _ = pcv.analyze_NIR_intensity(img=img, rgbimg=img, mask=mask, bins=256, device=0, histplot=True, debug="print",
                                   filename=outfile)
     try:
         os.rename("3_nir_pseudo_plant.jpg", os.path.join(cache_dir, "3_nir_pseudo_plant.jpg"))
@@ -278,8 +282,16 @@ def test_plantcv_analyze_nir():
     except WindowsError:
         os.remove(os.path.join(cache_dir, "3_nir_pseudo_plant_back.jpg"))
         os.rename("3_nir_pseudo_plant_back.jpg", os.path.join(cache_dir, "3_nir_pseudo_plant_back.jpg"))
+    try:
+        os.rename("3_nir_histogram.jpg", os.path.join(cache_dir, "3_nir_histogram.jpg"))
+    except WindowsError:
+        os.remove(os.path.join(cache_dir, "3_nir_histogram.jpg"))
+        os.rename("3_nir_histogram.jpg", os.path.join(cache_dir, "3_nir_histogram.jpg"))
     # Test with debug = "plot"
     _ = pcv.analyze_NIR_intensity(img=img, rgbimg=img, mask=mask, bins=256, device=0, histplot=False, debug="plot",
+                                  filename=False)
+    # Test with debug = "plot"
+    _ = pcv.analyze_NIR_intensity(img=img, rgbimg=img, mask=mask, bins=256, device=0, histplot=True, debug="plot",
                                   filename=False)
     # Test with debug = None
     device, hist_header, hist_data, h_norm = pcv.analyze_NIR_intensity(img=img, rgbimg=img, mask=mask, bins=256,
@@ -465,6 +477,7 @@ def test_plantcv_cluster_contours_splitimg():
     img1 = cv2.imread(os.path.join(TEST_DATA, TEST_INTPUT_MULTI), -1)
     contours = np.load(os.path.join(TEST_DATA, TEST_INPUT_MULTI_CONTOUR), encoding = 'bytes')
     clusters = np.load(os.path.join(TEST_DATA, TEST_INPUT_ClUSTER_CONTOUR), encoding = 'bytes')
+    cluster_names=os.path.join(TEST_DATA,TEST_INPUT_GENOTXT)
     roi_contours = contours['arr_0']
     cluster_contours = clusters['arr_0']
     # Test with debug = "print"
@@ -484,7 +497,7 @@ def test_plantcv_cluster_contours_splitimg():
             os.rename(str(i) + "_wmasked.png", os.path.join(cache_dir, str(i) + "_wmasked.png"))
     # Test with debug = "plot"
     _ = pcv.cluster_contour_splitimg(device=0, img=img1, grouped_contour_indexes=cluster_contours,
-                                     contours=roi_contours, outdir=None, file=None, filenames=None, debug="plot")
+                                     contours=roi_contours, outdir=None, file=None, filenames=cluster_names,debug="plot")
     # Test with debug = None
     device, output_path = pcv.cluster_contour_splitimg(device=0, img=img1, grouped_contour_indexes=cluster_contours,
                                                        contours=roi_contours, outdir=None, file=None,
@@ -542,6 +555,8 @@ def test_plantcv_crop_position_mask():
         os.rename("1_push-top_.png", os.path.join(cache_dir, "1_push-top_.png"))
     # Test with debug = "plot"
     _ = pcv.crop_position_mask(nir, mask, device=0, x=40, y=3, v_pos="top", h_pos="right", debug="plot")
+    # Test with debug = "plot" with bottom
+    _ = pcv.crop_position_mask(nir, mask, device=0, x=45, y=2, v_pos="bottom", h_pos="left", debug="plot")
     # Test with debug = None
     device, newmask = pcv.crop_position_mask(nir, mask, device=0, x=40, y=3, v_pos="top", h_pos="right", debug=None)
     assert np.sum(newmask) == 641517
@@ -837,7 +852,6 @@ def test_plantcv_find_objects():
     _ = pcv.find_objects(img=img, mask=mask, device=0, debug="plot")
     # Test with debug = None
     device, contours, hierarchy = pcv.find_objects(img=img, mask=mask, device=0, debug=None)
-    print( str(len(contours)))
     # Assert the correct number of contours are found
     assert len(contours) == 7341
 
@@ -1270,6 +1284,8 @@ def test_plantcv_output_mask():
     # Test with debug = "print"
     _ = pcv.output_mask(device=0, img=img, mask=mask, filename='test.png', outdir=cache_dir, mask_only=False,
                         debug="print")
+    _ = pcv.output_mask(device=0, img=img, mask=mask, filename='test.png', outdir=cache_dir, mask_only=True,
+                        debug="print")
     try:
         os.rename("1_mask-img.png", os.path.join(cache_dir, "1_mask-img.png"))
     except WindowsError:
@@ -1282,6 +1298,8 @@ def test_plantcv_output_mask():
         os.rename("1_ori-img.png", os.path.join(cache_dir, "1_ori-img.png"))
     # Test with debug = "plot"
     _ = pcv.output_mask(device=0, img=img, mask=mask, filename='test.png', outdir=cache_dir, mask_only=False,
+                        debug="plot")
+    _ = pcv.output_mask(device=0, img=img, mask=mask, filename='test.png', outdir=cache_dir, mask_only=True,
                         debug="plot")
     # Test with debug = None
     device, imgpath, maskpath, analysis_images = pcv.output_mask(device=0, img=img, mask=mask, filename='test.png',
@@ -1402,6 +1420,14 @@ def test_plantcv_report_size_marker():
 
     # Test with debug = "plot"
     _ = pcv.report_size_marker_area(img=img, shape='rectangle', device=0, debug="plot", marker='detect', x_adj=3500,
+                                    y_adj=600, w_adj=-100, h_adj=-1500, base='white', objcolor='light',
+                                    thresh_channel='s', thresh=120, filename=False)
+    # Test with debug = "plot"
+    _ = pcv.report_size_marker_area(img=img, shape='circle', device=0, debug="plot", marker='detect', x_adj=3500,
+                                    y_adj=600, w_adj=-100, h_adj=-1500, base='white', objcolor='light',
+                                    thresh_channel='s', thresh=120, filename=False)
+    # Test with debug = "plot"
+    _ = pcv.report_size_marker_area(img=img, shape='ellipse', device=0, debug="plot", marker='detect', x_adj=3500,
                                     y_adj=600, w_adj=-100, h_adj=-1500, base='white', objcolor='light',
                                     thresh_channel='s', thresh=120, filename=False)
     # Test with debug = None
@@ -1650,11 +1676,18 @@ def test_plantcv_shift_img():
         os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
+    mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     _ = pcv.shift_img(img=img, device=0, number=300, side="top", debug="print")
     os.rename("1_shifted_img.png", os.path.join(cache_dir, "1_shifted_img.png"))
     # Test with debug = "plot"
     _ = pcv.shift_img(img=img, device=0, number=300, side="top", debug="plot")
+    # Test with debug = "plot"
+    _ = pcv.shift_img(img=img, device=0, number=300, side="bottom", debug="plot")
+    # Test with debug = "plot"
+    _ = pcv.shift_img(img=img, device=0, number=300, side="right", debug="plot")
+    # Test with debug = "plot"
+    _ = pcv.shift_img(img=mask, device=0, number=300, side="left", debug="plot")
     # Test with debug = None
     device, rotated = pcv.shift_img(img=img, device=0, number=300, side="top", debug=None)
     imgavg = np.average(img)
@@ -1750,7 +1783,7 @@ def test_plantcv_white_balance_gray_16bit():
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_NIR_MASK), -1)
     # Test with debug = "print"
-    _ = pcv.white_balance(device=0, img=img, debug="print", roi=(5, 5, 80, 80))
+    _ = pcv.white_balance(device=0, img=img, mode='hist', debug="print", roi=(5, 5, 80, 80))
     try:
         os.rename("1_whitebalance_roi.png", os.path.join(cache_dir, "1_whitebalance_roi.png"))
     except WindowsError:
@@ -1762,9 +1795,9 @@ def test_plantcv_white_balance_gray_16bit():
         os.remove(os.path.join(cache_dir, "1_whitebalance.png"))
         os.rename("1_whitebalance.png", os.path.join(cache_dir, "1_whitebalance.png"))
     # Test with debug = "plot"
-    _ = pcv.white_balance(device=0, img=img, debug="plot", roi=(5, 5, 80, 80))
+    _ = pcv.white_balance(device=0, img=img, mode ='max', debug="plot", roi=(5, 5, 80, 80))
     # Test without an ROI
-    _ = pcv.white_balance(device=0, img=img, debug=None, roi=None)
+    _ = pcv.white_balance(device=0, img=img, mode = 'hist', debug=None, roi=None)
     # Test with debug = None
     device, white_balanced = pcv.white_balance(device=0, img=img, debug=None, roi=(5, 5, 80, 80))
     imgavg = np.average(img)
@@ -1781,7 +1814,7 @@ def test_plantcv_white_balance_gray_8bit():
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_NIR_MASK))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # Test with debug = "print"
-    _ = pcv.white_balance(device=0, img=img, debug="print", roi=(5, 5, 80, 80))
+    _ = pcv.white_balance(device=0, img=img, mode='hist', debug="print", roi=(5, 5, 80, 80))
     try:
         os.rename("1_whitebalance_roi.png", os.path.join(cache_dir, "1_whitebalance_roi.png"))
     except WindowsError:
@@ -1793,9 +1826,9 @@ def test_plantcv_white_balance_gray_8bit():
         os.remove(os.path.join(cache_dir, "1_whitebalance.png"))
         os.rename("1_whitebalance.png", os.path.join(cache_dir, "1_whitebalance.png"))
     # Test with debug = "plot"
-    _ = pcv.white_balance(device=0, img=img, debug="plot", roi=(5, 5, 80, 80))
+    _ = pcv.white_balance(device=0, img=img, mode='max', debug="plot", roi=(5, 5, 80, 80))
     # Test without an ROI
-    _ = pcv.white_balance(device=0, img=img, debug=None, roi=None)
+    _ = pcv.white_balance(device=0, img=img, mode='hist', debug=None, roi=None)
     # Test with debug = None
     device, white_balanced = pcv.white_balance(device=0, img=img, debug=None, roi=(5, 5, 80, 80))
     imgavg = np.average(img)
@@ -1811,7 +1844,7 @@ def test_plantcv_white_balance_rgb():
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_MARKER))
     # Test with debug = "print"
-    _ = pcv.white_balance(device=0, img=img, debug="print", roi=(5, 5, 80, 80))
+    _ = pcv.white_balance(device=0, img=img, mode='hist', debug="print", roi=(5, 5, 80, 80))
     try:
         os.rename("1_whitebalance_roi.png", os.path.join(cache_dir, "1_whitebalance_roi.png"))
     except WindowsError:
@@ -1823,9 +1856,9 @@ def test_plantcv_white_balance_rgb():
         os.remove(os.path.join(cache_dir, "1_whitebalance.png"))
         os.rename("1_whitebalance.png", os.path.join(cache_dir, "1_whitebalance.png"))
     # Test with debug = "plot"
-    _ = pcv.white_balance(device=0, img=img, debug="plot", roi=(5, 5, 80, 80))
+    _ = pcv.white_balance(device=0, img=img, mode='max', debug="plot", roi=(5, 5, 80, 80))
     # Test without an ROI
-    _ = pcv.white_balance(device=0, img=img, debug=None, roi=None)
+    _ = pcv.white_balance(device=0, img=img, mode='hist', debug=None, roi=None)
     # Test with debug = None
     device, white_balanced = pcv.white_balance(device=0, img=img, debug=None, roi=(5, 5, 80, 80))
     imgavg = np.average(img)
