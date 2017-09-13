@@ -853,7 +853,12 @@ def test_plantcv_find_objects():
     # Test with debug = None
     device, contours, hierarchy = pcv.find_objects(img=img, mask=mask, device=0, debug=None)
     # Assert the correct number of contours are found
-    assert len(contours) == 7341
+    if len(contours) == 7434:
+        print( 'OpenCV3 result')
+    elif len( contours) == 7341:
+        print( 'OpenCV2 result')
+    else:
+        assert len(contours) == 7341
 
 
 def test_plantcv_flip():
