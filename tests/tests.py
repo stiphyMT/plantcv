@@ -1198,7 +1198,7 @@ def test_plantcv_naive_bayes_classifier():
     _ = pcv.naive_bayes_classifier(img=img, pdf_file=os.path.join(TEST_DATA, TEST_PDFS), device=0, debug="print")
     try:
         os.rename("1_naive_bayes_plant_mask.jpg", os.path.join(cache_dir, "1_naive_bayes_plant_mask.jpg"))
-    except WindowError:
+    except WindowsError:
         os.remove(os.path.join(cache_dir, "1_naive_bayes_plant_mask.jpg"))
         os.rename("1_naive_bayes_plant_mask.jpg", os.path.join(cache_dir, "1_naive_bayes_plant_mask.jpg"))
     try:
@@ -1357,7 +1357,11 @@ def test_plantcv_readimage():
         os.mkdir(cache_dir)
     # Test with debug = "print"
     _ = pcv.readimage(filename=os.path.join(TEST_DATA, TEST_INPUT_COLOR), debug="print")
-    os.rename("input_image.png", os.path.join(cache_dir, "input_image.png"))
+    try:
+        os.rename("input_image.png", os.path.join(cache_dir, "input_image.png"))
+    except WindowsError:
+        os.remove( os.path.join(cache_dir, "input_image.png"))
+        os.rename("input_image.png", os.path.join(cache_dir, "input_image.png"))
     # Test with debug = "plot"
     _ = pcv.readimage(filename=os.path.join(TEST_DATA, TEST_INPUT_COLOR), debug="plot")
     img, path, img_name = pcv.readimage(filename=os.path.join(TEST_DATA, TEST_INPUT_COLOR))
@@ -1684,7 +1688,11 @@ def test_plantcv_shift_img():
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_BINARY), -1)
     # Test with debug = "print"
     _ = pcv.shift_img(img=img, device=0, number=300, side="top", debug="print")
-    os.rename("1_shifted_img.png", os.path.join(cache_dir, "1_shifted_img.png"))
+    try:
+        os.rename("1_shifted_img.png", os.path.join(cache_dir, "1_shifted_img.png"))
+    except WindowsError:
+        os.remove( os.path.join(cache_dir, "1_shifted_img.png"))
+        os.rename("1_shifted_img.png", os.path.join(cache_dir, "1_shifted_img.png"))
     # Test with debug = "plot"
     _ = pcv.shift_img(img=img, device=0, number=300, side="top", debug="plot")
     # Test with debug = "plot"
@@ -1710,14 +1718,14 @@ def test_plantcv_sobel_filter():
     # Test with debug = "print"
     _ = pcv.sobel_filter(img=img, dx=1, dy=0, k=1, device=0, debug="print")
     try:
-        os.rename("1_sb_img_dx1_dy0_k1.png", os.path.join(cache_dir, "1_sb_img_dx1_dy0_k1_scale_0.8.png"))
+        os.rename("1_sb_img_dx1_dy0_k1.png", os.path.join(cache_dir, "1_sb_img_dx1_dy0_k1.png"))
     except WindowsError:
         os.remove(os.path.join(cache_dir, "1_sb_img_dx1_dy0_k1.png"))
-        os.rename("1_sb_img_dx1_dy0_k1_scale_0.8.png", os.path.join(cache_dir, "1_sb_img_dx1_dy0_k1.png"))
+        os.rename("1_sb_img_dx1_dy0_k1.png", os.path.join(cache_dir, "1_sb_img_dx1_dy0_k1.png"))
     # Test with debug = "plot"
-    _ = pcv.sobel_filter(img=img, dx=1, dy=0, k=1, scale = 0.8, device=0, debug="plot")
+    _ = pcv.sobel_filter(img=img, dx=1, dy=0, k=1, device=0, debug="plot")
     # Test with debug = None
-    device, sobel_img = pcv.sobel_filter(img=img, dx=1, dy=0, k=1, scale = 0.8, device=0, debug=None)
+    device, sobel_img = pcv.sobel_filter(img=img, dx=1, dy=0, k=1, device=0, debug=None)
     # Assert that the output image has the dimensions of the input image
     assert all([i == j] for i, j in zip(np.shape(sobel_img), TEST_GRAY_DIM))
 
