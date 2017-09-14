@@ -11,7 +11,7 @@ except:
 cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 
-def sobel_filter(img, dx, dy, k, scale, device, debug=None):
+def sobel_filter(img, dx, dy, k, device, debug=None):
     """This is a filtering method used to identify and highlight gradient edges/features using the 1st derivative.
        Typically used to identify gradients along the x-axis (dx = 1, dy = 0) and y-axis (dx = 0, dy = 1) independently.
        Performance is quite similar to Scharr filter. Used to detect edges / changes in pixel intensity. ddepth = -1
@@ -41,12 +41,11 @@ def sobel_filter(img, dx, dy, k, scale, device, debug=None):
     :return sb_img: numpy array
     """
 
-    sb_img = cv2.Sobel(src=img, ddepth=-1, dx=dx, dy=dy, ksize=k)
     device += 1
+    sb_img = cv2.Sobel(src=img, ddepth=-1, dx=dx, dy=dy, ksize=k)
+
     if debug == 'print':
-# naming mismatch between test procedures and function
-    #        print_image(sb_img, str(device) + '_sb_img' + '_dx_' + str(dx) + '_dy_' + str(dy) + '_k_' + str(k) + '_Scale_' + str(scale) + '.png')
-        print_image(sb_img, str(device) + '_sb_img' + '_dx' + str(dx) + '_dy' + str(dy) + '_k' + str(k) + '_Scale_' + str(scale) + '.png')
+        print_image(sb_img, str(device) + '_sb_img_dx' + str(dx) + '_dy' + str(dy) + '_k' + str(k) + '.png')
     elif debug == 'plot':
         plot_image(sb_img, cmap='gray')
     return device, sb_img
