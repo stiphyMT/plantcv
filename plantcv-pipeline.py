@@ -717,20 +717,32 @@ def job_builder(args, meta):
         for j in range(0, jobs_per_cpu):
             # Add job to list
             if args.coprocess is not None and ('coimg' in meta[images[job]]):
-                job_str = "python {0} --image {1} --outdir {2} --result {3}.txt " \
-                          "--coresult {4}.txt".format(args.pipeline, os.path.join(meta[images[job]]['path'],
-                                                                                  images[job]), args.outdir,
-                                                      os.path.join(args.jobdir, images[job]),
-                                                      os.path.join(args.jobdir, meta[images[job]]['coimg']))
+                if sys.platform == 'win32':
+                    job_str = '"python "{0}" --image "{1}" --outdir "{2}" --result "{3}.txt" "' \
+                              '"--coresult {4}.txt"'.format(args.pipeline, os.path.join(meta[images[job]]['path'],
+                                                                                      images[job]), args.outdir,
+                                                          os.path.join(args.jobdir, images[job]),
+                                                          os.path.join(args.jobdir, meta[images[job]]['coimg']))
+                else:
+                    job_str = "python "{0}" --image "{1}" --outdir "{2}" --result "{3}".txt " \
+                              "--coresult "{4}.txt"".format(args.pipeline, os.path.join(meta[images[job]]['path'],
+                                                                                      images[job]), args.outdir,
+                                                          os.path.join(args.jobdir, images[job]),
+                                                          os.path.join(args.jobdir, meta[images[job]]['coimg']))
                 if args.writeimg:
                     job_str += ' --writeimg'
                 if args.other_args:
                     job_str += ' ' + args.other_args
                 jobs.append(job_str)
             else:
-                job_str = "python {0} --image {1} --outdir {2} " \
-                          "--result {3}.txt".format(args.pipeline, os.path.join(meta[images[job]]['path'], images[job]),
-                                                    args.outdir, os.path.join(args.jobdir, images[job]))
+                if sys.platform == 'win32'
+                    job_str = '"python "{0}" --image "{1}" --outdir "{2}" "' \
+                              '"--result "{3}.txt""'.format(args.pipeline, os.path.join(meta[images[job]]['path'], images[job]),
+                                                        args.outdir, os.path.join(args.jobdir, images[job]))
+                else:
+                    job_str = "python {0} --image {1} --outdir {2} " \
+                              "--result {3}.txt".format(args.pipeline, os.path.join(meta[images[job]]['path'], images[job]),
+                                                        args.outdir, os.path.join(args.jobdir, images[job]))
                 if args.writeimg:
                     job_str += ' --writeimg'
                 if args.other_args:
@@ -748,23 +760,35 @@ def job_builder(args, meta):
     for j in range(job, len(images)):
         # Add job to list
         if args.coprocess is not None and ('coimg' in meta[images[j]]):
-            job_str = "python {0} --image {1} --outdir {2} --result {3}.txt " \
-                      "--coresult {4}.txt".format(args.pipeline, os.path.join(meta[images[j]]['path'], images[j]),
-                                                  args.outdir, os.path.join(args.jobdir, images[j]),
-                                                  os.path.join(args.jobdir, meta[images[j]]['coimg']))
+            if sys.platform == 'win32':
+                job_str = '"python "{0}" --image "{1}" --outdir "{2}" --result "{3}.txt" "' \
+                          '"--coresult "{4}.txt""'.format(args.pipeline, os.path.join(meta[images[j]]['path'], images[j]),
+                                                      args.outdir, os.path.join(args.jobdir, images[j]),
+                                                      os.path.join(args.jobdir, meta[images[j]]['coimg']))
+            else:
+                job_str = "python {0} --image {1} --outdir {2} --result {3}.txt " \
+                          "--coresult {4}.txt".format(args.pipeline, os.path.join(meta[images[j]]['path'], images[j]),
+                                                      args.outdir, os.path.join(args.jobdir, images[j]),
+                                                      os.path.join(args.jobdir, meta[images[j]]['coimg']))
             if args.writeimg:
                 job_str += ' --writeimg'
             if args.other_args:
                 job_str += ' ' + args.other_args
             jobs.append(job_str)
         else:
-            job_str = "python {0} --image {1} --outdir {2} " \
-                      "--result {3}.txt".format(args.pipeline, os.path.join(meta[images[j]]['path'], images[j]),
-                                                args.outdir, os.path.join(args.jobdir, images[j]))
+            if sys.platform() == 'win32':
+                job_str = '"python "{0}" --image "{1}" --outdir "{2}" "' \
+                          '"--result "{3}.txt""'.format(args.pipeline, os.path.join(meta[images[j]]['path'], images[j]),
+                                                    args.outdir, os.path.join(args.jobdir, images[j]))
+            else:
+                job_str = "python {0} --image {1} --outdir {2} " \
+                          "--result {3}.txt".format(args.pipeline, os.path.join(meta[images[j]]['path'], images[j]),
+                                                    args.outdir, os.path.join(args.jobdir, images[j]))
             if args.writeimg:
                 job_str += ' --writeimg'
             if args.other_args:
                 job_str += ' ' + args.other_args
+            print( job_str)
             jobs.append(job_str)
     # Add the CPU job list to the job stack
     job_stack.append(jobs)
