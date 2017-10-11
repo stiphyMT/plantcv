@@ -724,8 +724,8 @@ def job_builder(args, meta):
                                                           os.path.join(args.jobdir, images[job]),
                                                           os.path.join(args.jobdir, meta[images[job]]['coimg']))
                 else:
-                    job_str = "python "{0}" --image "{1}" --outdir "{2}" --result "{3}".txt " \
-                              "--coresult "{4}.txt"".format(args.pipeline, os.path.join(meta[images[job]]['path'],
+                    job_str = '"python "{0}" --image "{1}" --outdir "{2}" --result "{3}".txt "' \
+                              '"--coresult "{4}.txt""'.format(args.pipeline, os.path.join(meta[images[job]]['path'],
                                                                                       images[job]), args.outdir,
                                                           os.path.join(args.jobdir, images[job]),
                                                           os.path.join(args.jobdir, meta[images[job]]['coimg']))
@@ -735,7 +735,7 @@ def job_builder(args, meta):
                     job_str += ' ' + args.other_args
                 jobs.append(job_str)
             else:
-                if sys.platform == 'win32'
+                if sys.platform == 'win32':
                     job_str = '"python "{0}" --image "{1}" --outdir "{2}" "' \
                               '"--result "{3}.txt""'.format(args.pipeline, os.path.join(meta[images[job]]['path'], images[job]),
                                                         args.outdir, os.path.join(args.jobdir, images[job]))
@@ -776,7 +776,7 @@ def job_builder(args, meta):
                 job_str += ' ' + args.other_args
             jobs.append(job_str)
         else:
-            if sys.platform() == 'win32':
+            if sys.platform == 'win32':
                 job_str = '"python "{0}" --image "{1}" --outdir "{2}" "' \
                           '"--result "{3}.txt""'.format(args.pipeline, os.path.join(meta[images[j]]['path'], images[j]),
                                                     args.outdir, os.path.join(args.jobdir, images[j]))
@@ -788,8 +788,8 @@ def job_builder(args, meta):
                 job_str += ' --writeimg'
             if args.other_args:
                 job_str += ' ' + args.other_args
-            print( job_str)
             jobs.append(job_str)
+
     # Add the CPU job list to the job stack
     job_stack.append(jobs)
 
