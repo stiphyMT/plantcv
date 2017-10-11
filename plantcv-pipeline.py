@@ -820,7 +820,7 @@ def process_results(args):
     # args.metadata_file.write('#' + '\t'.join(map(str, metadata_fields)) + '\n')
 
     # Feature data table
-    feature_fields = ['area', 'hull-area', 'solidity', 'perimeter', 'width', 'height',
+    feature_fields = ['area', 'hull-area', 'solidity', 'compactness', 'perimeter', 'width', 'height',
                       'longest_axis', 'center-of-mass-x', 'center-of-mass-y', 'hull_vertices',
                       'in_bounds', 'ellipse_center_x', 'ellipse_center_y', 'ellipse_major_axis',
                       'ellipse_minor_axis', 'ellipse_angle', 'ellipse_eccentricity']

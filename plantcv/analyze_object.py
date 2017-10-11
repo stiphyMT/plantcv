@@ -89,6 +89,8 @@ def analyze_object(img, imgname, obj, mask, device, debug=None, filename=False):
             solidity = area / hull_area
         # Perimeter
         perimeter = cv2.arcLength(obj, closed=True)
+        # compactness as the "isoperimetric quotient"
+        compactness = ( 4* np.pi * area) / (perimeter**2)
         # x and y position (bottom left?) and extent x (width) and extent y (height)
         x, y, width, height = cv2.boundingRect(obj)
         # Centroid (center of mass x, center of mass y)
@@ -192,6 +194,7 @@ def analyze_object(img, imgname, obj, mask, device, debug=None, filename=False):
         'area',
         'hull-area',
         'solidity',
+        'compactness',
         'perimeter',
         'width',
         'height',
@@ -213,6 +216,7 @@ def analyze_object(img, imgname, obj, mask, device, debug=None, filename=False):
         area,
         hull_area,
         solidity,
+        compactness,
         perimeter,
         width,
         height,
