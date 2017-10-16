@@ -293,11 +293,12 @@ def main():
 
     # Load database
     ###########################################
-    call("sqlite3 " + args.db + " \".import " + runinfo_file.name + " runinfo\"", shell=True)
-    call("sqlite3 " + args.db + " \".import " + args.metadata_file.name + " metadata\"", shell=True)
-    call("sqlite3 " + args.db + " \".import " + args.features_file.name + " features\"", shell=True)
-    call("sqlite3 " + args.db + " \".import " + args.analysis_images_file.name + " analysis_images\"", shell=True)
-    call("sqlite3 " + args.db + " \".import " + args.signal_file.name + " signal\"", shell=True)
+    call(["sqlite3 ", args.db, '.import ' + runinfo_file.name + ' runinfo'])
+    call(["sqlite3 ", args.db, '.import ' + args.metadata_file.name + ' metadata'])
+    call(["sqlite3 ", args.db, '.import ' + args.features_file.name + ' features'])
+    call(["sqlite3 ", args.db, '.import ' + args.analysis_images_file.name + ' analysis_images'])
+    call(["sqlite3 ", args.db, '.import ' + args.signal_file.name + ' signal'])
+
     ###########################################
 
 
@@ -704,6 +705,57 @@ def job_builder(args, meta):
 
         outfile.close()
 
+#    # Build the job stack
+#    # The first n - 1 CPUs will get INT jobs_per_cpu
+#    # The last CPU will get the remainder
+#    job = 0
+#    # For the first n - 1 CPU
+#    for c in range(1, args.cpu):
+#        # List of jobs for this CPU
+#        jobs = []
+#
+#        # For each job/CPU
+#        for j in range(0, jobs_per_cpu):
+#            job_parts = ["python", args.pipeline, "--image", os.path.join(meta[images[job]]['path'], images[job]),
+#                         "--outdir", args.outdir, "--result", os.path.join(args.jobdir, images[job]) + ".txt"]
+#            # Add job to list
+#            if args.coprocess is not None and ('coimg' in meta[images[job]]):
+#                job_parts = job_parts + ["--coresult", os.path.join(args.jobdir, meta[images[job]]['coimg']) + ".txt"]
+#            if args.writeimg:
+#                job_parts.append("--writeimg")
+#            if args.other_args:
+#                other_args1=re.sub("'","",args.other_args)
+#                other_args = other_args1.split(" ")
+#                job_parts = job_parts + other_args
+#            jobs.append(job_parts)
+#
+#            # Increase the job counter by 1
+#            job += 1
+#
+#        # Add the CPU job list to the job stack
+#        job_stack.append(jobs)
+#
+#    # Add the remaining jobs to the last CPU
+#    jobs = []
+#    for j in range(job, len(images)):
+#        job_parts = ["python", args.pipeline, "--image", os.path.join(meta[images[job]]['path'], images[job]),
+#                     "--outdir", args.outdir, "--result", os.path.join(args.jobdir, images[job]) + ".txt"]
+#        # Add job to list
+#        if args.coprocess is not None and ('coimg' in meta[images[j]]):
+#            job_parts = job_parts + ["--coresult", os.path.join(args.jobdir, meta[images[job]]['coimg']) + ".txt"]
+#        if args.writeimg:
+#            job_parts.append("--writeimg")
+#        if args.other_args:
+#            other_args1 = re.sub("'","",args.other_args)
+#            other_args = other_args1.split(" ")
+#            job_parts = job_parts + other_args
+#        jobs.append(job_parts)
+#
+#    # Add the CPU job list to the job stack
+#    job_stack.append(jobs)
+#
+#    return job_stack
+
     # Build the job stack
     # The first n - 1 CPUs will get INT jobs_per_cpu
     # The last CPU will get the remainder
@@ -724,8 +776,8 @@ def job_builder(args, meta):
                                                           os.path.join(args.jobdir, images[job]),
                                                           os.path.join(args.jobdir, meta[images[job]]['coimg']))
                 else:
-                    job_str = '"python "{0}" --image "{1}" --outdir "{2}" --result "{3}".txt "' \
-                              '"--coresult "{4}.txt""'.format(args.pipeline, os.path.join(meta[images[job]]['path'],
+                    job_str = "python {0} --image {1} --outdir {2} --result {3}.txt " \
+                              "--coresult {4}.txt".format(args.pipeline, os.path.join(meta[images[job]]['path'],
                                                                                       images[job]), args.outdir,
                                                           os.path.join(args.jobdir, images[job]),
                                                           os.path.join(args.jobdir, meta[images[job]]['coimg']))
