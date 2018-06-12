@@ -63,6 +63,9 @@ def background_subtraction(background_image, foreground_image, device, debug=Non
     if cv2major >= 3:
     # BackgroundSubtractorMOG is now available only in the extra contrib modules
     # cv2.bgsegm.
+    # can also use the newer function
+    #   bgsub = cv2.createBackgroundSubtractorMOG2()
+
         try:
             bgsub = cv2.bgsegm.createBackgroundSubtractorMOG()
         except AttributeError:

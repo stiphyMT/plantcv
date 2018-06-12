@@ -62,7 +62,7 @@ def options():
     parser.add_argument("-a", "--adaptor",
                         help='Image metadata reader adaptor. PhenoFront metadata is stored in a CSV file and the '
                              'image file name. For the filename option, all metadata is stored in the image file '
-                             'name. Current adaptors: phenofront, image', default="phenofront")
+                             'name. Current adaptors: phenofront, filename', default="phenofront")
     parser.add_argument("-p", "--pipeline", help='Pipeline script file.', required=True)
     parser.add_argument("-s", "--db", help='SQLite database file name.', required=True)
     parser.add_argument("-i", "--outdir", help='Output directory for images. Not required by all pipelines.',
@@ -192,10 +192,6 @@ def main():
     ###########################################
     meta = {}
 
-    # Get this script's path
-    # exedir = os.path.abspath(os.path.dirname(sys.argv[0]))
-    # db_schema = exedir + '/../../include/results.sql'
-
     # Get command
     command = ' '.join(map(str, sys.argv))
 
@@ -293,12 +289,11 @@ def main():
 
     # Load database
     ###########################################
-    call(["sqlite3 ", args.db, '.import ' + runinfo_file.name + ' runinfo'])
-    call(["sqlite3 ", args.db, '.import ' + args.metadata_file.name + ' metadata'])
-    call(["sqlite3 ", args.db, '.import ' + args.features_file.name + ' features'])
-    call(["sqlite3 ", args.db, '.import ' + args.analysis_images_file.name + ' analysis_images'])
-    call(["sqlite3 ", args.db, '.import ' + args.signal_file.name + ' signal'])
-
+    call(["sqlite3", args.db, '.import ' + runinfo_file.name + ' runinfo'])
+    call(["sqlite3", args.db, '.import ' + args.metadata_file.name + ' metadata'])
+    call(["sqlite3", args.db, '.import ' + args.features_file.name + ' features'])
+    call(["sqlite3", args.db, '.import ' + args.analysis_images_file.name + ' analysis_images'])
+    call(["sqlite3", args.db, '.import ' + args.signal_file.name + ' signal'])
     ###########################################
 
 
@@ -628,8 +623,6 @@ def phenofront_parser(args):
 ###########################################
 def process_images_multiproc(jobs):
     for job in jobs:
-#        os.system(job)
-        print(job)
         call(job)
 
 

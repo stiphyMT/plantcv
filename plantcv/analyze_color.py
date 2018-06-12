@@ -151,16 +151,17 @@ def analyze_color(img, imgname, mask, bins, device, debug=None, hist_plot_type=N
     h, s, v = cv2.split(hsv)
 
     # Color channel dictionary
-    norm_channels = {"b": (b // (256 // bins)),
-                     "g": (g // (256 // bins)),
-                     "r": (r // (256 // bins)),
-                     "l": (l // (256 // bins)),
-                     "m": (m // (256 // bins)),
-                     "y": (y // (256 // bins)),
-                     "h": (h // (256 // bins)),
-                     "s": (s // (256 // bins)),
-                     "v": (v // (256 // bins))
+    norm_channels = {"b": np.divide(b, (256 / bins)).astype(np.uint8),
+                     "g": np.divide(g, (256 / bins)).astype(np.uint8),
+                     "r": np.divide(r, (256 / bins)).astype(np.uint8),
+                     "l": np.divide(l, (256 / bins)).astype(np.uint8),
+                     "m": np.divide(m, (256 / bins)).astype(np.uint8),
+                     "y": np.divide(y, (256 / bins)).astype(np.uint8),
+                     "h": np.divide(h, (256 / bins)).astype(np.uint8),
+                     "s": np.divide(s, (256 / bins)).astype(np.uint8),
+                     "v": np.divide(v, (256 / bins)).astype(np.uint8)
                      }
+
     # Histogram plot types
     hist_types = {"all": ("b", "g", "r", "l", "m", "y", "h", "s", "v"),
                   "rgb": ("b", "g", "r"),
@@ -179,26 +180,26 @@ def analyze_color(img, imgname, mask, bins, device, debug=None, hist_plot_type=N
     if hist_plot_type is not None and hist_plot_type not in hist_types:
         fatal_error("The histogram plot type was " + str(hist_plot_type) +
                     ', but can only be one of the following: None, "all", "rgb", "lab", or "hsv"!')
-                    
     histograms = {
-        "b": {"label": "blue", "graph_color": "blue", 
-            "hist": cv2.calcHist([norm_channels["b"]], [0], mask, [bins], [0, (bins - 1)])},
-        "g": {"label": "green", "graph_color": "forestgreen", 
-            "hist": cv2.calcHist([norm_channels["g"]], [0], mask, [bins], [0, (bins - 1)])},
-        "r": {"label": "red", "graph_color": "red", 
-            "hist": cv2.calcHist([norm_channels["r"]], [0], mask, [bins], [0, (bins - 1)])},
-        "l": {"label": "lightness", "graph_color": "dimgray", 
-            "hist": cv2.calcHist([norm_channels["l"]], [0], mask, [bins], [0, (bins - 1)])},
-        "m": {"label": "green-magenta", "graph_color": "magenta", 
-            "hist": cv2.calcHist([norm_channels["m"]], [0], mask, [bins], [0, (bins - 1)])},
-        "y": {"label": "blue-yellow", "graph_color": "yellow", 
-            "hist": cv2.calcHist([norm_channels["y"]], [0], mask, [bins], [0, (bins - 1)])},
-        "h": {"label": "hue", "graph_color": "blueviolet", 
-            "hist": cv2.calcHist([norm_channels["h"]], [0], mask, [bins], [0, (bins - 1)])},
-        "s": {"label": "saturation", "graph_color": "cyan", 
-            "hist": cv2.calcHist([norm_channels["s"]], [0], mask, [bins], [0, (bins - 1)])},
-        "v": {"label": "value", "graph_color": "orange", 
-            "hist": cv2.calcHist([norm_channels["v"]], [0], mask, [bins], [0, (bins - 1)])} }
+        "b": {"label": "blue", "graph_color": "blue",
+              "hist": cv2.calcHist([norm_channels["b"]], [0], mask, [bins], [0, (bins - 1)])},
+        "g": {"label": "green", "graph_color": "forestgreen",
+              "hist": cv2.calcHist([norm_channels["g"]], [0], mask, [bins], [0, (bins - 1)])},
+        "r": {"label": "red", "graph_color": "red",
+              "hist": cv2.calcHist([norm_channels["r"]], [0], mask, [bins], [0, (bins - 1)])},
+        "l": {"label": "lightness", "graph_color": "dimgray",
+              "hist": cv2.calcHist([norm_channels["l"]], [0], mask, [bins], [0, (bins - 1)])},
+        "m": {"label": "green-magenta", "graph_color": "magenta",
+              "hist": cv2.calcHist([norm_channels["m"]], [0], mask, [bins], [0, (bins - 1)])},
+        "y": {"label": "blue-yellow", "graph_color": "yellow",
+              "hist": cv2.calcHist([norm_channels["y"]], [0], mask, [bins], [0, (bins - 1)])},
+        "h": {"label": "hue", "graph_color": "blueviolet",
+              "hist": cv2.calcHist([norm_channels["h"]], [0], mask, [bins], [0, (bins - 1)])},
+        "s": {"label": "saturation", "graph_color": "cyan",
+              "hist": cv2.calcHist([norm_channels["s"]], [0], mask, [bins], [0, (bins - 1)])},
+        "v": {"label": "value", "graph_color": "orange",
+              "hist": cv2.calcHist([norm_channels["v"]], [0], mask, [bins], [0, (bins - 1)])}
+    }
 
     hist_data_b = [l[0] for l in histograms["b"]["hist"]]
     hist_data_g = [l[0] for l in histograms["g"]["hist"]]
@@ -252,7 +253,7 @@ def analyze_color(img, imgname, mask, bins, device, debug=None, hist_plot_type=N
 
     if hist_plot_type is not None and filename:
         import matplotlib
-        matplotlib.use('Agg')
+        matplotlib.use('Agg', warn=False)
         from matplotlib import pyplot as plt
 
         # Create Histogram Plot

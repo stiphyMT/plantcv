@@ -242,9 +242,9 @@ def crop_position_mask( img, mask, device, x, y, v_pos = "top", h_pos = "right",
         elif debug == 'plot':
             plot_image( newmask, cmap = 'gray')
         if cv2major > 2 and cv2minor > 0:
-            _, objects, hierarchy = cv2.findContours( newmask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+            _, objects, hierarchy = cv2.findContours( np.copy( newmask), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
-            objects, hierarchy = cv2.findContours( newmask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+            objects, hierarchy = cv2.findContours( np.copy( newmask), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         for i, cnt in enumerate(objects):
             cv2.drawContours( ori_img, objects, i, ( 255, 102, 255), -1, lineType = 8, hierarchy = hierarchy)
         if debug == 'print':

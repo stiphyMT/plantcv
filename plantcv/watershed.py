@@ -60,8 +60,9 @@ def watershed_segmentation(device, img, mask, distance=10, filename=False, debug
     labels = watershed(dist_transform1, markers, mask=mask)
 
     img1 = np.copy(img)
-    rand_color = color_palette.color_palette(len(np.unique(labels)))
     for x in np.unique(labels):
+	# should this be here or just before the loop?
+        rand_color = color_palette(len(np.unique(labels)))
         img1[labels == x] = rand_color[x]
 
     device, img2 = apply_mask.apply_mask(img1, mask, 'black', device, debug=None)

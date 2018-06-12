@@ -2,6 +2,11 @@
 
 Rotates image without changing the dimensions of the image.
 
+<span style="color:red">NOTE: The rotate_img function will be depricated in the near future, please
+use the rotate function as an equivalent replacement. The rotate_img
+function will continue to be functional and is now a wrapper for the rotate
+function (with crop set to True) .</span>  
+
 **rotate_img**(*img, rotation_deg, device,debug=None*)
 
 **returns** device, image after rotation
