@@ -18,8 +18,13 @@ cv2major, cv2minor = int(cv2major), int(cv2minor)
 import matplotlib
 matplotlib.use('Template', warn=False)
 
-TEST_DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
-TEST_TMPDIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".cache")
+try:
+    filename = __file__
+except NameError:
+    filename = "D:\\StiphOne\\Documents\\GitHub\\plantcv\\tests\\tests.py"
+
+TEST_DATA = os.path.join(os.path.dirname(os.path.abspath(filename)), "data")
+TEST_TMPDIR = os.path.join(os.path.dirname(os.path.abspath(filename)), "..", ".cache")
 TEST_COLOR_DIM = (2056, 2454, 3)
 TEST_GRAY_DIM = (2056, 2454)
 TEST_BINARY_DIM = TEST_GRAY_DIM
@@ -384,7 +389,7 @@ def test_plantcv_analyze_object():
     #max_obj = max(obj_contour, key=len)
     # Test with debug = "print"
     outfile = os.path.join(cache_dir, TEST_INPUT_COLOR)
-    _ = pcv.analyze_object(img=img, imgname="img", obj=max_obj, mask=mask, device=0, debug="print", filename=outfile)
+    _ = pcv.analyze_object(img=img, imgname="img", obj=obj_contour, mask=mask, device=0, debug="print", filename=outfile)
     try:
         os.rename("1_shapes.jpg", os.path.join(cache_dir, "1_shapes.jpg"))
     except WindowsError:
@@ -942,13 +947,10 @@ def test_plantcv_find_objects():
     # Test with debug = None
     device, contours, hierarchy = pcv.find_objects(img=img, mask=mask, device=0, debug=None)
     # Assert the correct number of contours are found
-    if len(contours) == 7434:
-        print( 'OpenCV3 result')
-    elif len( contours) == 7341:
-        print( 'OpenCV2 result')
+    if cv2major == '2':
+        assert len(contours) == 2
     else:
-        assert len(contours) == 7341
-
+        assert len(contours) == 2
 
 def test_plantcv_flip():
     # Test cache directory
