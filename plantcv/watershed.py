@@ -65,7 +65,7 @@ def watershed_segmentation(device, img, mask, distance=10, filename=False, debug
         rand_color = color_palette(len(np.unique(labels)))
         img1[labels == x] = rand_color[x]
 
-    device, img2 = apply_mask.apply_mask(img1, mask, 'black', device, debug=None)
+    device, img2 = apply_mask(img1, mask, 'black', device, debug=None)
     # to count the watershed as only one device you need to subtract one after this call
     device -= 1
 
