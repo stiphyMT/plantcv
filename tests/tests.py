@@ -1722,7 +1722,8 @@ def test_plantcv_rotate_img_gray():
 def test_plantcv_rotate():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_rotate_img")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
     # Test with debug = "print"
