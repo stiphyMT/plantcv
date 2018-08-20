@@ -1,9 +1,9 @@
 # RGB -> Gray
 
 import cv2
-from . import print_image
-from . import plot_image
-## collet cv2 version info
+from plantcv.plantcv import print_image
+from plantcv.plantcv import plot_image
+## collect cv2 version info
 try:
     cv2major, cv2minor, _, _ = cv2.__version__.split('.')
 except:
@@ -30,25 +30,24 @@ def rgb2gray_rgb(img, channel, device, debug=None):
     :return channel: numpy array
     """
     # Split BGR channels
-    b, g, r = cv2.split( img)
     device += 1
-    if channel == 'b':
-        if debug == 'print':
-            print_image(b, (str(device) + '_rgb_blue.png'))
-        elif debug == 'plot':
-            plot_image(b, cmap='gray')
-        return device, b
-    elif channel == 'g':
-        if debug == 'print':
-            print_image(g, (str(device) + '_rgb_green.png'))
-        elif debug == 'plot':
-            plot_image(g, cmap='gray')
-        return device, g
-    elif channel == 'r':
-        if debug == 'print':
-            print_image(r, (str(device) + '_rbg_red.png'))
-        elif debug == 'plot':
-            plot_image(r, cmap='gray')
-        return device, r
-    else:
-        fatal_error('Channel ' + (str(channel) + ' is not b, g or r!'))
+	
+    # The allowable channel inputs are h, s or v
+    names = {"r": "red", "g": "green", "b": "blue"}
+	
+	b, g, r = cv2.split( img)
+
+    if channel not in names:
+        fatal_error("Channel " + str(channel) + " is not r, g or b!")
+
+     # Create a channel dictionaries for lookups by a channel name index
+    channels = {"r": r, "g": g, "b": b}
+
+    if debug == "print":
+        print_image(channels[channel], str(device) + "_rgb_" + names[channel] + ".png")
+    elif debug == "plot":
+        plot_image(channels[channel], cmap="gray")
+
+    return device, channels[channel]
+
+

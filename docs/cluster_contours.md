@@ -2,14 +2,15 @@
 
 This function take a image with multiple contours and clusters them based on user input of rows and columns
 
-**cluster_contours**(*device,img, roi_objects, nrow=1,ncol=1,debug=None*)
+**cluster_contours**(*device,img, roi_objects, roi_obj_hierarchy, nrow=1,ncol=1,debug=None*)
 
-**returns** device, grouped_contour_indexes, contours
+**returns** device, grouped_contour_indexes, contours, hierarchy
 
 - **Parameters:**
     - device- Counter for image processing steps
     - img = image object to be masked
-    - roi_objects= object contours in an image that are needed to be clustered.
+    - roi_objects = object contours in an image that are needed to be clustered.
+    - roi_obj_hierarchy = object hierarchy
     - nrow= approximate number of rows
     - ncol= approximate number of columns
     - debug- None, "print", or "plot". Print = save to file, Plot = print to screen. Default = None
@@ -24,10 +25,10 @@ This function take a image with multiple contours and clusters them based on use
 ![Screenshot](img/documentation_images/cluster_contour/13_roi_mask.jpg)
 
 ```python
-import plantcv as pcv
+from plantcv import plantcv as pcv
 
 # clusters them based on user input of rows and columns
-device, clusters_i, contours = pcv.cluster_contours(device, img, roi_objects, 4, 6, debug="print")
+device, clusters_i, contours,hierarchy = pcv.cluster_contours(device, img, roi_objects, roi_obj_hierarchy, 4, 6, debug="print")
 ```
 
 **Cluster Contour Image**

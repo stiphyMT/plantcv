@@ -27,6 +27,7 @@ pages:
     - 'Machine Learning': machine_learning_tutorial.md
     - 'Pipeline parallelization': pipeline_parallel.md
     - 'Exporting data': db-exporter.md
+    - 'Color Correction Pipeline': transform_color_correction_tutorial.md
   - 'Package plantcv':
     - 'Adaptive Threshold': adaptive_threshold.md
     - 'Analyze color': analyze_color.md
@@ -74,21 +75,29 @@ pages:
     - 'Object composition': object_composition.md
     - 'Otsu Auto Threshold': otsu_threshold.md
     - 'Output Mask': output_mask.md
+    - 'Params': params.md
     - 'Plot histogram': plot_hist.md
     - 'Print image': print_image.md
     - 'Read image': read_image.md
     - 'Rectangle mask': rectangle_mask.md
-    - 'Region of interest-Define': define_roi.md
-    - 'Region of interest-Objects': roi_objects.md
     - 'Report Size Marker': report_size_marker.md
     - 'Resize': resize.md
     - 'RGB to HSV': rgb2hsv.md
     - 'RGB to LAB': rgb2lab.md
+    - 'Region of Interest Tools':
+      - 'Create a circular ROI': roi_circle.md
+      - 'Create an elliptical ROI': roi_ellipse.md
+      - 'Create a rectangular ROI': roi_rectangle.md
+      - 'Create ROI from binary image': roi_from_binary_image.md
+      - 'Filter Objects by ROI': roi_objects.md
+      - 'Define ROI - Will Be Depricated': define_roi.md
     - 'Rotate Tools':
       - 'Rotate': rotate2.md
       - 'Rotate Image - Will Be Depricated': rotate.md
     - 'Shift Image': shift.md
     - 'Sobel filter': sobel_filter.md
+    - 'Transformations':
+      - 'Correct Color': transform_correct_color.md
     - 'Triangle Auto Threshold': triangle_threshold.md
     - 'Watershed Segmentation': watershed.md
     - 'White balance': white_balance.md

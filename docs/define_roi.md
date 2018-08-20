@@ -28,7 +28,7 @@ perform properly ROI must be completely contained within the image.
     - [Use In PSII Tutorial](psII_tutorial.md) 
 
 ```python
-import plantcv as pcv
+from plantcv import plantcv as pcv
 
 # Define region of interest in an image, there is a futher function 'ROI Objects' that allows 
 # the user to define if you want to include objects partially inside ROI or if you want to do cut objects to ROI.
@@ -40,7 +40,7 @@ device, roi, roi_hierarchy = define_roi(img, 'rectangle', device, roi=None, roi_
 ![Screenshot](img/documentation_images/define_roi/rectangle_roi.jpg)
 
 ```python
-import plantcv as pcv
+from plantcv import plantcv as pcv
 
 # Define region of interest in an image, there is a futher function 'ROI Objects' that allows 
 # the user to define if you want to include objects partially inside ROI or if you want to do cut objects to ROI.
@@ -52,7 +52,7 @@ device, roi, roi_hierarchy = define_roi(img, 'circle', device, roi=None, roi_inp
 ![Screenshot](img/documentation_images/define_roi/circle_roi.jpg)
 
 ```python
-import plantcv as pcv
+from plantcv import plantcv as pcv
 
 # Define region of interest in an image, there is a futher function 'ROI Objects' that allows
 # the user to define if you want to include objects partially inside ROI or if you want to do cut objects to ROI.

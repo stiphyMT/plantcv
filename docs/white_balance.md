@@ -2,13 +2,13 @@
 
 Corrects the exposure of an image. A color standard can be specified.
 
-**white_balance**(*device, img, mode='hist, debug=None,roi=None,*)
+**white_balance**(*device, img, mode='hist', debug=None,roi=None*)
 
 **returns** device, img
 
 - **Parameters:**
     - device - device number. Used to count steps in the pipeline
-    - img - A gray scale image on which to perform the correction
+    - img - image on which to perform the correction
     - mode - either 'hist' or 'max', if 'hist' method is used a histogram for the whole image or the specified ROI is calculated, and the 
     bin with the most pixels is used as a reference point to shift image values. If 'max' is used as a method, then the pixel with the maximum
     value in the whole image or the specified ROI is used as a reference point to shift image values.
@@ -24,10 +24,10 @@ Corrects the exposure of an image. A color standard can be specified.
 ![Screenshot](img/documentation_images/white_balance/original_image.jpg)
 
 ```python
-import plantcv as pcv
+from plantcv import plantcv as pcv
 
 # Corrects image based on color standard and stores output as corrected_img
-device, corrected_img = pcv.white_balance(device,img,'hist', debug="print",(5, 5, 80, 80))
+device, corrected_img = pcv.white_balance(device,img,mode='hist', debug="print",roi=(5, 5, 80, 80))
 ```
 
 

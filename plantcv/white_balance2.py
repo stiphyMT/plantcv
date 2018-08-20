@@ -1,10 +1,10 @@
 import sys
 import cv2
 import numpy as np
-from . import print_image
-from . import plot_image
-from . import fatal_error
-from . import apply_mask
+from plantcv.plantcv import print_image
+from plantcv.plantcv import plot_image
+from plantcv.plantcv import fatal_error
+from plantcv.plantcv import apply_mask
 ## collect cv2 version info
 try:
     cv2major, cv2minor, _, _ = cv2.__version__.split('.')
