@@ -7,11 +7,7 @@ import numpy as np
 import cv2
 from plantcv import plantcv as pcv
 import plantcv.learn
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except ValueError:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+
 # Import matplotlib and use a null Template to block plotting to screen
 # This will let us test debug = "plot"
 import matplotlib
@@ -1028,7 +1024,7 @@ def test_plantcv_find_objects():
     # Test with debug = None
     device, contours, hierarchy = pcv.find_objects(img=img, mask=mask, device=0, debug=None)
     # Assert the correct number of contours are found
-    if cv2major == '2':
+    if pcv.CV2MAJOR == '2':
         assert len(contours) == 2
     else:
         assert len(contours) == 2
@@ -1953,7 +1949,7 @@ def test_plantcv_triangle_threshold():
     # i'm not sure what the hist (t_val) should be 30.0? but Python 3.6 and opencv3.2 give 21.0
     # Test with debug = "print"
     _ = pcv.triangle_auto_threshold(device=0, img=img1, maxvalue=255, object_type="light", xstep=10, debug="print")
-    t_value = 21.0 * ( cv2major == 3) + 30.0 * ( cv2major < 3)
+    t_value = 21.0 * ( pcv.CV2MAJOR == 3) + 30.0 * ( pcv.CV2MINOR < 3)
     f_name1, f_name2 = "1_triangle_thresh_hist_" + str(t_value) + ".png", "1_triangle_thresh_img_" + str( t_value) + ".png"
     try:
         os.rename(f_name1, os.path.join(cache_dir, f_name1))
