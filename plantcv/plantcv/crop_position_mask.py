@@ -6,13 +6,7 @@ import math
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def crop_position_mask( img, mask, device, x, y, v_pos = "top", h_pos = "right", debug = None):
     """Crop position mask
@@ -238,19 +232,19 @@ def crop_position_mask( img, mask, device, x, y, v_pos = "top", h_pos = "right",
 
     newmask = np.array( maskv)
     if debug is not None:
-        if debug == 'print':
+        if debug == DEBUG_PRINT:
             print_image( newmask, ( str( device) + "_newmask.png"))
-        elif debug == 'plot':
+        elif debug == DEBUG_PLOT:
             plot_image( newmask, cmap = 'gray')
-        if cv2major > 2 and cv2minor > 0:
+        if pcvc.CV2MAJOR > 2 and pcvc.CV2MINOR > 0:
             _, objects, hierarchy = cv2.findContours( np.copy( newmask), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             objects, hierarchy = cv2.findContours( np.copy( newmask), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         for i, cnt in enumerate(objects):
             cv2.drawContours( ori_img, objects, i, ( 255, 102, 255), -1, lineType = 8, hierarchy = hierarchy)
-        if debug == 'print':
+        if debug == pcvc.DEBUG_PRINT:
             print_image( ori_img, ( str( device) + '_mask_overlay.png'))
-        elif debug == 'plot':
+        elif debug == pcvc.DEBUG_PLOT:
             plot_image( ori_img)
 
     return device, newmask

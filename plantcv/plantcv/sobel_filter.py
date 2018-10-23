@@ -3,13 +3,8 @@
 import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def sobel_filter(img, dx, dy, k, device, debug=None):
     """This is a filtering method used to identify and highlight gradient edges/features using the 1st derivative.
@@ -43,8 +38,8 @@ def sobel_filter(img, dx, dy, k, device, debug=None):
     device += 1
     sb_img = cv2.Sobel(src=img, ddepth=-1, dx=dx, dy=dy, ksize=k)
 
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(sb_img, str(device) + '_sb_img_dx' + str(dx) + '_dy' + str(dy) + '_k' + str(k) + '.png')
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(sb_img, cmap='gray')
     return device, sb_img

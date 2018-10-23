@@ -6,14 +6,7 @@ from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import apply_mask
 from plantcv.plantcv import fatal_error
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
-
+from plantcv.plantcv import PCVconstants as pcvc
 
 def _hist(img, hmax, x,y,h,w,type):
     hist, bins = np.histogram(img[y:y + h, x:x + w], bins='auto')
@@ -113,16 +106,16 @@ def white_balance(device, img, mode='hist',debug=None, roi=None):
 
     else:
         cv2.rectangle(ori_img, (x, y), (x + w, y + h), (255, 255, 255), 3)
-        if mode == 'hist':
+        if mode == pcvc.WHITE_BALANCE_HIST:
             finalcorrected = _hist(img, hmax, x, y, h, w, type)
-        elif mode == 'max':
+        elif mode == pcvc.WHITE_BALANCE_MAX:
             finalcorrected = _max(img, hmax, mask, x, y, h, w, type)
 
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(ori_img, (str(device) + '_whitebalance_roi.png'))
         print_image(finalcorrected, (str(device) + '_whitebalance.png'))
 
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(ori_img, cmap='gray')
         plot_image(finalcorrected, cmap='gray')
 

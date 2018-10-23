@@ -2,7 +2,7 @@
 
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-
+from plantcv.plantcv import PCVconstants as pcvc
 
 def image_add(img1, img2, device, debug=None):
     """This is a function used to add images. The numpy addition function '+' is used. This is a modulo operation
@@ -29,8 +29,8 @@ def image_add(img1, img2, device, debug=None):
 
     added_img = img1 + img2
     device += 1
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(added_img, str(device) + '_added' + '.png')
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(added_img, cmap='gray')
     return device, added_img

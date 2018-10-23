@@ -5,13 +5,7 @@ import numpy as np
 import math
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def acute_vertex(obj, win, thresh, sep, img, device, debug=None):
     """acute_vertex: identify corners/acute angles of an object
@@ -107,7 +101,7 @@ def acute_vertex(obj, win, thresh, sep, img, device, debug=None):
     #        x,y = i.ravel()
     #        cv2.circle(img2,(x,y),15,(153,0,153),-1)
     # cv2.imwrite('tip_points_centroid_and_base.png', img2)
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         # Lets make a plot of these values on the
         img2 = np.copy(img)
         # Plot each of these tip points on the image
@@ -115,7 +109,7 @@ def acute_vertex(obj, win, thresh, sep, img, device, debug=None):
             x, y = i.ravel()
             cv2.circle(img2, (x, y), 15, (255, 204, 255), -1)
         print_image(img2, (str(device) + '_acute_vertices.png'))
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         # Lets make a plot of these values on the
         img2 = np.copy(img)
         # Plot each of these tip points on the image

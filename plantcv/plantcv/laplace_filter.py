@@ -3,13 +3,8 @@
 import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def laplace_filter(img, k, scale, device, debug=None):
     """This is a filtering method used to identify and highlight fine edges based on the 2nd derivative. A very
@@ -39,8 +34,8 @@ def laplace_filter(img, k, scale, device, debug=None):
 
     lp_filtered = cv2.Laplacian(src=img, ddepth=-1, ksize=k, scale=scale)
     device += 1
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(lp_filtered, str(device) + '_lp_out_k' + str(k) + '_scale' + str(scale) + '.png')
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(lp_filtered, cmap='gray')
     return device, lp_filtered

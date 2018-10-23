@@ -4,13 +4,7 @@ import cv2
 import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def rectangle_mask(img, p1, p2, device, debug=None, color="black"):
     """Takes an input image and returns a binary image masked by a rectangular area denoted by p1 and p2. Note that
@@ -58,7 +52,7 @@ def rectangle_mask(img, p1, p2, device, debug=None, color="black"):
 
     cv2.rectangle( img=bnk, pt1 = p1, pt2 = p2, color = (255, 255, 255), thickness = -1)
     ret, bnk = cv2.threshold(bnk, 127, 255, 0)
-    if cv2major >= 3 and cv2minor >= 1:
+    if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
         _, contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
         contour, hierarchy = cv2.findContours(bnk, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -66,20 +60,20 @@ def rectangle_mask(img, p1, p2, device, debug=None, color="black"):
     # thickness = -1. Note that you should only print the first contour (contour[0]) if you want to fill with
     # thickness = -1. otherwise two rectangles will be drawn and the space between them will get filled
 
-    if color == "white":
+    if color == pcvc.RECT_MASK_WHITE:
         cv2.drawContours(bnk, contour, 0, (255, 255, 255), -1)
         cv2.drawContours(img1, contour, 0, (255, 255, 255), -1)
-    if color == "black":
+    if color == pcvc.RECT_MASK_BLACK:
         bnk = bnk + 255
         cv2.drawContours(bnk, contour, 0, (0, 0, 0), -1)
         cv2.drawContours(img1, contour, 0, (0, 0, 0), -1)
-    if color == "gray":
+    if color == pcvc.RECT_MASK_GREY:
         cv2.drawContours(bnk, contour, 0, (192, 192, 192), -1)
         cv2.drawContours(img1, contour, 0, (192, 192, 192), -1)
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(bnk, (str(device) + '_roi.png'))
 
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         if len(np.shape(bnk))==3:
             plot_image(bnk)
             plot_image(img1)

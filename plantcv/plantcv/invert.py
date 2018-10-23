@@ -3,13 +3,8 @@
 import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def invert(img, device, debug=None):
     """Inverts grayscale images.
@@ -32,8 +27,8 @@ def invert(img, device, debug=None):
 
     device += 1
     img_inv = cv2.bitwise_not(img)
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(img_inv, (str(device) + '_invert.png'))
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(img_inv, cmap='gray')
     return device, img_inv

@@ -4,13 +4,8 @@ import numpy as np
 import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def object_composition(img, contours, hierarchy, device, debug=None):
     """Groups objects into a single object, usually done after object filtering.
@@ -60,10 +55,10 @@ def object_composition(img, contours, hierarchy, device, debug=None):
             cv2.drawContours(ori_img, group, -1, (255, 0, 0), 4)
             for cnt in contours:
                 cv2.drawContours(ori_img, cnt, -1, (255, 0, 0), 4)
-            if debug == 'print':
+            if debug == pcvc.DEBUG_PRINT:
                 print_image(ori_img, (str(device) + '_objcomp.png'))
                 print_image(ori_img, (str(device) + '_objcomp_mask.png'))
-            elif debug == 'plot':
+            elif debug == pcvc.DEBUG_PLOT:
                 plot_image(ori_img)
         return device, group, mask
     else:

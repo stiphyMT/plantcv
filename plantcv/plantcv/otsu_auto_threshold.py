@@ -3,13 +3,8 @@
 import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def otsu_auto_threshold(img, maxValue, object_type, device, debug=None):
     """Creates a binary image from a grayscaled image using Otsu's thresholding.
@@ -41,20 +36,20 @@ def otsu_auto_threshold(img, maxValue, object_type, device, debug=None):
     # check whether to inverse the image or not and make an ending extension
     obj = 0
     extension = ''
-    if object_type == 'light':
+    if object_type == pcvc.THRESHOLD_OBJ_LIGHT:
         extension = '.png'
         obj = cv2.THRESH_BINARY + cv2.THRESH_OTSU
-    elif object_type == 'dark':
+    elif object_type == pcvc.THRESHOLD_OBJ_DARK:
         extension = '_inv.png'
         obj = cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU
 
     # threshold the image based on the object type using otsu's binarization
     t_val, t_img = cv2.threshold(img, 0, maxValue, obj)
 
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         name = str(device) + '_otsu_auto_threshold_' + str(t_val) + str(extension)
         print_image(t_img, name)
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(t_img, cmap="gray")
 
     return device, t_img

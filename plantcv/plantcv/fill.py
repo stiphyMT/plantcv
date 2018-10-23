@@ -5,13 +5,7 @@ import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def fill(img, mask, size, device, debug=None):
     """Identifies objects and fills objects that are less than size.
@@ -45,7 +39,7 @@ def fill(img, mask, size, device, debug=None):
     background = np.zeros(size1, dtype=np.uint8)
 
     # Find contours
-    if cv2major > 2 and cv2minor > 0:
+    if pcvc.CV2MAJOR > 2 and pcvc.CV2MINOR > 0:
         _, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
         contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -58,9 +52,9 @@ def fill(img, mask, size, device, debug=None):
         if area <= size:
             # cv2.fillPoly(img, pts = cnt, color=(0,0,0))
             cv2.drawContours(img, contours, c, (0, 0, 0), -1, lineType=8, hierarchy=hierarchy)
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(img, (str(device) + '_fill' + str(size) + '.png'))
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(img, cmap='gray')
 
     return device, img

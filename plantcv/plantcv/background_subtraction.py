@@ -6,13 +6,7 @@ import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def background_subtraction(background_image, foreground_image, device, debug=None):
     """Creates a binary image from a background subtraction of the foreground using cv2.BackgroundSubtractorMOG().
@@ -61,7 +55,7 @@ def background_subtraction(background_image, foreground_image, device, debug=Non
             fg_img = cv2.resize(fg_img, (width, height), interpolation=cv2.INTER_AREA)
 
     # Instantiating the background subtractor, for a single history no default parameters need to be changed.
-    if cv2major >= 3:
+    if pcvc.CV2MAJOR >= 3:
     # BackgroundSubtractorMOG is now available only in the extra contrib modules
     # cv2.bgsegm.
     # can also use the newer function
@@ -80,9 +74,9 @@ def background_subtraction(background_image, foreground_image, device, debug=Non
     fgmask = bgsub.apply(fg_img)
 
     # Debug options
-    if debug == "print":
+    if debug == pcvc.DEBUG_PRINT:
         print_image(fgmask, "{0}_background_subtraction.png".format(device))
-    elif debug == "plot":
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(fgmask, cmap="gray")
     
     return device, fgmask

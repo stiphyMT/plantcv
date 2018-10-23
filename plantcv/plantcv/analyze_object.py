@@ -4,13 +4,7 @@ import cv2
 import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def analyze_object(img, imgname, obj, mask, device, debug=None, filename=False):
     """Outputs numeric properties for an input object (contour or grouped contours).
@@ -60,7 +54,7 @@ def analyze_object(img, imgname, obj, mask, device, debug=None, filename=False):
     # Check is object is touching image boundaries (QC)
     frame_background = np.zeros(size1, dtype=np.uint8)
     frame = frame_background + 1
-    if cv2major > 2 and cv2minor > 0:
+    if pcvc.CV2MAJOR > 2 and pcvc.CV2MINOR > 0:
         _, frame_contour, frame_heirarchy = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
         frame_contour, frame_heirarchy = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -109,7 +103,7 @@ def analyze_object(img, imgname, obj, mask, device, debug=None, filename=False):
         cv2.circle(background, (int(cmx), int(cmy)), 4, (255, 255, 255), -1)
         center_p = cv2.cvtColor(background, cv2.COLOR_BGR2GRAY)
         ret, centerp_binary = cv2.threshold(center_p, 0, 255, cv2.THRESH_BINARY)
-        if cv2major > 2 and cv2minor > 0:
+        if pcvc.CVC2MAJOR > 2 and pcvc.CV2MINOR > 0:
             _, centerpoint, cpoint_h = cv2.findContours(centerp_binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             centerpoint, cpoint_h = cv2.findContours(centerp_binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -267,9 +261,9 @@ def analyze_object(img, imgname, obj, mask, device, debug=None, filename=False):
         cv2.line(ori_img, (int(cmx), y), (int(cmx), y + height), (0, 0, 255), 5)
         cv2.circle(ori_img, (int(cmx), int(cmy)), 10, (0, 0, 255), 5)
         cv2.line(ori_img, (tuple(caliper_transpose[caliper_length - 1])), (tuple(caliper_transpose[0])), (0, 0, 255), 5)
-        if debug == 'print':
+        if debug == pcvc.DEBUG_PRINT:
             print_image(ori_img, (str(device) + '_shapes.jpg'))
-        elif debug == 'plot':
+        elif debug == pcvc.DEBUG_PLOT:
             if len(np.shape(img)) == 3:
                 plot_image(ori_img)
             else:

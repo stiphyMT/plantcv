@@ -4,13 +4,7 @@ import cv2
 import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def dilate(img, kernel, i, device, debug=None):
     """Performs morphological 'dilation' filtering. Adds pixel to center of kernel if conditions set in kernel are true.
@@ -40,8 +34,8 @@ def dilate(img, kernel, i, device, debug=None):
     kernel2 = np.ones((kernel1, kernel1), np.uint8)
     dil_img = cv2.dilate(src = img, kernel = kernel2, iterations = i)
     device += 1
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(dil_img, str(device) + '_dil_image_' + 'itr_' + str(i) + '.png')
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(dil_img, cmap='gray')
     return device, dil_img

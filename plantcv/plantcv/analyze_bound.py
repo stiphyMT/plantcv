@@ -3,13 +3,7 @@
 import sys
 import cv2 as cv2
 from plantcv.plantcv import analyze_bound_horizontal
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def analyze_bound(img, imgname, obj, mask, line_position, device, debug=None, filename=False):
     """User-input boundary line tool

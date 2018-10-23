@@ -6,13 +6,7 @@ from datetime import datetime
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import apply_mask
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def cluster_contour_splitimg(device, img, grouped_contour_indexes, contours, hierarchy, outdir=None, file=None,
                              filenames=None, debug=None):
@@ -154,10 +148,10 @@ def cluster_contour_splitimg(device, img, grouped_contour_indexes, contours, hie
                 print_image(mask_binary,savename1)
             output_path.append(savename)
 
-            if debug == 'print':
+            if debug == pcvc.DEBUG_PRINT:
                 print_image(masked1, (str(device) + '_clusters.png'))
                 print_image(mask_binary, (str(device) + '_clusters_mask.png'))
-            elif debug == 'plot':
+            elif debug == pcvc.DEBUG_PLOT:
                 if len(np.shape(masked1)) == 3:
                     plot_image(masked1)
                     plot_image(mask_binary, cmap='gray')

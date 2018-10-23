@@ -11,13 +11,8 @@ from plantcv.plantcv import binary_threshold
 from plantcv.plantcv import define_roi
 from plantcv.plantcv import roi_objects
 from plantcv.plantcv import object_composition
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0, y_adj=0, w_adj=0, h_adj=0,
                             base='white', objcolor='dark', thresh_channel=None, thresh=None, filename=False):
@@ -79,7 +74,7 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
     roi_size = (ix - 5), (iy - 5)
     roi = np.zeros(roi_size, dtype=np.uint8)
     roi1 = roi + 1
-    if cv2major > 2 and cv2minor > 0:
+    if pcvc.CV2MAJOR > 2 and pcvc2.CV2MINOR > 0:
         _, roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
         roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -126,15 +121,15 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
             fatal_error('Shape' + str(shape) + ' is not "rectangle", "circle", or "ellipse"!')
 
     markerback = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-    if cv2major > 2 and cv2minor > 0:
+    if pcvc.CV2MAJOR > 2 and pcvc.CV2MINOR > 0:
         _, shape_contour, hierarchy = cv2.findContours(markerback, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
         shape_contour, hierarchy = cv2.findContours(markerback, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     cv2.drawContours(ori_img, shape_contour, -1, (255, 255, 0), 5)
     
-    if debug is 'print':
+    if debug is pcvc.DEBUG_PRINT:
         print_image(ori_img, (str(device) + '_marker_roi.png'))
-    elif debug is 'plot':
+    elif debug is pcvc.DEBUG_PLOT:
         plot_image(ori_img)
 
     if marker == 'define':
@@ -151,7 +146,7 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
 
     elif marker == 'detect':
         if thresh_channel is not None and thresh is not None:
-            if base == 'white':
+            if base == pcvc.APPLY_MASK_WHITE:
                 masked = cv2.multiply(img, background)
                 marker1 = markerback * 255
                 mask1 = cv2.bitwise_not(marker1)
@@ -164,7 +159,7 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
             device, id_objects, obj_hierarchy = find_objects(added, masked2a_thresh, device, debug)
             device, roi1, roi_hierarchy = define_roi(added, shape, device, None, 'default', debug, True, x_adj, y_adj,
                                                      w_adj, h_adj)
-            device, roi_o, hierarchy3, kept_mask, obj_area = roi_objects(img, 'partial', roi1, roi_hierarchy,
+            device, roi_o, hierarchy3, kept_mask, obj_area = roi_objects(img, pcvc.ROI_OBJECTS_TYPE_PARTIAL, roi1, roi_hierarchy,
                                                                          id_objects, obj_hierarchy, device, debug)
             device, obj, mask = object_composition(img, roi_o, hierarchy3, device, debug)
 
@@ -189,9 +184,9 @@ def report_size_marker_area(img, shape, device, debug, marker='define', x_adj=0,
         out_file = str(filename[0:-4]) + '_sizemarker.jpg'
         print_image(ori_img, out_file)
         analysis_images.append(['IMAGE', 'marker', out_file])
-    if debug is 'print':
+    if debug is pcvc.DEBUG_PRINT:
         print_image(ori_img, (str(device) + '_marker_shape.png'))
-    elif debug is 'plot':
+    elif debug is pcvc.DEBUG_PLOT:
         plot_image(ori_img)
 
     marker_header = (

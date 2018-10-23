@@ -5,12 +5,8 @@ import numpy as np
 from skimage.filters import median as skmedian
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
+
 
 def line_blur(img, kernel, device, direction = 0, debug=None):
     """Applies a median blur filter from skimage with rectangular kernel 
@@ -48,9 +44,9 @@ def line_blur(img, kernel, device, direction = 0, debug=None):
     img_mblur = skmedian(img, selem = kern)
     
     device += 1
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
 #        print_image(img_mblur, (str(device) + '_line_blur' + str(kernel) + '.png'))
         print_image(img_mblur, ("{0}_line_blur_{1}.png".format( device, ((1, kernel), (kernel,1))[direction])))
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(img_mblur, cmap = 'gray')
     return device, img_mblur

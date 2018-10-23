@@ -4,13 +4,7 @@ import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import color_palette
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def cluster_contours(device, img, roi_objects,roi_obj_hierarchy, nrow=1, ncol=1, debug=None):
 
@@ -134,7 +128,7 @@ def cluster_contours(device, img, roi_objects,roi_obj_hierarchy, nrow=1, ncol=1,
 
     # Debug image is rainbow printed contours
 
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         if len(np.shape(img)) == 3:
             img_copy = np.copy(img)
         else:
@@ -150,7 +144,7 @@ def cluster_contours(device, img, roi_objects,roi_obj_hierarchy, nrow=1, ncol=1,
                     cv2.drawContours(img_copy, roi_objects, a, rand_color[i], -1, hierarchy=roi_obj_hierarchy)
         print_image(img_copy, (str(device) + '_clusters.png'))
 
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         if len(np.shape(img)) == 3:
             img_copy = np.copy(img)
         else:

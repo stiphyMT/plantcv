@@ -4,13 +4,8 @@ import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def resize(img, resize_x, resize_y, device, debug=None):
     """Resize image.
@@ -42,9 +37,9 @@ def resize(img, resize_x, resize_y, device, debug=None):
 
     reimg = cv2.resize(img, (0, 0), fx=resize_x, fy=resize_y)
 
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(reimg, (str(device) + "_resize1.png"))
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(reimg, cmap='gray')
 
     return device, reimg

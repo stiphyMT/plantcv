@@ -5,13 +5,8 @@ import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_hierarchy, device, debug=None):
     """Find objects partially inside a region of interest or cut objects to the ROI.
@@ -63,7 +58,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
     background2 = np.zeros( size, dtype = np.uint8)
 
     # Allows user to find all objects that are completely inside or overlapping with ROI
-    if roi_type == 'partial':
+    if roi_type == pcvc.ROI_OBJECTS_PARTIAL:
         for c, cnt in enumerate( object_contour):
             length = ( len( cnt) - 1)
             stack = np.vstack( cnt)
@@ -86,7 +81,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
         kept_obj = cv2.bitwise_not( kept)
         mask = np.copy( kept_obj)
         obj_area = cv2.countNonZero( kept_obj)
-        if cv2major >= 3 and cv2minor >= 1:
+        if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
             _, kept_cnt, hierarchy = cv2.findContours( kept_obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             kept_cnt, hierarchy = cv2.findContours( kept_obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -94,7 +89,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
         cv2.drawContours( ori_img, roi_contour, -1, ( 255, 0, 0), 5, lineType = 8, hierarchy = roi_hierarchy)
 
     # Allows user to cut objects to the ROI (all objects completely outside ROI will not be kept)
-    elif roi_type == 'cutto':
+    elif roi_type == pcvc.ROI_OBJECTS_CUTTO:
         cv2.drawContours( background1, object_contour, -1, ( 255, 255, 255), -1, lineType = 8, hierarchy = obj_hierarchy)
         roi_points = np.vstack( roi_contour[0])
         cv2.fillPoly( background2, [roi_points], ( 255, 255, 255))
@@ -102,7 +97,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
         kept_obj = cv2.cvtColor( obj_roi, cv2.COLOR_RGB2GRAY)
         mask = np.copy( kept_obj)
         obj_area = cv2.countNonZero( kept_obj)
-        if cv2major >= 3 and cv2minor >= 1:
+        if pcvc.CV2MAJOR >= 3 and pcvc.cv2MINOR >= 1:
             _, kept_cnt, hierarchy = cv2.findContours( kept_obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             kept_cnt, hierarchy = cv2.findContours( kept_obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -111,7 +106,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
         cv2.drawContours( ori_img, roi_contour, -1, (255, 0, 0), 5, lineType = 8, hierarchy = roi_hierarchy)
         
     # Cuts off objects that do not have their center of mass inside the ROI
-    elif roi_type == 'massc':
+    elif roi_type == pcvc.ROI_OBJECTS_MASSC:
         for c, cnt in enumerate( object_contour):
             stack = np.vstack( cnt)
             test = []
@@ -139,7 +134,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
         kept_obj = cv2.bitwise_not( kept)
         mask = np.copy( kept_obj)
         obj_area = cv2.countNonZero( kept_obj)
-        if cv2major >= 3 and cv2minor >= 1:
+        if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
             _, kept_cnt, hierarchy = cv2.findContours( kept_obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             kept_cnt, hierarchy = cv2.findContours( kept_obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -150,11 +145,11 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
     else:
         fatal_error('ROI Type' + str(roi_type) + ' is not "cutto", "partial", or "massc"!')
 
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image( w_back, ( str( device) + '_roi_objects.png'))
         print_image( ori_img, ( str( device) + '_obj_on_img.png'))
         print_image( mask, ( str( device) + '_roi_mask.png'))
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image( w_back)
         plot_image( ori_img)
         plot_image( mask, cmap = 'gray')

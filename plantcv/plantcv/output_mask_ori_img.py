@@ -4,6 +4,7 @@ import os
 import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
+from plantcv.plantcv import PCVconstants as pcvc
 
 
 def output_mask(device, img, mask, filename, outdir=None, mask_only=False, debug=None):
@@ -68,11 +69,11 @@ def output_mask(device, img, mask, filename, outdir=None, mask_only=False, debug
             print_image(mask, maskpath)
             analysis_images.append(['IMAGE', 'mask', maskpath])
 
-        if debug == 'print':
+        if debug == pcvc.DEBUG_PRINT:
             print_image(img, (str(device) + '_ori-img.png'))
             print_image(mask, (str(device) + '_mask-img.png'))
 
-        elif debug == 'plot':
+        elif debug == pcvc.DEBUG_PLOT:
             if len(np.shape(img)) == 3:
                 plot_image(img)
                 plot_image(mask, cmap='gray')
@@ -95,9 +96,9 @@ def output_mask(device, img, mask, filename, outdir=None, mask_only=False, debug
             print_image(mask, maskpath)
             analysis_images.append(['IMAGE', 'mask', maskpath])
 
-        if debug == 'print':
+        if debug == pcvc.DEBUG_PRINT:
             print_image(mask, (str(device) + '_mask-img.png'))
-        elif debug == 'plot':
+        elif debug == pcvc.DEBUG_PLOT:
                 plot_image(mask, cmap='gray')
 
         return device, maskpath, analysis_images

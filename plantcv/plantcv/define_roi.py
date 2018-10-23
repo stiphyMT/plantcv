@@ -6,13 +6,7 @@ import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, adjust=False, x_adj=0, y_adj=0,
                w_adj=0, h_adj=0):
@@ -70,12 +64,12 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
         hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
         h, s, v = cv2.split(hsv)
         ret, v_img = cv2.threshold(v, 0, 255, cv2.THRESH_BINARY)
-        if cv2major >= 3 and cv2minor >= 1:
+        if pcvc.pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
             _, roi_contour, hierarchy = cv2.findContours(v_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             roi_contour, hierarchy = cv2.findContours(v_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     elif roi_input == 'binary':
-        if cv2major >= 3 and cv2minor >= 1:
+        if pcvc.CV2MAJOR >= 3 and pcvc.pcvc.CV2MINOR >= 1:
             _, roi_contour, hierarchy = cv2.findContours(roi, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             roi_contour, hierarchy = cv2.findContours(roi, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -85,7 +79,7 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
         roi_size = (ix - 5), (iy - 5)
         roi = np.zeros(roi_size, dtype=np.uint8)
         roi1 = roi + 1
-        if cv2major > 2 and cv2minor > 0:
+        if pcvc.CV2MAJOR > 2 and pcvc.pcvc.CV2MINOR > 0:
             _, roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -105,14 +99,14 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                 x, y, w, h = cv2.boundingRect(cnt)
                 cv2.rectangle(background, (x, y), (x + w, y + h), (0, 255, 0), 5)
                 rect = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                if cv2major >= 3 and cv2minor >= 1:
+                if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
                     _, rect_contour, hierarchy = cv2.findContours(rect, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                 else:
                     rect_contour, hierarchy = cv2.findContours(rect, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                 cv2.drawContours(ori_img, rect_contour[0], -1, (255, 0, 0), 5)
-                if debug == 'print':
+                if debug == pcvc.DEBUG_PRINT:
                     print_image(ori_img, (str(device) + '_roi.png'))
-                elif debug == 'plot':
+                elif debug == pcvc.DEBUG_PLOT:
                     plot_image(ori_img)
                 return device, rect_contour, hierarchy
             elif shape == 'circle':
@@ -122,28 +116,28 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                     radius = int(w / 2)
                     cv2.circle(background, center, radius, (255, 255, 255), -1)
                     circle = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                    if cv2major >= 3 and cv2minor >= 1:
+                    if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
                         _, circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     else:
                         circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     cv2.drawContours(ori_img, circle_contour[0], -1, (255, 0, 0), 5)
-                    if debug == 'print':
+                    if debug == pcvc.DEBUG_PRINT:
                         print_image(ori_img, (str(device) + '_roi.png'))
-                    elif debug == 'plot':
+                    elif debug == pcvc.DEBUG_PLOT:
                         plot_image(ori_img)
                     return device, circle_contour, hierarchy
                 else:
                     radius = int(h / 2)
                     cv2.circle(background, center, radius, (255, 255, 255), -1)
                     circle = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                    if cv2major >= 3 and cv2minor >= 1:
+                    if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
                         _, circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     else:
                         circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     cv2.drawContours(ori_img, circle_contour[0], -1, (255, 0, 0), 5)
-                    if debug == 'print':
+                    if debug == pcvc.DEBUG_PRINT:
                         print_image(ori_img, (str(device) + '_roi.png'))
-                    elif debug == 'plot':
+                    elif debug == pcvc.DEBUG_PLOT:
                         plot_image(ori_img)
                     return device, circle_contour, hierarchy
             elif shape == 'ellipse':
@@ -152,28 +146,28 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                 if w > h:
                     cv2.ellipse(background, center, (w // 2, h // 2), 0, 0, 360, (0, 255, 0), 2)
                     ellipse = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                    if cv2major >= 3 and cv2minor >= 1:
+                    if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
                         _, ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     else:
                         ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     cv2.drawContours(ori_img, ellipse_contour[0], -1, (255, 0, 0), 5)
-                    if debug == 'print':
+                    if debug == pcvc.DEBUG_PRINT:
                         print_image(ori_img, (str(device) + '_roi.png'))
-                    elif debug == 'plot':
+                    elif debug == pcvc.DEBUG_PLOT:
                         plot_image(ori_img)
                     return device, ellipse_contour, hierarchy
                 else:
                     cv2.ellipse(ori_img, center, (h // 2, w // 2), 0, 0, 360, (0, 255, 0), 2)
                     cv2.ellipse(background, center, (h // 2, w // 2), 0, 0, 360, (0, 255, 0), 2)
                     ellipse = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                    if cv2major >= 3 and cv2minor >= 1:
+                    if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
                         _, ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     else:
                         ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     cv2.drawContours(ori_img, ellipse_contour[0], -1, (255, 0, 0), 5)
-                    if debug == 'print':
+                    if debug == pcvc.DEBUG_PRINT:
                         print_image(ori_img, (str(device) + '_roi.png'))
-                    elif debug == 'plot':
+                    elif debug == pcvc.DEBUG_PLOT:
                         plot_image(ori_img)
                     return device, ellipse_contour, hierarchy
             else:
@@ -198,14 +192,14 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                     h1 = h + h_adj
                     cv2.rectangle(background, (x1, y1), (x + w1, y + h1), (0, 255, 0), 1)
                     rect = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                    if cv2major >= 3 and cv2minor >= 1:
+                    if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
                         _, rect_contour, hierarchy = cv2.findContours(rect, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     else:
                         rect_contour, hierarchy = cv2.findContours(rect, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                     cv2.drawContours(ori_img, rect_contour[0], -1, (255, 0, 0), 5)
-                    if debug == 'print':
+                    if debug == pcvc.DEBUG_PRINT:
                         print_image(ori_img, (str(device) + '_roi.png'))
-                    elif debug == 'plot':
+                    elif debug == pcvc.DEBUG_PLOT:
                         plot_image(ori_img)
                     return device, rect_contour, hierarchy
                 elif shape == 'circle':
@@ -219,28 +213,28 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                         radius = int(w1 / 2)
                         cv2.circle(background, center, radius, (255, 255, 255), -1)
                         circle = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                        if cv2major > 2 and cv2minor > 0:
+                        if pcvc.CV2MAJOR > 2 and pcvc.CV2MINOR > 0:
                             _, circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                         else:
                             circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                         cv2.drawContours(ori_img, circle_contour[0], -1, (255, 0, 0), 5)
-                        if debug == 'print':
+                        if debug == pcvc.DEBUG_PRINT:
                             print_image(ori_img, (str(device) + '_roi.png'))
-                        elif debug == 'plot':
+                        elif debug == pcvc.DEBUG_PLOT:
                             plot_image(ori_img)
                         return device, circle_contour, hierarchy
                     else:
                         radius = int(h1 / 2)
                         cv2.circle(background, center, radius, (255, 255, 255), -1)
                         circle = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                        if cv2major >= 3 and cv2minor >= 1:
+                        if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
                             _, circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                         else:
                             circle_contour, hierarchy = cv2.findContours(circle, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                         cv2.drawContours(ori_img, circle_contour[0], -1, (255, 0, 0), 5)
-                        if debug == 'print':
+                        if debug == pcvc.DEBUG_PRINT:
                             print_image(ori_img, (str(device) + '_roi.png'))
-                        elif debug == 'plot':
+                        elif debug == pcvc.DEBUG_PLOT:
                             plot_image(ori_img)
                         return device, circle_contour, hierarchy
                 elif shape == 'ellipse':
@@ -253,27 +247,27 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
                     if w > h:
                         cv2.ellipse(background, center, ( w1 // 2, h1 // 2), 0, 0, 360, (0, 255, 0), 2)
                         ellipse = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                        if cv2major > 2 and cv2minor > 0:
+                        if pcvc.CV2MAJOR > 2 and pcvc.CV2MINOR > 0:
                             _, ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                         else:
                             ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                         cv2.drawContours(ori_img, ellipse_contour[0], -1, (255, 0, 0), 5)
-                        if debug == 'print':
+                        if debug == pcvc.DEBUG_PRINT:
                             print_image(ori_img, (str(device) + '_roi.png'))
-                        elif debug == 'plot':
+                        elif debug == pcvc.DEBUG_PLOT:
                             plot_image(ori_img)
                         return device, ellipse_contour, hierarchy
                     else:
                         cv2.ellipse(background, center, (h1 // 2, w1 // 2), 0, 0, 360, (0, 255, 0), 2)
                         ellipse = cv2.cvtColor(background, cv2.COLOR_RGB2GRAY)
-                        if cv2major >= 3 and cv2minor >= 1:
+                        if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
                             _, ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                         else:
                             ellipse_contour, hierarchy = cv2.findContours(ellipse, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
                         cv2.drawContours(ori_img, ellipse_contour[0], -1, (255, 0, 0), 5)
-                        if debug == 'print':
+                        if debug == pcvc.DEBUG_PRINT:
                             print_image(ori_img, (str(device) + '_roi.png'))
-                        elif debug == 'plot':
+                        elif debug == pcvc.DEBUG_PLOT:
                             plot_image(ori_img)
                         return device, ellipse_contour, hierarchy
                 else:

@@ -3,14 +3,7 @@
 import cv2
 import numpy as np
 from plantcv.plantcv import plot_image
-
-## collet cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
-
+from plantcv.plantcv import PCVconstants as pcvc
 
 def y_axis_pseudolandmarks(obj, mask, img, device, debug=None):
     """Divide up object contour into 19 equidistant segments and generate landmarks for each
@@ -147,7 +140,7 @@ def y_axis_pseudolandmarks(obj, mask, img, device, debug=None):
         center_h = list(zip(x_centroids, y_centroids))
         center_h = np.array(center_h)
         center_h.shape = (20, 1, 2)
-        if debug == 'plot':
+        if debug == pcvc.DEBUG_PLOT:
             img2 = np.copy(img)
             for i in left:
                 x = i[0, 0]
@@ -184,7 +177,7 @@ def y_axis_pseudolandmarks(obj, mask, img, device, debug=None):
         center_h = list(zip(c_points, y_coords))
         center_h = np.array(center_h)
         center_h.shape = (20, 1, 2)
-        if debug == 'plot':
+        if debug == pcvc.DEBUG_PLOT:
             img2 = np.copy(img)
             for i in left:
                 x = i[0, 0]

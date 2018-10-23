@@ -4,13 +4,8 @@ import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def rgb2gray_hsv(img, channel, device, debug=None):
     """Convert an RGB color image to HSV colorspace and return a gray image (one channel).
@@ -47,9 +42,9 @@ def rgb2gray_hsv(img, channel, device, debug=None):
     # Create a channel dictionaries for lookups by a channel name index
     channels = {"h": h, "s": s, "v": v}
 
-    if debug == "print":
+    if debug == pcvc.DEBUG_PRINT:
         print_image(channels[channel], str(device) + "_hsv_" + names[channel] + ".png")
-    elif debug == "plot":
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(channels[channel], cmap="gray")
 
     return device, channels[channel]

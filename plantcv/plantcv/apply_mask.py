@@ -4,13 +4,7 @@ import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def apply_mask(img, mask, mask_color, device, debug=None):
     """Apply white image mask to image, with bitwise AND operator bitwise NOT operator and ADD operator.
@@ -36,7 +30,7 @@ def apply_mask(img, mask, mask_color, device, debug=None):
     """
 
     device += 1
-    if mask_color == 'white':
+    if mask_color == pcvc.APPLY_MASK_WHITE:
         # Mask image
         masked_img = cv2.bitwise_and(img, img, mask=mask)
         # Create inverted mask for background
@@ -45,16 +39,16 @@ def apply_mask(img, mask, mask_color, device, debug=None):
         white_mask = cv2.bitwise_not(masked_img, mask=mask_inv)
         # Add masked image to white background (can't just use mask_inv because that is a binary)
         white_masked = cv2.add(masked_img, white_mask)
-        if debug == 'print':
+        if debug == pcvc.DEBUGPRINT:
             print_image(white_masked, (str(device) + '_wmasked.png'))
-        elif debug == 'plot':
+        elif debug == pcvc.DEBUG_PLOT:
             plot_image(white_masked)
         return device, white_masked
-    elif mask_color == 'black':
+    elif mask_color == pcvc.APPLY_MASK_BLACK:
         masked_img = cv2.bitwise_and(img, img, mask=mask)
-        if debug == 'print':
+        if debug == pcvc.DEBUG_PRINT:
             print_image(masked_img, (str(device) + '_bmasked.png'))
-        elif debug == 'plot':
+        elif debug == pcvc.DEBUG_PLOT:
             plot_image(masked_img)
         return device, masked_img
     else:

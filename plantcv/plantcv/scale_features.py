@@ -3,13 +3,8 @@
 import cv2
 import numpy as np
 from plantcv.plantcv import plot_image
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def scale_features(obj, mask, points, boundary_line, device, debug=None):
     """scale_features: returns feature scaled points
@@ -74,7 +69,7 @@ def scale_features(obj, mask, points, boundary_line, device, debug=None):
     bly_scaled = float(bly - Ymin) / float(Ymax - Ymin)
     boundary_line_scaled = (blx_scaled, bly_scaled)
     # If debug is 'True' plot an image of the scaled points on a black background
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         # Make a decent size blank image
         scaled_img = np.zeros((1500, 1500, 3), np.uint8)
         plotter = np.array(rescaled)
@@ -92,7 +87,7 @@ def scale_features(obj, mask, points, boundary_line, device, debug=None):
         flipped_scaled = cv2.flip(scaled_img, 0)
         cv2.imwrite((str(device) + '_feature_scaled.png'), flipped_scaled)
     # Return the transformed points
-    if debug == 'plot':
+    if debug == pcvc.DEBUG_PLOT:
         # Make a decent size blank image
         scaled_img = np.zeros((1500, 1500, 3), np.uint8)
         plotter = np.array(rescaled)

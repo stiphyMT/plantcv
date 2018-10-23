@@ -8,7 +8,7 @@ from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
 from plantcv.plantcv import params
-
+from plantcv.plantcv import PCVconstants as pcvc
 
 def get_color_matrix(rgb_img, mask):
     """ Calculate the average value of pixels in each color chip for each color channel.
@@ -240,10 +240,10 @@ def apply_transformation_matrix(source_img, target_img, transformation_matrix):
     corrected_img[np.where(corrected_img > 255)] = 255
     corrected_img = corrected_img.astype(np.uint8)
 
-    if params.debug == "print":
+    if params.debug == pcvc.DEBUG_PRINT:
         # If debug is print, save the image to a file
         print_image(corrected_img, os.path.join(params.debug_outdir, str(params.device) + "_corrected.png"))
-    elif params.debug == "plot":
+    elif params.debug == pcvc.DEBUG_PLOT:
         # If debug is plot, print a horizontal view of source_img, corrected_img, and target_img to the plotting device
         # plot horizontal comparison of source_img, corrected_img (with rounded elements) and target_img
         plot_image(np.hstack([source_img, corrected_img, target_img]))

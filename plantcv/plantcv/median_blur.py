@@ -3,13 +3,8 @@
 import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def median_blur(img, ksize, device, debug=None):
     """Applies a median blur filter (applies median value to central pixel within a kernel size ksize x ksize).
@@ -34,8 +29,8 @@ def median_blur(img, ksize, device, debug=None):
 
     img_mblur = cv2.medianBlur(img, ksize)
     device += 1
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(img_mblur, (str(device) + '_median_blur' + str(ksize) + '.png'))
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(img_mblur, cmap='gray')
     return device, img_mblur

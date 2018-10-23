@@ -7,7 +7,7 @@ from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
 from plantcv.plantcv import params
-
+from plantcv.plantcv import PCVconstants as pcvc
 
 # Create an ROI from a binary mask
 def from_binary_image(bin_img, img):
@@ -199,9 +199,9 @@ def _draw_roi(img, roi_contour):
         ref_img = cv2.cvtColor(ref_img, cv2.COLOR_GRAY2BGR)
     # Draw the contour on the reference image
     cv2.drawContours(ref_img, roi_contour, -1, (255, 0, 0), 5)
-    if params.debug == "print":
+    if params.debug == pcvc.DEBUG_PRINT:
         # If debug is print, save the image to a file
         print_image(ref_img, os.path.join(params.debug_outdir, str(params.device) + "_roi.png"))
-    elif params.debug == "plot":
+    elif params.debug == pcvc.DEBUG_PLOT:
         # If debug is plot, print to the plotting device
         plot_image(ref_img)

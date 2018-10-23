@@ -4,13 +4,7 @@ import cv2
 import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def analyze_bound_vertical(img, obj, mask, line_position, device, debug=None, filename=False):
     """User-input boundary line tool
@@ -167,10 +161,10 @@ def analyze_bound_vertical(img, obj, mask, line_position, device, debug=None, fi
                 cv2.line(ori_img, (x_coor + 2, int(cmy)), (x_coor - width_right_bound, int(cmy)), (0, 255, 0), 3)
                 cv2.line(wback, (x_coor + 2, int(cmy)), (x_coor + width_left_bound, int(cmy)), (255, 0, 0), 3)
                 cv2.line(wback, (x_coor + 2, int(cmy)), (x_coor - width_right_bound, int(cmy)), (0, 255, 0), 3)
-        if debug == 'print':
+        if debug == pcvc.DEBUG_PRINT:
             print_image(wback, (str(device) + '_boundary_on_white.jpg'))
             print_image(ori_img, (str(device) + '_boundary_on_img.jpg'))
-        if debug == 'plot':
+        if debug == pcvc.DEBUG_PLOT:
             plot_image(wback)
             plot_image(ori_img)
 

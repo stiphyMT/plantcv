@@ -1,12 +1,11 @@
 # Image subtraction
-
+import numpy as np
+import os
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import params
 from plantcv.plantcv import fatal_error
-import numpy as np
-import os
-
+from plantcv.plantcv import PCVconstants as pcvc
 
 def image_subtract(gray_img1, gray_img2):
     """This is a function used to subtract values of one gray-scale image array from another gray-scale image array. The
@@ -35,8 +34,8 @@ def image_subtract(gray_img1, gray_img2):
     new_img[np.where(new_img < 0)] = 0  # force negative array values to zero
     new_img = new_img.astype(np.uint8)  # typecast image to 8-bit image
     # print-plot handling
-    if params.debug == 'print':
+    if params.debug == pcvc.DEBUG_PRINT:
         print_image(new_img, os.path.join(params.debug_outdir, str(params.device) + "_subtraction.png"))
-    elif params.debug == 'plot':
+    elif params.debug == pcvc.DEBUG_PLOT:
         plot_image(new_img, cmap='gray')
     return new_img  # return

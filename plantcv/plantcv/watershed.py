@@ -11,13 +11,8 @@ from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import apply_mask
 from plantcv.plantcv import color_palette
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def watershed_segmentation(device, img, mask, distance=10, filename=False, debug=None):
     """Uses the watershed algorithm to detect boundary of objects. Needs a marker file which specifies area which is
@@ -49,7 +44,7 @@ def watershed_segmentation(device, img, mask, distance=10, filename=False, debug
     :return analysis_images: list
     """
 
-    if cv2major >= 3:
+    if pcvc.CV2MAJOR >= 3:
         dist_transform = cv2.distanceTransform(mask, cv2.DIST_L2, maskSize=0)
     else:
         dist_transform = cv2.distanceTransform(mask, cv2.cv.CV_DIST_L2, maskSize=0)
@@ -88,10 +83,10 @@ def watershed_segmentation(device, img, mask, distance=10, filename=False, debug
         estimated_object_count
     )
 
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(dist_transform, str(device) + '_watershed_dist_img.png')
         print_image(joined, str(device) + '_watershed_img.png')
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(dist_transform, cmap='gray')
         plot_image(joined)
 

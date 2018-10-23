@@ -5,13 +5,8 @@ import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def shift_img(img, device, number, side="right", debug=None):
     """this function allows you to shift an image over without changing dimensions
@@ -49,28 +44,28 @@ def shift_img(img, device, number, side="right", debug=None):
         ix, iy = np.shape(img)
         ori_img = np.dstack((img, img, img))
 
-    if side == "top":
+    if side == pcvc.SHIFT_IMG_TOP:
         top = np.zeros((number, iy, 3), dtype=np.uint8)
         adjust = ix - number
         adjusted_img = np.vstack((top, ori_img[0:adjust, 0:]))
 
-    if side == 'bottom':
+    if side == pcvc.SHIFT_IMG_BOTTOM:
         bottom = np.zeros((number, iy, 3), dtype=np.uint8)
         adjusted_img = np.vstack((ori_img[number:, 0:], bottom))
 
-    if side == 'right':
+    if side == pcvc.SHIFT_IMG_RIGHT:
         right = np.zeros((ix, number, 3), dtype=np.uint8)
         adjusted_img = np.hstack((ori_img[0:, number:], right))
-    if side == 'left':
+    if side == pcvc.SHIFT_IMG_LEFT:
         left = np.zeros((ix, number, 3), dtype=np.uint8)
         adjust = iy - number
         adjusted_img = np.hstack((left, ori_img[0:, 0:adjust]))
 
     if len(np.shape(img)) == 2:
         adjusted_img = adjusted_img[:,:,0]
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(adjusted_img, (str(device) + "_shifted_img.png"))
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         if len(np.shape(adjusted_img)) == 3:
             plot_image(adjusted_img)
         else:

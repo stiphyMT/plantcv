@@ -5,13 +5,7 @@ import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def hist_equalization(img, device, debug=None):
     """Histogram equalization is a method to normalize the distribution of intensity values. If the image has low
@@ -38,9 +32,9 @@ def hist_equalization(img, device, debug=None):
 
     img_eh = cv2.equalizeHist(img)
     device += 1
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(img_eh, str(device) + '_hist_equal_img.png')
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(img_eh, cmap = 'gray')
 
     return device, img_eh

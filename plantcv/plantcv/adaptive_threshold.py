@@ -4,13 +4,7 @@ import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def adaptive_threshold(img, maxValue, thres_type, object_type, device, debug=None):
     """Creates a binary image from a grayscaled image using adaptive thresholding
@@ -53,10 +47,10 @@ def adaptive_threshold(img, maxValue, thres_type, object_type, device, debug=Non
     # check whether to invert the image or not and make an ending extension
     obj = 0
     ext = ''
-    if object_type == 'light':
+    if object_type == pcvc.THRESHOLD_OBJ_LIGHT:
         ext = '.png'
         obj = cv2.THRESH_BINARY
-    elif object_type == 'dark':
+    elif object_type == pcvc.THRESHOLD_OBJ_DARK:
         ext = '_inv.png'
         obj = cv2.THRESH_BINARY_INV
     else:
@@ -66,10 +60,10 @@ def adaptive_threshold(img, maxValue, thres_type, object_type, device, debug=Non
     t_img = cv2.adaptiveThreshold(img, maxValue, thres, obj, 11, 2)
 
     # print out the image if the debug is true
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         name = str(device) + '_adaptive_threshold_' + thres_type + ext
         print_image(t_img, name)
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(t_img, cmap='gray')
 
     return device, t_img

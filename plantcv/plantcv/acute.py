@@ -3,13 +3,7 @@
 import numpy as np
 import math
 import cv2
-## collet cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
-
+from plantcv.plantcv import PCVconstants as pcvc
 
 ### Identify landmark positions within a contour for morphometric analysis
 def acute(obj, win, thresh, mask, device, debug=False):

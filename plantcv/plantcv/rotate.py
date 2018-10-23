@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-
+from plantcv.plantcv import PCVconstants as pcvc
 
 def rotate(img, rotation_deg, crop, device, debug=None):
     """Rotate image, sometimes it is necessary to rotate image, especially when clustering for
@@ -54,10 +54,10 @@ def rotate(img, rotation_deg, crop, device, debug=None):
     else:
         rotated_img = cv2.warpAffine(img, M, (ix, iy))
 
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(rotated_img, (str(device) + '_rotated_img.png'))
 
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         if len(np.shape(img)) == 3:
             plot_image(rotated_img)
         else:

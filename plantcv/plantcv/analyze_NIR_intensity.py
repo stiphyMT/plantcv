@@ -8,13 +8,7 @@ from plantcv.plantcv import plot_image
 from plantcv.plantcv import plot_colorbar
 from plantcv.plantcv import binary_threshold
 from plantcv.plantcv import apply_mask
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def analyze_NIR_intensity(img, rgbimg, mask, bins, device, histplot=False, debug=None, filename=False):
     """This function calculates the intensity of each pixel associated with the plant and writes the values out to
@@ -112,10 +106,10 @@ def analyze_NIR_intensity(img, rgbimg, mask, bins, device, histplot=False, debug
         analysis_img.append(['IMAGE', 'pseudo', fig_name_pseudo])
 
     if debug is not None:
-        if debug == "print":
+        if debug == pcvc.DEBUG_PRINT:
             print_image(masked1, (str(device) + "_nir_pseudo_plant.jpg"))
             print_image(cplant_back, (str(device) + "_nir_pseudo_plant_back.jpg"))
-        if debug == "plot":
+        if debug == pcvc.DEBUG_PLOT:
             plot_image(masked1)
             plot_image(cplant_back)
 
@@ -135,9 +129,9 @@ def analyze_NIR_intensity(img, rgbimg, mask, bins, device, histplot=False, debug
             fig_name_hist = (str(filename[0:-4]) + '_nir_hist.svg')
             plt.savefig(fig_name_hist)
             analysis_img.append(['IMAGE', 'hist', fig_name_hist])
-        if debug == "print":
+        if debug == pcvc.DEBUG_PRINT:
             plt.savefig(str(device) + '_nir_histogram.png')
-        if debug == "plot":
+        if debug == pcvc.DEBUG_PLOT:
             plt.figure()
         plt.clf()
 

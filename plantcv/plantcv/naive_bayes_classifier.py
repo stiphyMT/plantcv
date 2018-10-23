@@ -6,13 +6,8 @@ import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
+from plantcv.plantcv import PCVconstants as pcvc
 
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
 
 def naive_bayes_classifier( img, pdf_file, device, debug = None):
     """Use the Naive Bayes classifier to output a plant binary mask.
@@ -95,10 +90,10 @@ def naive_bayes_classifier( img, pdf_file, device, debug = None):
     # mask[np.where(plant > bg)] = 255
 
     # Print or plot the mask if debug is not None
-    if debug == "print":
+    if debug == pcvc.DEBUG_PRINT:
         for class_name, mask in masks.items():
             print_image( mask, ( str( device) + "_naive_bayes_" + class_name + "_mask.jpg"))
-    elif debug == "plot":
+    elif debug == pcvc.DEBUG_PLOT:
         for class_name, mask in masks.items():
             plot_image( mask, cmap="gray")
 

@@ -4,13 +4,7 @@ import cv2
 import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def erode(img, kernel, i, device, debug=None):
     """Perform morphological 'erosion' filtering. Keeps pixel in center of the kernel if conditions set in kernel are
@@ -41,8 +35,8 @@ def erode(img, kernel, i, device, debug=None):
     kernel2 = np.ones((kernel1, kernel1), np.uint8)
     er_img = cv2.erode(src=img, kernel=kernel2, iterations=i)
     device += 1
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(er_img, str(device) + '_er_image_' + 'itr_' + str(i) + '.png')
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(er_img, cmap='gray')
     return device, er_img

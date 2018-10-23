@@ -7,13 +7,7 @@ from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
 from plantcv.plantcv import plot_colorbar
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def _pseudocolored_image(device, histogram, bins, img, mask, background, channel, filename, resolution,
                          analysis_images, debug):
@@ -87,7 +81,7 @@ def _pseudocolored_image(device, histogram, bins, img, mask, background, channel
         path = "."
         
     if debug is not None:
-        if debug == 'print':
+        if debug == pcvc.DEBUG_PRINT:
             for key in output_imgs:
                 if output_imgs[key]["img"] is not None:
                     print_image(output_imgs[key]["img"], (str(device) + "_" + output_imgs[key]["background"] +
@@ -95,7 +89,7 @@ def _pseudocolored_image(device, histogram, bins, img, mask, background, channel
             fig_name = 'VIS_pseudocolor_colorbar_' + str(channel) + '_channel.svg'
             if not os.path.isfile(os.path.join(path, fig_name)):
                 plot_colorbar(path, fig_name, bins)
-        elif debug == 'plot':
+        elif debug == pcvc.DEBUG_PLOT:
             for key in output_imgs:
                 if output_imgs[key]["img"] is not None:
                     plot_image(output_imgs[key]["img"])
@@ -268,7 +262,7 @@ def analyze_color(img, imgname, mask, bins, device, debug=None, hist_plot_type=N
         fig_name = (str(filename[0:-4]) + '_' + str(hist_plot_type) + '_hist.svg')
         plt.savefig(fig_name)
         analysis_images.append(['IMAGE', 'hist', fig_name])
-        if debug == 'print':
+        if debug == pcvc.DEBUG_PRINT:
             fig_name = (str(device) + '_' + str(hist_plot_type) + '_hist.svg')
             plt.savefig(fig_name)
         plt.clf()

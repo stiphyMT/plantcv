@@ -7,13 +7,7 @@ from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import plot_colorbar
 from plantcv.plantcv import fatal_error
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def fluor_fvfm(fdark, fmin, fmax, mask, device, filename, bins=1000, debug=None):
     """Analyze PSII camera images.
@@ -161,11 +155,11 @@ def fluor_fvfm(fdark, fmin, fmax, mask, device, filename, bins=1000, debug=None)
         if not os.path.isfile(path + '/' + fig_name):
             plot_colorbar(path, fig_name, 2)
 
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(fmin_mask, (str(device) + '_fmin_mask.png'))
         print_image(fmax_mask, (str(device) + '_fmax_mask.png'))
         print_image(fv, (str(device) + '_fv_convert.png'))
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(fmin_mask, cmap='gray')
         plot_image(fmax_mask, cmap='gray')
         plot_image(fv, cmap='gray')

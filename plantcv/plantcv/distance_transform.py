@@ -3,7 +3,7 @@
 import cv2
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-
+from plantcv.plantcv import PCVconstants as pcvc
 
 def distance_transform(img, distanceType, maskSize, device, debug=None):
     """Creates an image where for each object pixel, a number is assigned that corresponds to the distance to the
@@ -37,9 +37,9 @@ def distance_transform(img, distanceType, maskSize, device, debug=None):
     dist = cv2.distanceTransform(src=img, distanceType=distanceType, maskSize=maskSize)
     norm_image = cv2.normalize(src=dist, dst=dist, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
 
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(norm_image, (str(device) + '_distance_transform.png'))
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         plot_image(norm_image, cmap='gray')
 
     return device, norm_image

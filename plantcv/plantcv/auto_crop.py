@@ -4,13 +4,7 @@ import cv2
 import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-
-## collect cv2 version info
-try:
-    cv2major, cv2minor, _, _ = cv2.__version__.split('.')
-except:
-    cv2major, cv2minor, _ = cv2.__version__.split('.')
-cv2major, cv2minor = int(cv2major), int(cv2minor)
+from plantcv.plantcv import PCVconstants as pcvc
 
 def auto_crop(device, img, objects, padding_x=0, padding_y=0, color='black', debug=None):
     """Resize image.
@@ -57,10 +51,10 @@ def auto_crop(device, img, objects, padding_x=0, padding_y=0, color='black', deb
 
     cropped = cv2.copyMakeBorder(crop_img, offsety, offsety, offsetx, offsetx, cv2.BORDER_CONSTANT, value=colorval)
 
-    if debug == 'print':
+    if debug == pcvc.DEBUG_PRINT:
         print_image(img_copy, (str(device) + "_crop_area.png"))
         print_image(cropped, (str(device) + "_auto_cropped.png"))
-    elif debug == 'plot':
+    elif debug == pcvc.DEBUG_PLOT:
         if len(np.shape(img_copy)) == 3:
             plot_image(img_copy)
             plot_image(cropped)
