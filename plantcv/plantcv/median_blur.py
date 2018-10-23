@@ -26,9 +26,11 @@ def median_blur(img, ksize, device, debug=None):
     :return device: int
     :return img_mblur: numpy array
     """
+    if type(ksize) is not int and type(ksize) is not tuple:
+        fatal_error("Invalid ksize, must be integer or tuple")
 
-    img_mblur = cv2.medianBlur(img, ksize)
-    device += 1
+    img_mblur = median_filter(gray_img, size=ksize)
+    params.device += 1
     if debug == pcvc.DEBUG_PRINT:
         print_image(img_mblur, (str(device) + '_median_blur' + str(ksize) + '.png'))
     elif debug == pcvc.DEBUG_PLOT:
