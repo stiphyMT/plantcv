@@ -314,3 +314,4 @@ _site/*
 ## User ignores
 change_plantcv.sh
 >>>>>>> 89d4d47c42265cf5cddc593c43f4feac23b9293f
+*.ipynb
