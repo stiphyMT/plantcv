@@ -36,9 +36,9 @@ def binary_threshold(img, threshold, maxValue, object_type, device, debug=None):
     device += 1
     if object_type == pcvc.THRESHOLD_OBJ_LIGHT:
         ret, t_img = cv2.threshold(img, threshold, maxValue, cv2.THRESH_BINARY)
-        if debug == DEBUG_PRINT:
+        if debug == pcvc.DEBUG_PRINT:
             print_image(t_img, (str(device) + '_binary_threshold' + str(threshold) + '.png'))
-        elif debug == DEBUG_PLOT:
+        elif debug == pcvc.DEBUG_PLOT:
             plot_image(t_img, cmap='gray')
         return device, t_img
     elif object_type == pcvc.THRESHOLD_OBJ_DARK:

@@ -58,7 +58,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
     background2 = np.zeros( size, dtype = np.uint8)
 
     # Allows user to find all objects that are completely inside or overlapping with ROI
-    if roi_type == pcvc.ROI_OBJECTS_PARTIAL:
+    if roi_type == pcvc.ROI_OBJECTS_TYPE_PARTIAL:
         for c, cnt in enumerate( object_contour):
             length = ( len( cnt) - 1)
             stack = np.vstack( cnt)
@@ -89,7 +89,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
         cv2.drawContours( ori_img, roi_contour, -1, ( 255, 0, 0), 5, lineType = 8, hierarchy = roi_hierarchy)
 
     # Allows user to cut objects to the ROI (all objects completely outside ROI will not be kept)
-    elif roi_type == pcvc.ROI_OBJECTS_CUTTO:
+    elif roi_type == pcvc.ROI_OBJECTS_TYPE_CUTTO:
         cv2.drawContours( background1, object_contour, -1, ( 255, 255, 255), -1, lineType = 8, hierarchy = obj_hierarchy)
         roi_points = np.vstack( roi_contour[0])
         cv2.fillPoly( background2, [roi_points], ( 255, 255, 255))
@@ -106,7 +106,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
         cv2.drawContours( ori_img, roi_contour, -1, (255, 0, 0), 5, lineType = 8, hierarchy = roi_hierarchy)
         
     # Cuts off objects that do not have their center of mass inside the ROI
-    elif roi_type == pcvc.ROI_OBJECTS_MASSC:
+    elif roi_type == pcvc.ROI_OBJECTS_TYPE_MASSC:
         for c, cnt in enumerate( object_contour):
             stack = np.vstack( cnt)
             test = []

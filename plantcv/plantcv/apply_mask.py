@@ -39,7 +39,7 @@ def apply_mask(img, mask, mask_color, device, debug=None):
         white_mask = cv2.bitwise_not(masked_img, mask=mask_inv)
         # Add masked image to white background (can't just use mask_inv because that is a binary)
         white_masked = cv2.add(masked_img, white_mask)
-        if debug == pcvc.DEBUGPRINT:
+        if debug == pcvc.DEBUG_PRINT:
             print_image(white_masked, (str(device) + '_wmasked.png'))
         elif debug == pcvc.DEBUG_PLOT:
             plot_image(white_masked)

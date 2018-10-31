@@ -64,12 +64,12 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
         hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
         h, s, v = cv2.split(hsv)
         ret, v_img = cv2.threshold(v, 0, 255, cv2.THRESH_BINARY)
-        if pcvc.pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
+        if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
             _, roi_contour, hierarchy = cv2.findContours(v_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             roi_contour, hierarchy = cv2.findContours(v_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     elif roi_input == 'binary':
-        if pcvc.CV2MAJOR >= 3 and pcvc.pcvc.CV2MINOR >= 1:
+        if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
             _, roi_contour, hierarchy = cv2.findContours(roi, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             roi_contour, hierarchy = cv2.findContours(roi, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -79,7 +79,7 @@ def define_roi(img, shape, device, roi=None, roi_input='default', debug=None, ad
         roi_size = (ix - 5), (iy - 5)
         roi = np.zeros(roi_size, dtype=np.uint8)
         roi1 = roi + 1
-        if pcvc.CV2MAJOR > 2 and pcvc.pcvc.CV2MINOR > 0:
+        if pcvc.CV2MAJOR > 2 and pcvc.CV2MINOR > 0:
             _, roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             roi_contour, roi_heirarchy = cv2.findContours(roi1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
