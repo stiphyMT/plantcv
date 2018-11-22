@@ -12,12 +12,12 @@ def print_image(img, filename):
     img      = image object
     filename = name of file to save image to
 
-    :param img: numpy array
+    :param img: numpy.ndarray
     :param filename: string
     :return:
     """
 
     try:
-        cv2.imwrite(filename, img)
+        cv2.imwrite( filename, img)
     except:
-        fatal_error("Error writing file " + filename + ": " + str(sys.exc_info()[0]))
+        fatal_error( "Error writing file {0} : {1}".format( filename, sys.exc_info()[0]))

@@ -2,45 +2,46 @@
 
 import cv2
 import numpy as np
+import os
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
+from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
-def find_objects(img, mask, device, debug=None):
+
+def find_objects(img, mask):
     """Find all objects and color them blue.
 
     Inputs:
-    img       = image that the objects will be overlayed
-    mask      = what is used for object detection
-    device    = device number.  Used to count steps in the pipeline
-    debug     = None, print, or plot. Print = save to file, Plot = print to screen.
+    img       = RGB or grayscale image data for plotting
+    mask      = Binary mask used for contour detection
+
 
     Returns:
-    device    = device number
     objects   = list of contours
     hierarchy = contour hierarchy list
 
-    :param img: numpy array
-    :param mask: numpy array
-    :param device: int
-    :param debug: str
-    :return device: int
+    :param img: numpy.ndarray
+    :param mask: numpy.ndarray
     :return objects: list
-    :return hierarchy: list
+    :return hierarchy: numpy.ndarray
     """
 
-    device += 1
+    params.device += 1
     mask1 = np.copy(mask)
     ori_img = np.copy(img)
+    # If the reference image is grayscale convert it to color
+    if len(np.shape(ori_img)) == 2:
+        ori_img = cv2.cvtColor(ori_img, cv2.COLOR_GRAY2BGR)
     if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
-        _, objects, hierarchy = cv2.findContours( mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        _, objects, hierarchy = cv2.findContours( mask1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     else:
-        objects, hierarchy = cv2.findContours( mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-    for i, cnt in enumerate( objects):
-        cv2.drawContours( ori_img, objects, i, ( 255, 102, 255), -1, lineType = 8, hierarchy = hierarchy)
-    if debug == pcvc.DEBUG_PRINT:
-        print_image( ori_img, ( str( device) + '_id_objects.png'))
-    elif debug == pcvc.DEBUG_PLOT:
-        plot_image( ori_img)
+        objects, hierarchy = cv2.findContours( mask1, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    for i, cnt in enumerate(objects):
+        cv2.drawContours(ori_img, objects, i, (255, 102, 255), -1, lineType=8, hierarchy=hierarchy)
+    if params.debug == pcvc.DEBUG_PRINT:
+        print_image(ori_img, os.path.join(params.debug_outdir, str(params.device) + '_id_objects.png'))
+    elif params.debug == pcvc.DEBUG_PLOT:
+        plot_image(ori_img)
 
-    return device, objects, hierarchy
+    return objects, hierarchy

@@ -13,29 +13,29 @@ def image_subtract(gray_img1, gray_img2):
     subtraction are forced to zero.
 
     Inputs:
-    gray_img1   = a gray-scale or binary image from which gray_img2 will be subtracted
-    gray_img2   = a gray-scale or binary image which will be subtracted from gray_img1
+    gray_img1   = Grayscale image data from which gray_img2 will be subtracted
+    gray_img2   = Grayscale image data which will be subtracted from gray_img1
 
     Returns:
     new_img = subtracted image
 
-    :param gray_img1: numpy array
-    :param gray_img2: numpy array
-    :return new_img: numpy array
+    :param gray_img1: numpy.ndarray
+    :param gray_img2: numpy.ndarray
+    :return new_img: numpy.ndarray
     """
 
     params.device += 1  # increment device
 
     # check inputs for gray-scale
-    if len(np.shape(gray_img1)) != 2 or len(np.shape(gray_img2)) != 2:
+    if len( np.shape( gray_img1)) != 2 or len( np.shape( gray_img2)) != 2:
         fatal_error("Input image is not gray-scale")
 
-    new_img = gray_img1.astype(np.float64) - gray_img2.astype(np.float64)  # subtract values
-    new_img[np.where(new_img < 0)] = 0  # force negative array values to zero
-    new_img = new_img.astype(np.uint8)  # typecast image to 8-bit image
+    new_img = gray_img1.astype( np.float64) - gray_img2.astype( np.float64)  # subtract values
+    new_img[np.where( new_img < 0)] = 0  # force negative array values to zero
+    new_img = new_img.astype( np.uint8)  # typecast image to 8-bit image
     # print-plot handling
     if params.debug == pcvc.DEBUG_PRINT:
-        print_image(new_img, os.path.join(params.debug_outdir, str(params.device) + "_subtraction.png"))
+        print_image( new_img, os.path.join( params.debug_outdir, str( params.device) + "_subtraction.png"))
     elif params.debug == pcvc.DEBUG_PLOT:
-        plot_image(new_img, cmap='gray')
+        plot_image( new_img, cmap = pcvc.COLOUR_MAP_GREY)
     return new_img  # return

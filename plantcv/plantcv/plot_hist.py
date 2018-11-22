@@ -5,6 +5,7 @@ import numpy as np
 from plantcv.plantcv import PCVconstants as pcvc
 
 
+
 def plot_hist(img, name=False):
     """Plot a histogram using the pyplot library.
 
@@ -12,9 +13,10 @@ def plot_hist(img, name=False):
     img  = image to analyze
     name = name for plot output
 
-    :param img: numpy array
+    :param img: numpy.ndarray
     :param name: str
-    :return: bins,hist
+    :return bins: list
+    : return hist: list
     """
 
     import matplotlib
@@ -26,7 +28,7 @@ def plot_hist(img, name=False):
         hist = cv2.calcHist([img], [0], None, [256], [0, 255])
         bins = range(0, 256, 1)
 
-        if name != False:
+        if name is not False:
             # open pyplot plotting window using hist data
             plt.plot(hist)
             # set range of x-axis
@@ -40,7 +42,7 @@ def plot_hist(img, name=False):
     else:
         hist, bins = np.histogram(img, bins='auto')
 
-        if name != False:
+        if name is not False:
             # open pyplot plotting window using hist data
             plt.plot(bins[:-1], hist)
             plt.xticks(bins[:-1], rotation='vertical', fontsize=4)

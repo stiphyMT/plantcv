@@ -5,15 +5,16 @@ import cv2
 from plantcv.plantcv import fatal_error
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
-from plantcv.plantcv import PCVconstants
+from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
-def readimage(filename, debug=None):
+
+def readimage(filename, mode="native"):
     """Read image from file.
 
     Inputs:
     filename = name of image file
-    debug    = None, print, or plot. Print = save to file, Plot = print to screen.
+    mode     = mode of imread ("native", "rgb", "gray")
 
     Returns:
     img      = image object as numpy array
@@ -21,13 +22,17 @@ def readimage(filename, debug=None):
     img_name = name of image file
 
     :param filename: str
-    :param debug: str
-    :return img: numpy array
+    :param mode: str
+    :return img: numpy.ndarray
     :return path: str
     :return img_name: str
     """
-
-    img = cv2.imread(filename)
+    if mode.upper() == "GRAY":
+        img = cv2.imread(filename, 0)
+    elif mode.upper() == "RGB":
+        img = cv2.imread(filename)
+    else:
+        img = cv2.imread(filename, -1)
 
     if img is None:
         fatal_error("Failed to open " + filename)
@@ -35,9 +40,9 @@ def readimage(filename, debug=None):
     # Split path from filename
     path, img_name = os.path.split(filename)
 
-    if debug == pcvc.DEBUG_PRINT:
+    if params.debug == pcvc.DEBUG_PRINT:
         print_image(img, "input_image.png")
-    elif debug == pcvc.DEBUG_PLOT:
+    elif params.debug == pcvc.DEBUG_PLOT:
         plot_image(img)
 
     return img, path, img_name

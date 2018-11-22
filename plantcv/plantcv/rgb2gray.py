@@ -1,33 +1,30 @@
 # RGB -> Gray
 
 import cv2
+import os
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
+from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
-def rgb2gray(img, device, debug=None):
+
+def rgb2gray( rgb_img):
     """Convert image from RGB colorspace to Gray.
 
     Inputs:
-    img    = image object, RGB colorspace
-    device = device number. Used to count steps in the pipeline
-    debug  = None, print, or plot. Print = save to file, Plot = print to screen.
+    rgb_img    = RGB image data
 
     Returns:
-    device = device number
     gray   = grayscale image
 
-    :param img: numpy array
-    :param device: int
-    :param debug: str
-    :return device: int
-    :return gray: numpy array
+    :param rgb_img: numpy.ndarray
+    :return gray: numpy.ndarray
     """
 
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    device += 1
-    if debug == pcvc.DEBUG_PRINT:
-        print_image(gray, (str(device) + '_gray.png'))
-    elif debug == pcvc.DEBUG_PLOT:
-        plot_image(gray, cmap='gray')
-    return device, gray
+    gray = cv2.cvtColor( rgb_img, cv2.COLOR_BGR2GRAY)
+    params.device += 1
+    if params.debug == pcvc.DEBUG_PRINT:
+        print_image(gray, ( str( params.device) + '_gray.png'))
+    elif params.debug == pcvc.DEBUG_PLOT:
+        plot_image(gray, cmap = pcvc.COLOUR_MAP_GREY)
+    return gray

@@ -17,6 +17,14 @@ THRESHOLD_OBJ_LIGHT = 'light'
 
 APPLY_MASK_WHITE = 'white'
 APPLY_MASK_BLACK = 'black'
+COLOR_BLACK = 'black'
+COLOR_WHITE = 'white'
+COLOUR_BLACK = 'black'
+COLOUR_WHITE = 'white'
+
+COLOR_MAP_GRAY = 'gray'
+COLOUR_MAP_GREY = 'gray'
+
 
 DEFINE_ROI_SHAPE_RECT = 'rectangle'
 DEFINE_ROI_SHAPE_CIRCLE = 'circle'
@@ -35,6 +43,9 @@ SHIFT_IMG_TOP = 'top'
 SHIFT_IMG_BOTTOM = 'bottom'
 SHIFT_IMG_LEFT = 'left'
 SHIFT_IMG_RIGHT = 'right'
+
+REPORT_SIZE_MARKER_DETECT = 'detect'
+REPORT_SIZE_MARKER_DEFINE = 'define'
 
 DEBUG_PRINT = 'print'
 DEBUG_PLOT = 'plot'

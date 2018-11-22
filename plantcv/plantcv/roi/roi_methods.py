@@ -10,7 +10,7 @@ from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
 # Create an ROI from a binary mask
-def from_binary_image(bin_img, img):
+def from_binary_image( bin_img, img):
     """Create an ROI from a binary image
 
     Inputs:
@@ -29,19 +29,22 @@ def from_binary_image(bin_img, img):
     # Autoincrement the device counter
     params.device += 1
     # Make sure the input bin_img is binary
-    if len(np.unique(bin_img)) != 2:
-        fatal_error("Input image is not binary!")
+    if len( np.unique( bin_img)) != 2:
+        fatal_error( "Input image is not binary!")
     # Use the binary image to create an ROI contour
-    roi_contour, roi_hierarchy = cv2.findContours(np.copy(bin_img), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[-2:]
+    if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
+        _, roi_contour, roi_hierarchy = cv2.findContours( np.copy( bin_img), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    else:
+        roi_contour, roi_hierarchy = cv2.findContours( np.copy( bin_img), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     # Draw the ROI if requested
     if params.debug is not None:
-        _draw_roi(img=img, roi_contour=roi_contour)
+        _draw_roi( img = img, roi_contour = roi_contour)
 
     return roi_contour, roi_hierarchy
 
 
 # Create a rectangular ROI
-def rectangle(x, y, h, w, img):
+def rectangle( x, y, h, w, img):
     """Create a rectangular ROI.
 
     Inputs:
@@ -67,7 +70,7 @@ def rectangle(x, y, h, w, img):
     params.device += 1
 
     # Get the height and width of the reference image
-    height, width = np.shape(img)[:2]
+    height, width = np.shape( img)[:2]
 
     # Check whether the ROI is correctly bounded inside the image
     if x < 0 or y < 0 or x + w > width or y + h > height:
@@ -80,18 +83,18 @@ def rectangle(x, y, h, w, img):
     pt4 = [x + w - 1, y]
 
     # Create the ROI contour
-    roi_contour = [np.array([[pt1], [pt2], [pt3], [pt4]], dtype=np.int32)]
-    roi_hierarchy = np.array([[[-1, -1, -1, -1]]], dtype=np.int32)
+    roi_contour = [np.array( [[pt1], [pt2], [pt3], [pt4]], dtype = np.int32)]
+    roi_hierarchy = np.array( [[[-1, -1, -1, -1]]], dtype = np.int32)
 
     # Draw the ROI if requested
     if params.debug is not None:
-        _draw_roi(img=img, roi_contour=roi_contour)
+        _draw_roi( img = img, roi_contour = roi_contour)
 
     return roi_contour, roi_hierarchy
 
 
 # Create a circular ROI
-def circle(x, y, r, img):
+def circle( x, y, r, img):
     """Create a circular ROI.
 
     Inputs:
@@ -119,25 +122,28 @@ def circle(x, y, r, img):
 
     # Check whether the ROI is correctly bounded inside the image
     if x - r < 0 or x + r > width or y - r < 0 or y + r > height:
-        fatal_error("The ROI extends outside of the image!")
+        fatal_error( "The ROI extends outside of the image!")
 
     # Initialize a binary image of the circle
     bin_img = np.zeros((height, width), dtype=np.uint8)
     # Draw the circle on the binary image
-    cv2.circle(bin_img, (x, y), r, 255, -1)
+    cv2.circle( bin_img, ( x, y), r, 255, -1)
 
     # Use the binary image to create an ROI contour
-    roi_contour, roi_hierarchy = cv2.findContours(np.copy(bin_img), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[-2:]
+    if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
+        _, roi_contour, roi_hierarchy = cv2.findContours( np.copy( bin_img), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    else:
+        roi_contour, roi_hierarchy = cv2.findContours( np.copy( bin_img), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
     # Draw the ROI if requested
     if params.debug is not None:
-        _draw_roi(img=img, roi_contour=roi_contour)
+        _draw_roi( img = img, roi_contour = roi_contour)
 
     return roi_contour, roi_hierarchy
 
 
 # Create an elliptical ROI
-def ellipse(x, y, r1, r2, angle, img):
+def ellipse( x, y, r1, r2, angle, img):
     """Create an elliptical ROI.
 
     Inputs:
@@ -165,43 +171,46 @@ def ellipse(x, y, r1, r2, angle, img):
     params.device += 1
 
     # Get the height and width of the reference image
-    height, width = np.shape(img)[:2]
+    height, width = np.shape( img)[:2]
 
     # Initialize a binary image of the ellipse
     bin_img = np.zeros((height, width), dtype=np.uint8)
     # Draw the ellipse on the binary image
-    cv2.ellipse(bin_img, (x, y), (r1, r2), angle, 0, 360, 255, -1)
+    cv2.ellipse( bin_img, ( x, y), ( r1, r2), angle, 0, 360, 255, -1)
 
-    if np.sum(bin_img[0, :]) + np.sum(bin_img[-1, :]) + np.sum(bin_img[:, 0]) + np.sum(bin_img[:, -1]) > 0:
-        fatal_error("The ROI extends outside of the image!")
+    if np.sum( bin_img[0, :]) + np.sum( bin_img[-1, :]) + np.sum( bin_img[:, 0]) + np.sum( bin_img[:, -1]) > 0:
+        fatal_error( "The ROI extends outside of the image!")
 
     # Use the binary image to create an ROI contour
-    roi_contour, roi_hierarchy = cv2.findContours(np.copy(bin_img), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[-2:]
+    if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
+        _, roi_contour, roi_hierarchy = cv2.findContours( np.copy( bin_img), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    else:
+        roi_contour, roi_hierarchy = cv2.findContours( np.copy( bin_img), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
     # Draw the ROI if requested
     if params.debug is not None:
-        _draw_roi(img=img, roi_contour=roi_contour)
+        _draw_roi( img = img, roi_contour = roi_contour)
 
     return roi_contour, roi_hierarchy
 
 
 # Draw the ROI on a reference image
-def _draw_roi(img, roi_contour):
+def _draw_roi( img, roi_contour):
     """Draw an ROI
 
     :param img: numpy.ndarray
     :param roi_contour: list
     """
     # Make a copy of the reference image
-    ref_img = np.copy(img)
+    ref_img = np.copy( img)
     # If the reference image is grayscale convert it to color
-    if len(np.shape(ref_img)) == 2:
-        ref_img = cv2.cvtColor(ref_img, cv2.COLOR_GRAY2BGR)
+    if len( np.shape( ref_img)) == 2:
+        ref_img = cv2.cvtColor( ref_img, cv2.COLOR_GRAY2BGR)
     # Draw the contour on the reference image
-    cv2.drawContours(ref_img, roi_contour, -1, (255, 0, 0), 5)
+    cv2.drawContours( ref_img, roi_contour, -1, ( 255, 0, 0), 5)
     if params.debug == pcvc.DEBUG_PRINT:
         # If debug is print, save the image to a file
-        print_image(ref_img, os.path.join(params.debug_outdir, str(params.device) + "_roi.png"))
+        print_image( ref_img, os.path.join( params.debug_outdir, str( params.device) + "_roi.png"))
     elif params.debug == pcvc.DEBUG_PLOT:
         # If debug is plot, print to the plotting device
-        plot_image(ref_img)
+        plot_image( ref_img)

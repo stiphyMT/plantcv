@@ -2,57 +2,56 @@
 
 import cv2
 import numpy as np
+import os
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
+from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
 
-def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_hierarchy, device, debug=None):
+def roi_objects( img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_hierarchy):
     """Find objects partially inside a region of interest or cut objects to the ROI.
 
     Inputs:
-    img            = img to display kept objects
-    roi_type       = 'cutto' (cut off), 'partial' (partially inside), or 'massc' (for center of mass inside)
+    img            = RGB or grayscale image data for plotting
+    roi_type       = 'cutto' or 'partial' (for partially inside), or 'massc' (for center of mass inside)
     roi_contour    = contour of roi, output from "View and Ajust ROI" function
-    roi_hierarchy  = contour of roi, output from "View and Ajust ROI" function
-    object_contour = contours of objects, output from "Identifying Objects" fuction
-    obj_hierarchy  = hierarchy of objects, output from "Identifying Objects" fuction
-
-    device         = device number.  Used to count steps in the pipeline
-    debug          = None, print, or plot. Print = save to file, Plot = print to screen.
+    roi_contour    = contour of roi, output from "View and Adjust ROI" function
+    roi_hierarchy  = contour of roi, output from "View and Adjust ROI" function
+    object_contour = contours of objects, output from "Identifying Objects" function
+    obj_hierarchy  = hierarchy of objects, output from "Identifying Objects" function
 
     Returns:
-    device         = device number
     kept_cnt       = kept contours
     hierarchy      = contour hierarchy list
     mask           = mask image
     obj_area       = total object pixel area
 
-    :param img: numpy array
+    :param img: numpy.ndarray
     :param roi_type: str
     :param roi_contour: list
-    :param roi_hierarchy: list
+    :param roi_hierarchy: numpy.ndarray
     :param object_contour: list
-    :param obj_hierarchy: list
-    :param device: int
-    :param debug: str
-    :return device: int
+    :param obj_hierarchy: numpy.ndarray
     :return kept_cnt: list
-    :return hierarchy: list
-    :return mask: numpy array
+    :return hierarchy: numpy.ndarray
+    :return mask: numpy.ndarray
     :return obj_area: int
     """
 
-    device += 1
-    if len(np.shape(img)) == 3:
+    params.device += 1
+    if len( np.shape(img)) == 3:
         ix, iy, iz = np.shape( img)
     else:
         ix, iy = np.shape( img)
 
     size = ix, iy, 3
-    background = np.zeros(size, dtype = np.uint8)
+    background = np.zeros( size, dtype = np.uint8)
     ori_img = np.copy( img)
+    # If the reference image is grayscale convert it to color
+    if len( np.shape(ori_img)) == 2:
+        ori_img = cv2.cvtColor( ori_img, cv2.COLOR_GRAY2BGR)
     w_back = background + 255
     background1 = np.zeros( size, dtype = np.uint8)
     background2 = np.zeros( size, dtype = np.uint8)
@@ -62,13 +61,13 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
         for c, cnt in enumerate( object_contour):
             length = ( len( cnt) - 1)
             stack = np.vstack( cnt)
-            test = []
+
             keep = False
             for i in range( 0, length):
                 pptest = cv2.pointPolygonTest( roi_contour[0], ( stack[i][0], stack[i][1]), False)
                 if int( pptest) != -1:
                     keep = True
-            if keep == True:
+            if keep:
                 if obj_hierarchy[0][c][3] > -1:
                     cv2.drawContours( w_back, object_contour, c, ( 255, 255, 255), -1, lineType=8,
                                      hierarchy = obj_hierarchy)
@@ -97,7 +96,7 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
         kept_obj = cv2.cvtColor( obj_roi, cv2.COLOR_RGB2GRAY)
         mask = np.copy( kept_obj)
         obj_area = cv2.countNonZero( kept_obj)
-        if pcvc.CV2MAJOR >= 3 and pcvc.cv2MINOR >= 1:
+        if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
             _, kept_cnt, hierarchy = cv2.findContours( kept_obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
             kept_cnt, hierarchy = cv2.findContours( kept_obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
@@ -143,16 +142,16 @@ def roi_objects(img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_h
 
 
     else:
-        fatal_error('ROI Type' + str(roi_type) + ' is not "cutto", "partial", or "massc"!')
+        fatal_error('ROI Type {} is not "cutto", "partial", or "massc"!'.format( roi_type))
 
-    if debug == pcvc.DEBUG_PRINT:
-        print_image( w_back, ( str( device) + '_roi_objects.png'))
-        print_image( ori_img, ( str( device) + '_obj_on_img.png'))
-        print_image( mask, ( str( device) + '_roi_mask.png'))
-    elif debug == pcvc.DEBUG_PLOT:
+    if params.debug == pcvc.DEBUG_PRINT:
+        print_image( w_back, ( str( params.device) + '_roi_objects.png'))
+        print_image( ori_img, ( str( params.device) + '_obj_on_img.png'))
+        print_image( mask, ( str( params.device) + '_roi_mask.png'))
+    elif params.debug == pcvc.DEBUG_PLOT:
         plot_image( w_back)
         plot_image( ori_img)
-        plot_image( mask, cmap = 'gray')
+        plot_image( mask, cmap = pcvc.COLOUR_MAP_GREY)
         # print ('Object Area=', obj_area)
 
-    return device, kept_cnt, hierarchy, mask, obj_area
+    return kept_cnt, hierarchy, mask, obj_area
