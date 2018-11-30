@@ -19,7 +19,7 @@ try:
     filename = __file__
 except NameError:
     filename = ("D:\\StiphOne\\Documents\\GitHub\\plantcv\\tests\\tests.py",
-                "D:\\StiphOne\\Documents\\GitHub\\plantcv\\tests\\tests.py")[1] 
+                "C:\\Users\\Scanalyzer Admin\\Documents\\GitHub\\plantcv\\tests\\tests.py")[1] 
 
 TEST_DATA = os.path.join( os.path.dirname( os.path.abspath( filename)), "data")
 TEST_TMPDIR = os.path.join( os.path.dirname( os.path.abspath( filename)), "..", ".cache")
