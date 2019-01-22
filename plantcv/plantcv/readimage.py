@@ -9,7 +9,7 @@ from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
 
-def readimage(filename, mode="native"):
+def readimage(filename, mode = "native"):
     """Read image from file.
 
     Inputs:
@@ -27,22 +27,22 @@ def readimage(filename, mode="native"):
     :return path: str
     :return img_name: str
     """
-    if mode.upper() == "GRAY":
-        img = cv2.imread(filename, 0)
-    elif mode.upper() == "RGB":
-        img = cv2.imread(filename)
+    if mode.upper() == pcvc.READ_IMAGE_GRAY or pcvc.READ_IMAGE_GREY:
+        img = cv2.imread( filename, cv2.IMREAD_COLOR)
+    elif mode.upper() == pcvc.READ_IMAGE_RGB:
+        img = cv2.imread( filename, cv2.IMREAD_COLOR)
     else:
-        img = cv2.imread(filename, -1)
+        img = cv2.imread( filename, cv2.IMREAD_UNCHANGED)
 
     if img is None:
-        fatal_error("Failed to open " + filename)
+        fatal_error( "Failed to open " + filename)
 
     # Split path from filename
-    path, img_name = os.path.split(filename)
+    path, img_name = os.path.split( filename)
 
     if params.debug == pcvc.DEBUG_PRINT:
-        print_image(img, "input_image.png")
+        print_image( img, "input_image.png")
     elif params.debug == pcvc.DEBUG_PLOT:
-        plot_image(img)
+        plot_image( img)
 
     return img, path, img_name
