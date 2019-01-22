@@ -28,10 +28,10 @@ def rgb2gray_rgb( rgb_img, channel):
     # Split BGR channels
     params.device += 1
 	
-    # The allowable channel inputs are h, s or v
+    # The allowable channel inputs are r, g or b
     names = { "r": "red", "g": "green", "b": "blue"}
 	
-    b, g, r = cv2.split( img)
+    b, g, r = cv2.split( rgb_img)
 
     if channel not in names:
         fatal_error( "Channel " + str(channel) + " is not r, g or b!")
