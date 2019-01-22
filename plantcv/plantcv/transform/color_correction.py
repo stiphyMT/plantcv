@@ -8,9 +8,10 @@ from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
 from plantcv.plantcv import params
+from plantcv.plantcv.roi import rectangle
 from plantcv.plantcv import PCVconstants as pcvc
 
-def get_color_matrix(rgb_img, mask):
+def get_color_matrix( rgb_img, mask):
     """ Calculate the average value of pixels in each color chip for each color channel.
 
     Inputs:
@@ -32,14 +33,14 @@ def get_color_matrix(rgb_img, mask):
     params.device += 1
 
     # Check for RGB input
-    if len(np.shape(rgb_img)) != 3:
-        fatal_error("Input rgb_img is not an RGB image.")
+    if len( np.shape( rgb_img)) != 3:
+        fatal_error( "Input rgb_img is not an RGB image.")
     # Check mask for gray-scale
-    if len(np.shape(mask)) != 2:
-        fatal_error("Input mask is not an gray-scale image.")
+    if len( np.shape( mask)) != 2:
+        fatal_error( "Input mask is not an gray-scale image.")
 
     # create empty color_matrix
-    color_matrix = np.zeros((len(np.unique(mask))-1, 4))
+    color_matrix = np.zeros((len(np.unique(mask)) - 1, 4))
 
     # create headers
     headers = ["chip_number", "r_avg", "g_avg", "b_avg"]
@@ -87,14 +88,14 @@ def get_matrix_m(target_matrix, source_matrix):
     params.device += 1
 
     # if the number of chips in source_img match the number of chips in target_matrix
-    if np.shape(target_matrix) == np.shape(source_matrix):
-        t_cc, t_r, t_g, t_b = np.split(target_matrix, 4, 1)
-        s_cc, s_r, s_g, s_b = np.split(source_matrix, 4, 1)
+    if np.shape( target_matrix) == np.shape( source_matrix):
+        t_cc, t_r, t_g, t_b = np.split( target_matrix, 4, 1)
+        s_cc, s_r, s_g, s_b = np.split( source_matrix, 4, 1)
     else:
-        combined_matrix = np.zeros((np.ma.size(source_matrix, 0), 7))
+        combined_matrix = np.zeros(( np.ma.size(source_matrix, 0), 7))
         row_count = 0
-        for r in range(0, np.ma.size(target_matrix, 0)):
-            for i in range(0, np.ma.size(source_matrix, 0)):
+        for r in range( 0, np.ma.size(target_matrix, 0)):
+            for i in range( 0, np.ma.size(source_matrix, 0)):
                 if target_matrix[r][0] == source_matrix[i][0]:
                     combined_matrix[row_count][0] = target_matrix[r][0]
                     combined_matrix[row_count][1] = target_matrix[r][1]
@@ -104,19 +105,19 @@ def get_matrix_m(target_matrix, source_matrix):
                     combined_matrix[row_count][5] = source_matrix[i][2]
                     combined_matrix[row_count][6] = source_matrix[i][3]
                     row_count += 1
-        t_cc, t_r, t_g, t_b, s_r, s_g, s_b = np.split(combined_matrix, 7, 1)
-    t_r2 = np.square(t_r)
-    t_r3 = np.power(t_r, 3)
-    t_g2 = np.square(t_g)
-    t_g3 = np.power(t_g, 3)
-    t_b2 = np.square(t_b)
-    t_b3 = np.power(t_b, 3)
-    s_r2 = np.square(s_r)
-    s_r3 = np.power(s_r, 3)
-    s_g2 = np.square(s_g)
-    s_g3 = np.power(s_g, 3)
-    s_b2 = np.square(s_b)
-    s_b3 = np.power(s_b, 3)
+        t_cc, t_r, t_g, t_b, s_r, s_g, s_b = np.split( combined_matrix, 7, 1)
+    t_r2 = np.square( t_r)
+    t_r3 = np.power( t_r, 3)
+    t_g2 = np.square( t_g)
+    t_g3 = np.power( t_g, 3)
+    t_b2 = np.square( t_b)
+    t_b3 = np.power( t_b, 3)
+    s_r2 = np.square( s_r)
+    s_r3 = np.power( s_r, 3)
+    s_g2 = np.square( s_g)
+    s_g3 = np.power( s_g, 3)
+    s_b2 = np.square( s_b)
+    s_b3 = np.power( s_b, 3)
 
     # create matrix_a
     matrix_a = np.concatenate((s_r, s_g, s_b, s_b2, s_g2, s_r2, s_b3, s_g3, s_r3), 1)
@@ -149,14 +150,14 @@ def calc_transformation_matrix(matrix_m, matrix_b):
     :return transformation_matrix: numpy.ndarray
     """
     # check matrix_m and matrix_b are matrices
-    if len(np.shape(matrix_b)) != 2 or len(np.shape(matrix_m)) != 2:
+    if len( np.shape( matrix_b)) != 2 or len( np.shape( matrix_m)) != 2:
         fatal_error("matrix_m and matrix_b must be n x m matrices such that m,n != 1.")
     # check matrix_b has 9 columns
-    if np.shape(matrix_b)[1] != 9:
-        fatal_error("matrix_b must have 9 columns.")
+    if np.shape( matrix_b)[1] != 9:
+        fatal_error( "matrix_b must have 9 columns.")
     # check matrix_m and matrix_b for multiplication
-    if np.shape(matrix_m)[0] != np.shape(matrix_b)[1] or np.shape(matrix_m)[1] != np.shape(matrix_b)[0]:
-        fatal_error("Cannot multiply matrices.")
+    if np.shape( matrix_m)[0] != np.shape( matrix_b)[1] or np.shape(matrix_m)[1] != np.shape(matrix_b)[0]:
+        fatal_error( "Cannot multiply matrices.")
 
     # Autoincrement the device counter
     params.device += 1
@@ -164,28 +165,28 @@ def calc_transformation_matrix(matrix_m, matrix_b):
     t_r, t_r2, t_r3, t_g, t_g2, t_g3, t_b, t_b2, t_b3 = np.split(matrix_b, 9, 1)
 
     # multiply each 22x1 matrix from target color space by matrix_m
-    red = np.matmul(matrix_m, t_r)
-    green = np.matmul(matrix_m, t_g)
-    blue = np.matmul(matrix_m, t_b)
+    red = np.matmul( matrix_m, t_r)
+    green = np.matmul( matrix_m, t_g)
+    blue = np.matmul( matrix_m, t_b)
 
-    red2 = np.matmul(matrix_m, t_r2)
-    green2 = np.matmul(matrix_m, t_g2)
-    blue2 = np.matmul(matrix_m, t_b2)
+    red2 = np.matmul( matrix_m, t_r2)
+    green2 = np.matmul( matrix_m, t_g2)
+    blue2 = np.matmul( matrix_m, t_b2)
 
-    red3 = np.matmul(matrix_m, t_r3)
-    green3 = np.matmul(matrix_m, t_g3)
-    blue3 = np.matmul(matrix_m, t_b3)
+    red3 = np.matmul( matrix_m, t_r3)
+    green3 = np.matmul( matrix_m, t_g3)
+    blue3 = np.matmul( matrix_m, t_b3)
 
     # concatenate each product column into 9X9 transformation matrix
-    transformation_matrix = np.concatenate((red, green, blue, red2, green2, blue2, red3, green3, blue3), 1)
+    transformation_matrix = np.concatenate(( red, green, blue, red2, green2, blue2, red3, green3, blue3), 1)
 
     # find determinant of transformation matrix
-    t_det = np.linalg.det(transformation_matrix)
+    t_det = np.linalg.det( transformation_matrix)
 
     return 1-t_det, transformation_matrix
 
 
-def apply_transformation_matrix(source_img, target_img, transformation_matrix):
+def apply_transformation_matrix( source_img, target_img, transformation_matrix):
     """ Apply the transformation matrix to the source_image.
 
     Inputs:
@@ -202,26 +203,26 @@ def apply_transformation_matrix(source_img, target_img, transformation_matrix):
     :return corrected_img: numpy.ndarray
     """
     # check transformation_matrix for 9x9
-    if np.shape(transformation_matrix) != (9, 9):
-        fatal_error("transformation_matrix must be a 9x9 matrix of transformation coefficients.")
+    if np.shape( transformation_matrix) != ( 9, 9):
+        fatal_error( "transformation_matrix must be a 9x9 matrix of transformation coefficients.")
     # Check for RGB input
-    if len(np.shape(source_img)) != 3:
-        fatal_error("Source_img is not an RGB image.")
+    if len(np.shape( source_img)) != 3:
+        fatal_error( "Source_img is not an RGB image.")
 
     # Autoincrement the device counter
     params.device += 1
 
     # split transformation_matrix
-    red, green, blue, red2, green2, blue2, red3, green3, blue3 = np.split(transformation_matrix, 9, 1)
+    red, green, blue, red2, green2, blue2, red3, green3, blue3 = np.split( transformation_matrix, 9, 1)
 
     # find linear, square, and cubic values of source_img color channels
-    source_b, source_g, source_r = cv2.split(source_img)
-    source_b2 = np.square(source_b)
-    source_b3 = np.power(source_b, 3)
-    source_g2 = np.square(source_g)
-    source_g3 = np.power(source_g, 3)
-    source_r2 = np.square(source_r)
-    source_r3 = np.power(source_r, 3)
+    source_b, source_g, source_r = cv2.split( source_img)
+    source_b2 = np.square( source_b)
+    source_b3 = np.power( source_b, 3)
+    source_g2 = np.square( source_g)
+    source_g3 = np.power( source_g, 3)
+    source_r2 = np.square( source_r)
+    source_r3 = np.power( source_r, 3)
 
     # apply linear model to source color channels
     b = 0 + source_r * blue[0] + source_g * blue[1] + source_b * blue[2] + source_r2 * blue[3] + source_g2 * blue[
@@ -233,20 +234,20 @@ def apply_transformation_matrix(source_img, target_img, transformation_matrix):
 
     # merge corrected color channels onto source_image
     bgr = [b, g, r]
-    corrected_img = cv2.merge(bgr)
+    corrected_img = cv2.merge( bgr)
 
     # round corrected_img elements to be within range and of the correct data type
-    corrected_img = np.rint(corrected_img)
-    corrected_img[np.where(corrected_img > 255)] = 255
-    corrected_img = corrected_img.astype(np.uint8)
+    corrected_img = np.rint( corrected_img)
+    corrected_img[np.where( corrected_img > 255)] = 255
+    corrected_img = corrected_img.astype( np.uint8)
 
     if params.debug == pcvc.DEBUG_PRINT:
         # If debug is print, save the image to a file
-        print_image(corrected_img, os.path.join(params.debug_outdir, str(params.device) + "_corrected.png"))
+        print_image(corrected_img, os.path.join( params.debug_outdir, str( params.device) + "_corrected.png"))
     elif params.debug == pcvc.DEBUG_PLOT:
         # If debug is plot, print a horizontal view of source_img, corrected_img, and target_img to the plotting device
         # plot horizontal comparison of source_img, corrected_img (with rounded elements) and target_img
-        plot_image(np.hstack([source_img, corrected_img, target_img]))
+        plot_image( np.hstack([source_img, corrected_img, target_img]))
 
     # return corrected_img
     return corrected_img
@@ -267,10 +268,10 @@ def save_matrix(matrix, filename):
     # Autoincrement the device counter
     params.device += 1
 
-    np.savez(filename, matrix)
+    np.savez( filename, matrix)
 
 
-def load_matrix(filename):
+def load_matrix( filename):
     """ Deserializes from file an numpy.ndarray object as a matrix
     Inputs:
     filename    = .npz file to which a numpy.matrix or numpy.ndarray is saved
@@ -285,9 +286,9 @@ def load_matrix(filename):
     # Autoincrement the device counter
     params.device += 1
 
-    matrix_file = np.load(filename, encoding="latin1")
+    matrix_file = np.load( filename, encoding="latin1")
     matrix = matrix_file['arr_0']
-    np.asmatrix(matrix)
+    np.asmatrix( matrix)
 
     return matrix
 
@@ -342,3 +343,72 @@ def correct_color(target_img, target_mask, source_img, source_mask, output_direc
     corrected_img = apply_transformation_matrix(source_img, target_img, transformation_matrix)
 
     return target_matrix, source_matrix, transformation_matrix, corrected_img
+
+
+def create_color_card_mask(rgb_img, chip_dims, start_coord, spacing, nrows, ncols, exclude=[]):
+    """Create a labeled mask for color card chips
+    Inputs:
+    rgb_img        = Input RGB image data containing a color card.
+    chip_dims      = Two-element tuple of the chip masks width and height.
+    start_coord    = Two-element tuple of the first chip mask starting x and y coordinate.
+    spacing        = Two-element tuple of the horizontal and vertical spacing between chip masks.
+    nrows          = Number of chip rows.
+    ncols          = Number of chip columns.
+    exclude        = Optional list of chips to exclude. List in largest to smallest index (e.g. [20, 0])
+
+    Returns:
+    mask           = Labeled mask of chips
+
+    :param rgb_img: numpy.ndarray
+    :param chip_dims: tuple
+    :param start_coord: tuple
+    :param spacing: tuple
+    :param nrows: int
+    :param ncols: int
+    :param exclude: list
+    :return mask: numpy.ndarray
+    """
+    # Initialize chip list
+    chips = []
+    # Store user debug
+    debug = params.debug
+    # Temporarily disable debug
+    params.debug = None
+    # Loop over each color card row
+    for i in range(0, nrows):
+        # The upper left corner is the y starting coordinate + the chip offset * the vertical spacing between chips
+        y = start_coord[1] + i * spacing[1]
+        # Loop over each column
+        for j in range(0, ncols):
+            # The upper left corner is the x starting coordinate + the chip offset * the
+            # horizontal spacing between chips
+            x = start_coord[0] + j * spacing[0]
+            # Create a chip ROI
+            chips.append(rectangle( img = rgb_img, x = x, y = y, w = chip_dims[0], h = chip_dims[1]))
+    # Remove any excluded chips
+    for chip in exclude:
+        del chips[chip]
+    # Create mask
+    mask = np.zeros( shape = np.shape( rgb_img)[:2], dtype = np.uint8())
+    # Mask label index
+    i = 1
+    # Draw labeled chip boxes on the mask
+    for chip in chips:
+        mask = cv2.drawContours( mask, chip[0], -1, (i * 10), -1)
+        i += 1
+    # Reset debug
+    params.debug = debug
+    if params.debug is not None:
+        # Create a copy of the input image for plotting
+        canvas = np.copy( rgb_img)
+        # Draw chip ROIs on the canvas image
+        for chip in chips:
+            cv2.drawContours( canvas, chip[0], -1, (255, 255, 0), 5)
+        if params.debug == pcvc.DEBUG_PRINT:
+            print_image( img = canvas, filename = os.path.join(params.debug_outdir,
+                                                          str(params.device) + "_color_card_mask_rois.png"))
+            print_image(img = mask, filename=os.path.join(params.debug_outdir,
+                                                        str(params.device) + "_color_card_mask.png"))
+        elif params.debug == pcvc.DEBUG_PLOT:
+            plot_image( canvas)
+    return mask
