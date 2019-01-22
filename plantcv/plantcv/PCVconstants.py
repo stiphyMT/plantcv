@@ -25,15 +25,14 @@ COLOUR_WHITE = 'white'
 COLOR_MAP_GRAY = 'gray'
 COLOUR_MAP_GREY = 'gray'
 
-
 DEFINE_ROI_SHAPE_RECT = 'rectangle'
 DEFINE_ROI_SHAPE_CIRCLE = 'circle'
 DEFINE_ROI_INPUT_BINARY = 'binary'
 DEFINE_ROI_INPUT_RGB = 'rgb'
 
-RECT_MASK_WHITE = 'white' 
-RECT_MASK_BLACK = 'black'
-RECT_MASK_GREY = 'grey'
+MASK_WHITE = 'white' 
+MASK_BLACK = 'black'
+#RECT_MASK_GREY = 'grey'
 
 ROI_OBJECTS_TYPE_CUTTO = 'cutto'
 ROI_OBJECTS_TYPE_PARTIAL = 'partial'
@@ -50,10 +49,12 @@ REPORT_SIZE_MARKER_DEFINE = 'define'
 DEBUG_PRINT = 'print'
 DEBUG_PLOT = 'plot'
 
+READ_IMAGE_GRAY = 'GRAY'
+READ_IMAGE_GREY = 'GRAY'
+READ_IMAGE_RGB = 'RGB'
+
 WHITE_BALANCE_HIST = 'hist'
 WHITE_BALANCE_MAX = 'max'
-LINEBLUR_HORI = 0
-LINEBLUR_VERT = 1
 
 ## collect cv2 version info
 try:
