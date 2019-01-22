@@ -51,6 +51,7 @@ def background_subtraction(background_image, foreground_image):
             width, height = bg_img.shape[1], bg_img.shape[0]
             fg_img = cv2.resize(fg_img, (width, height), interpolation=cv2.INTER_AREA)
 
+    # # Will be depricating opencv version 2
     # Instantiating the background subtractor, for a single history no default parameters need to be changed.
     if pcvc.CV2MAJOR >= 3:
     # BackgroundSubtractorMOG is now available only in the extra contrib modules

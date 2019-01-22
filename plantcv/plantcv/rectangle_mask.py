@@ -19,7 +19,7 @@ def rectangle_mask( img, p1, p2, color = "black"):
     color     = black,white, or gray
 
     Returns:
-    masked      = original image with masked image
+    masked    = original image with masked image
     bnk       = binary image
     contour   = object contour vertices
     hierarchy = contour hierarchy list
@@ -57,23 +57,19 @@ def rectangle_mask( img, p1, p2, color = "black"):
     # thickness = -1. otherwise two rectangles will be drawn and the space between them will get filled
 
     if color == pcvc.RECT_MASK_WHITE:
-        cv2.drawContours( bnk, contour, 0, (255, 255, 255), -1)
-        cv2.drawContours( img1, contour, 0, (255, 255, 255), -1)
+        cv2.drawContours(bnk, contour, 0, (255, 255, 255), -1)
+        cv2.drawContours(img1, contour, 0, (255, 255, 255), -1)
     if color == pcvc.RECT_MASK_BLACK:
-        bnk = bnk + 255
-        cv2.drawContours( bnk, contour, 0, (0, 0, 0), -1)
-        cv2.drawContours( img1, contour, 0, (0, 0, 0), -1)
+        bnk += 255
+        cv2.drawContours(bnk, contour, 0, (0, 0, 0), -1)
+        cv2.drawContours(img1, contour, 0, (0, 0, 0), -1)
     if color == pcvc.RECT_MASK_GREY:
-        cv2.drawContours( bnk, contour, 0, (192, 192, 192), -1)
-        cv2.drawContours( img1, contour, 0, (192, 192, 192), -1)
+        cv2.drawContours(bnk, contour, 0, (192, 192, 192), -1)
+        cv2.drawContours(img1, contour, 0, (192, 192, 192), -1)
     if params.debug == pcvc.DEBUG_PRINT:
-        print_image( bnk, ( str( params.device) + '_roi.png'))
+        print_image(bnk, os.path.join(params.debug_outdir, str(params.device) + '_roi.png'))
 
     elif params.debug == pcvc.DEBUG_PLOT:
-        if len(np.shape( bnk)) == 3:
-            plot_image( bnk)
-            plot_image( img1)
-        else:
-            plot_image( bnk, cmap = pcvc.COLOUR_MAP_GREY)
-            plot_image( img1, cmap = pcvc.COLOUR_MAP_GREY)
+        plot_image( bnk, cmap = pcvc.COLOUR_MAP_GREY)
+        plot_image( img1, cmap = pcvc.COLOUR_MAP_GREY)
     return img1, bnk, contour, hierarchy

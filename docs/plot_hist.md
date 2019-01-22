@@ -2,13 +2,13 @@
 
 This is a plotting method used to examine the distribution of signal within an image.
 
-**plantcv.plot_hist**(*img, 'hist_name'*)
+**plantcv.plot_hist**(*img, name=False*)
 
-**returns** no return value, makes a plot
+**returns** bins, hist
 
 - **Parameters:**
-    - img = the original 2-dimensional grayscale image for anaysis.
-    - name = the name of the output plot
+    - img - RGB or grayscale image data, the original image for analysis.
+    - name - the name of the output plot as a string (default: name=False)
 - **Context:**
     - Examine the distribution of the signal, this help you select a value for binary thresholding.
 - **Example use:**
@@ -19,11 +19,12 @@ This is a plotting method used to examine the distribution of signal within an i
 ![Screenshot](img/documentation_images/plot_hist/grayscale_image.jpg) 
 
 ```python
+
 from plantcv import plantcv as pcv
 
 # Examine signal distribution within an image
 # prints out an image histogram of signal within image
-pcv.plot_hist(img, 'histogram')
+bins, hist = pcv.plot_hist(img, 'histogram')
 ```
 
 **Histogram of signal intensity**

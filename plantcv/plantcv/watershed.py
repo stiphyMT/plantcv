@@ -41,7 +41,7 @@ def watershed_segmentation( rgb_img, mask, distance = 10, filename = False):
     """
 
     if pcvc.CV2MAJOR >= 3:
-        dist_transform = cv2.distanceTransformWithLabels( mask, cv2.DIST_L2, maskSize = 0)
+        dist_transform, _ = cv2.distanceTransformWithLabels( mask, cv2.DIST_L2, maskSize = 0)
     else:
         dist_transform = cv2.distanceTransform( mask, cv2.cv.CV_DIST_L2, maskSize = 0)
 
@@ -66,8 +66,8 @@ def watershed_segmentation( rgb_img, mask, distance = 10, filename = False):
 
     analysis_images = []
     if filename != False:
-        out_file = str( filename[0:-4]) + '_watershed.jpg'
-        print_image( joined, out_file)
+        out_file = os.path.splitext(filename)[0] + '_watershed.jpg'
+        print_image(joined, out_file)
         analysis_images.append(['IMAGE', 'watershed', out_file])
 
     watershed_header = (

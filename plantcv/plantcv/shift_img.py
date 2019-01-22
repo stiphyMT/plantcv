@@ -27,7 +27,7 @@ def shift_img( img, number, side = pcvc.SHIFT_IMG_RIGHT):
     """
     params.device += 1
 
-    number = number - 1
+    number -= 1
 
     if number < 0:
         fatal_error( "x and y cannot be negative numbers or non-integers")

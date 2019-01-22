@@ -4,8 +4,8 @@ import cv2
 import numpy as np
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import params
+from plantcv.plantcv import fatal_error
 from plantcv.plantcv import PCVconstants as pcvc
-
 
 def y_axis_pseudolandmarks(obj, mask, img):
     """Divide up object contour into 19 equidistant segments and generate landmarks for each
@@ -21,11 +21,8 @@ def y_axis_pseudolandmarks(obj, mask, img):
     center_v =
 
     :param obj: list
-    :param mask: ndarray
-    :param img: ndarray
-    :param device: int
-    :param debug: str
-    :return device: int
+    :param mask: numpy.ndarray
+    :param img: numpy.ndarray
     :return left:
     :return right:
     :return center_h:
@@ -171,7 +168,10 @@ def y_axis_pseudolandmarks(obj, mask, img):
         right.shape = (20, 1, 2)
         m = cv2.moments(mask, binaryImage=True)
         # Centroid (center of mass x, center of mass y)
-        cmx, cmy = (m['m10'] / m['m00'], m['m01'] / m['m00'])
+        if m['m00'] == 0:
+            fatal_error('Check input parameters, first moment=0')
+        else:
+            cmx, cmy = (m['m10'] / m['m00'], m['m01'] / m['m00'])
         c_points = [cmx] * 20
         center_h = list(zip(c_points, y_coords))
         center_h = np.array(center_h)

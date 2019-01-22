@@ -30,9 +30,9 @@ DEFINE_ROI_SHAPE_CIRCLE = 'circle'
 DEFINE_ROI_INPUT_BINARY = 'binary'
 DEFINE_ROI_INPUT_RGB = 'rgb'
 
-MASK_WHITE = 'white' 
-MASK_BLACK = 'black'
-#RECT_MASK_GREY = 'grey'
+RECT_MASK_WHITE = 'white' 
+RECT_MASK_BLACK = 'black'
+RECT_MASK_GREY = 'grey'
 
 ROI_OBJECTS_TYPE_CUTTO = 'cutto'
 ROI_OBJECTS_TYPE_PARTIAL = 'partial'

@@ -57,9 +57,9 @@ def naive_bayes( imgdir, maskdir, outfile, mkplots = False):
                         # use explicit interger division not Python 2 implied
                         fg = fg[np.random.random_integers( 0, len( fg) - 1, len( fg) // 10)]
                         # Randomly sample from the background class the same n as the plant class
-                        bg = bg[np.random.random_integers( 0, len( bg) - 1, len( fg))]
-                        plant[channel] = np.append( plant[channel], fg)
-                        background[channel] = np.append( background[channel], bg)
+                        bg = bg[np.random.randint(0, len(bg) - 1, len(fg))]
+                        plant[channel] = np.append(plant[channel], fg)
+                        background[channel] = np.append(background[channel], bg)
 
     # Calculate a probability density function for each channel using a Gaussian kernel density estimator
     # Create an output file for the PDFs
