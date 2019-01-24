@@ -82,7 +82,7 @@ def watershed_segmentation( rgb_img, mask, distance = 10, filename = False):
 
     if params.debug == pcvc.DEBUG_PRINT:
         print_image( dist_transform, str( params.device) + '_watershed_dist_img.png')
-        print_image( joined, str(device) + '_watershed_img.png')
+        print_image( joined, str( params.device) + '_watershed_img.png')
     elif params.debug == pcvc.DEBUG_PLOT:
         plot_image( dist_transform, cmap = pcvc.COLOUR_MAP_GREY)
         plot_image( joined)

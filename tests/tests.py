@@ -727,7 +727,8 @@ def test_plantcv_crop_position_mask():
 def test_plantcv_crop_position_mask_color():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_crop_position_mask")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     pcv.params.debug_outdir = cache_dir
     # Read in test data
     nir, path1, filename1 = pcv.readimage(os.path.join(TEST_DATA, TEST_INPUT_COLOR))
@@ -758,7 +759,8 @@ def test_plantcv_crop_position_mask_color():
 def test_plantcv_crop_position_mask_bad_input_x():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_crop_position_mask")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     pcv.params.debug_outdir = cache_dir
     mask = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_MASK), -1)
     # Read in test data
@@ -844,7 +846,7 @@ def test_plantcv_distance_transform():
     # Assert that the output image has the dimensions of the input image
     assert all([i == j] for i, j in zip(np.shape(distance_transform_img), np.shape(mask)))
 
-#****************** check that this is working correctly
+
 def test_plantcv_fatal_error():
     # Verify that the fatal_error function raises a RuntimeError
     with pytest.raises( RuntimeError):
@@ -1393,7 +1395,8 @@ def test_plantcv_output_mask_true():
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_output_mask")
     pcv.params.debug_outdir = cache_dir
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     # Read in test data
     img = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_GRAY), -1)
     img_color = cv2.imread(os.path.join(TEST_DATA, TEST_INPUT_COLOR), -1)
@@ -2879,7 +2882,8 @@ def test_plantcv_transform_find_color_card_optional_parameters():
     rgb_img = cv2.imread(os.path.join(TEST_DATA, TEST_TARGET_IMG_COLOR_CARD))
     # Test cache directory
     cache_dir = os.path.join(TEST_TMPDIR, "test_plantcv_transform_find_color_card")
-    os.mkdir(cache_dir)
+    if not os.path.isdir(cache_dir):
+        os.mkdir(cache_dir)
     pcv.params.debug_outdir = cache_dir
     # Test with threshold ='normal'
     df1, start1, space1 = pcv.transform.find_color_card(rgb_img=rgb_img, threshold='normal', blurry=True,
