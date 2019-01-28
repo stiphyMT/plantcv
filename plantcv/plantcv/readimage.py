@@ -27,7 +27,7 @@ def readimage(filename, mode = "native"):
     :return path: str
     :return img_name: str
     """
-    if mode.upper() == pcvc.READ_IMAGE_GRAY or pcvc.READ_IMAGE_GREY:
+    if mode.upper() == pcvc.READ_IMAGE_GRAY:
         img = cv2.imread( filename, cv2.IMREAD_GRAYSCALE)
     elif mode.upper() == pcvc.READ_IMAGE_RGB:
         img = cv2.imread( filename, cv2.IMREAD_COLOR)
