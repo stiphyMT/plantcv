@@ -39,6 +39,7 @@ def options():
         # Camera settings
         'camera': 'none',
         'imgtype': 'none',
+        'angle': 'none',
         'zoom': 'none',
         'exposure': 'none',
         'gain': 'none',
