@@ -27,14 +27,15 @@ def rgb2gray_rgb( rgb_img, channel):
     """
     # Split BGR channels
     params.device += 1
-	
+    if rgb_img.shape[2] !=3:
+        fatal_error( "Not an RGB Image!")
+
     # The allowable channel inputs are r, g or b
     names = { "r": "red", "g": "green", "b": "blue"}
-	
-    b, g, r = cv2.split( rgb_img)
-
     if channel not in names:
         fatal_error( "Channel " + str(channel) + " is not r, g or b!")
+
+    b, g, r = cv2.split( rgb_img)
 
      # Create a channel dictionaries for lookups by a channel name index
     channels = { "r": r, "g": g, "b": b}
@@ -42,7 +43,7 @@ def rgb2gray_rgb( rgb_img, channel):
     if params.debug == pcvc.DEBUG_PRINT:
         print_image( channels[channel], '{0}_rgb_{1}.png'.format( params.device, names[channel]))
     elif params.debug == pcvc.DEBUG_PLOT:
-        plot_image(channels[channel], cmap = pcvc.COLOUR_MAP_GREY)
+        plot_image( channels[channel], cmap = pcvc.COLOUR_MAP_GREY)
 
     return channels[channel]
 
