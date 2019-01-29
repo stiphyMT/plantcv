@@ -44,14 +44,15 @@ def from_binary_image( bin_img, img):
 
 
 # Create a rectangular ROI
-def rectangle( x, y, h, w, img):
+def rectangle( dtuple, img):
     """Create a rectangular ROI.
 
     Inputs:
-    x             = The x-coordinate of the upper left corner of the rectangle.
-    y             = The y-coordinate of the upper left corner of the rectangle.
-    h             = The height of the rectangle.
-    w             = The width of the rectangle.
+    dtuple containing ( x, y, h, w) where
+        x             = The x-coordinate of the upper left corner of the rectangle.
+        y             = The y-coordinate of the upper left corner of the rectangle.
+        h             = The height of the rectangle.
+        w             = The width of the rectangle.
     img           = An RGB or grayscale image to plot the ROI on in debug mode.
 
     Outputs:
@@ -68,6 +69,7 @@ def rectangle( x, y, h, w, img):
     """
     # Autoincrement the device counter
     params.device += 1
+    x, y, h, w = dtuple
 
     # Get the height and width of the reference image
     height, width = np.shape( img)[:2]
@@ -94,13 +96,14 @@ def rectangle( x, y, h, w, img):
 
 
 # Create a circular ROI
-def circle( x, y, r, img):
+def circle( dtuple, img):
     """Create a circular ROI.
 
-    Inputs:
-    x             = The x-coordinate of the center of the circle.
-    y             = The y-coordinate of the center of the circle.
-    r             = The radius of the circle.
+    Inputs: 
+    dtuple containing ( x, y, r) where
+        x             = The x-coordinate of the center of the circle.
+        y             = The y-coordinate of the center of the circle.
+        r             = The radius of the circle.
     img           = An RGB or grayscale image to plot the ROI on in debug mode.
 
     Outputs:
@@ -116,6 +119,7 @@ def circle( x, y, r, img):
     """
     # Autoincrement the device counter
     params.device += 1
+    x, y, r = dtuple
 
     # Get the height and width of the reference image
     height, width = np.shape(img)[:2]
@@ -143,15 +147,16 @@ def circle( x, y, r, img):
 
 
 # Create an elliptical ROI
-def ellipse( x, y, r1, r2, angle, img):
+def ellipse( dtuple, img):
     """Create an elliptical ROI.
 
     Inputs:
-    x             = The x-coordinate of the center of the ellipse.
-    y             = The y-coordinate of the center of the ellipse.
-    r1            = The radius of the major axis.
-    r2            = The radius of the minor axis.
-    angle         = The angle of rotation of the major axis.
+    dtuple containing ( x, y, r1, r2, angle) where
+        x             = The x-coordinate of the center of the ellipse.
+        y             = The y-coordinate of the center of the ellipse.
+        r1            = The radius of the major axis.
+        r2            = The radius of the minor axis.
+        angle         = The angle of rotation of the major axis.
     img           = An RGB or grayscale image to plot the ROI on in debug mode.
 
     Outputs:
@@ -169,6 +174,7 @@ def ellipse( x, y, r1, r2, angle, img):
     """
     # Autoincrement the device counter
     params.device += 1
+    x, y, r1, r2, angle = dtuple
 
     # Get the height and width of the reference image
     height, width = np.shape( img)[:2]
