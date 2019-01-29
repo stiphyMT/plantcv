@@ -12,7 +12,17 @@ import re
 from subprocess import call
 import mimetypes
 
-
+def str2bool( v):
+    '''
+    https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
+    '''
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError( 'Boolean value expected.')
+        
 # Parse command-line arguments
 ###########################################
 def options():
@@ -70,31 +80,32 @@ def options():
                         default=".")
     parser.add_argument("-T", "--cpu", help='Number of CPU to use.', default=1, type=int)
     parser.add_argument("-c", "--create",
-                        help='will overwrite an existing database'
+                        help = 'will overwrite an existing database'
                              'Warning: activating this option will delete an existing database!',
-                        default=False, action="store_true")
-    parser.add_argument("-D", "--dates",
+                        default = False, action = "store_true")
+    parser.add_argument( "-D", "--dates",
                         help='Date range. Format: YYYY-MM-DD-hh-mm-ss_YYYY-MM-DD-hh-mm-ss. If the second date '
                              'is excluded then the current date is assumed.',
                         required=False)
-    parser.add_argument("-t", "--type", help='Image format type (extension).', default="png")
-    parser.add_argument("-l", "--delimiter", help='Image file name metadata delimiter character.', default='_')
-    parser.add_argument("-f", "--meta",
-                        help='Image file name metadata format. List valid metadata fields separated by the '
+    parser.add_argument( "-t", "--type", help = 'Image format type (extension).', default="png")
+    parser.add_argument( "-l", "--delimiter", help = 'Image file name metadata delimiter character.', default='_')
+    parser.add_argument( "-f", "--meta",
+                        help = 'Image file name metadata format. List valid metadata fields separated by the '
                              'delimiter (-l/--delimiter). Valid metadata fields are: ' +
                              ', '.join(map(str, list(valid_meta.keys()))), default='imgtype_camera_frame_zoom_id')
-    parser.add_argument("-M", "--match",
-                        help='Restrict analysis to images with metadata matching input criteria. Input a '
+    parser.add_argument( "-M", "--match",
+                        help = 'Restrict analysis to images with metadata matching input criteria. Input a '
                              'metadata:value comma-separated list. This is an exact match search. '
                              'E.g. imgtype:VIS,camera:SV,zoom:z500',
-                        required=False)
-    parser.add_argument("-C", "--coprocess",
+                        required = False)
+    parser.add_argument( "-C", "--coprocess",
                         help='Coprocess the specified imgtype with the imgtype specified in --match '
                              '(e.g. coprocess NIR images with VIS).',
-                        default=None)
-    parser.add_argument("-w", "--writeimg", help='Include analysis images in output.', default=False,
+                        default = None)
+    parser.add_argument( "-w", "--writeimg", help='Include analysis images in output.', default = False,
                         action="store_true")
-    parser.add_argument("-o", "--other_args", help='Other arguments to pass to the pipeline script.', required=False)
+    parser.add_argument( "-A", "--alsia", help = 'An institute specific argument.', type = str2bool, default = False)
+    parser.add_argument( "-o", "--other_args", help='Other arguments to pass to the pipeline script.', required = False)
     args = parser.parse_args()
 
     if not os.path.exists(args.dir):
@@ -541,6 +552,8 @@ def phenofront_parser(args):
                     # raise IOError("Something is wrong, file {0}/{1} does not exist".format(dirpath, filename))
                 # Metadata from image file name
                 metadata = img.split(args.delimiter)
+                if args.alsia:
+                    metadata = [ x[1:] for x in metadata] # remove small letter prefix
                 # Not all images in a directory may have the same metadata structure only keep those that do
                 if len(metadata) == args.meta_count:
                     # Image metadata
