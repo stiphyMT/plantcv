@@ -12,6 +12,7 @@ import re
 from subprocess import call
 import mimetypes
 
+
 def str2bool( v):
     '''
     https://stackoverflow.com/questions/15008758/parsing-boolean-values-with-argparse
@@ -205,7 +206,7 @@ def main():
     meta = {}
 
     # Get command
-    command = ' '.join(map(str, sys.argv))
+    command = ' '.join( map( str, sys.argv))
 
     # Database upload file name prefix
     # Use user inputs to make filenames
@@ -213,22 +214,23 @@ def main():
     if args.imgtype is not None:
         kv_list = []
         for key in args.imgtype:
-            kv_list.append(key + str(args.imgtype[key]))
-        prefix = prefix + '_' + '_'.join(map(str, kv_list))
+            kv_list.append(key + str( args.imgtype[key]))
+        prefix = prefix + '_' + '_'.join( map( str, kv_list))
     if args.dates:
         prefix = prefix + '_' + args.dates
     ###########################################
 
     # Open log files
-    args.fail_log = file_writer(prefix + '_failed_images_' + args.start_time + '.log')
-    args.error_log = file_writer(prefix + '_errors_' + args.start_time + '.log')
+    args.fail_log = file_writer( prefix + '_failed_images_' + args.start_time + '.log')
+    args.error_log = file_writer( prefix + '_errors_' + args.start_time + '.log')
 
     # Open intermediate database files
-    runinfo_file = file_writer(prefix + '_runinfo.tab')
-    args.metadata_file = file_writer(prefix + '_metadata.tab')
-    args.analysis_images_file = file_writer(prefix + '_analysis_images.tab')
-    args.features_file = file_writer(prefix + '_features.tab')
-    args.signal_file = file_writer(prefix + '_signal.tab')
+    runinfo_file = file_writer( prefix + '_runinfo.tab')
+    args.metadata_file = file_writer( prefix + '_metadata.tab')
+    args.analysis_images_file = file_writer( prefix + '_analysis_images.tab')
+    args.features_file = file_writer( prefix + '_features.tab')
+    args.colourclasses_file = file_writer( prefix + '_colourlcasses.tab')
+    args.signal_file = file_writer( prefix + '_signal.tab')
 
     # Database setup
     ###########################################
@@ -292,6 +294,7 @@ def main():
     runinfo_file.close()
     args.metadata_file.close()
     args.features_file.close()
+    args.colourclasses_file.close()
     args.signal_file.close()
     args.analysis_images_file.close()
     args.fail_log.close()
@@ -304,6 +307,7 @@ def main():
     call(["sqlite3", args.db, '.import ' + runinfo_file.name + ' runinfo'])
     call(["sqlite3", args.db, '.import ' + args.metadata_file.name + ' metadata'])
     call(["sqlite3", args.db, '.import ' + args.features_file.name + ' features'])
+    call(["sqlite3", args.db, '.import ' + args.colourclasses_file.name + ' colourclasses'])
     call(["sqlite3", args.db, '.import ' + args.analysis_images_file.name + ' analysis_images'])
     call(["sqlite3", args.db, '.import ' + args.signal_file.name + ' signal'])
     ###########################################
@@ -728,7 +732,37 @@ def job_builder(args, meta):
 
     return jobs
 
+###########################################
 
+# small function to get the colourclass names from the pdfs file
+###########################################
+def _cc_names_( otherArgs):
+    others = otherArgs.split( ' ')
+    for ps, ar in enumerate( others):
+        if ar == '--pdfs':
+            xn = ps + 1
+    pdf_file = others[xn]
+    pdfs = {}
+    # Read the PDF file
+    pf = open( pdf_file, "r")
+    # Read the first line (header)
+    pf.readline()
+    # Read each line of the file and parse the PDFs, store in the PDF dictionary
+    class_names = []
+    rws = 0
+    for row in pf:
+        # Remove newline character
+        row = row.rstrip( "\n")
+        # Split the row into columns on tab characters
+        cols = row.split( "\t")
+        # Make sure there are the correct number of columns (i.e. is this a valid PDF file?)
+        if len( cols) != 258:
+            fatal_error( "Naive Bayes PDF file is not formatted correctly. Error on line:\n" + row)
+        # Store the PDFs. Column 0 is the class, Column 1 is the color channel, the rest are p at
+        # intensity values 0-255. Cast text p values as float
+        class_names.extend( [cols[0] + ' Absolute', cols[0] + ' Relative'])
+        rws += 2
+    return class_names[:rws//3]
 
 ###########################################
 
@@ -768,6 +802,13 @@ def process_results(args):
                        'left_lmk', 'right_lmk', 'center_h_lmk', 'left_lmk_r', 'right_lmk_r', 'center_h_lmk_r',
                        'top_lmk', 'bottom_lmk', 'center_v_lmk', 'top_lmk_r', 'bottom_lmk_r', 'center_v_lmk_r']
 
+    if args.other_args is not None and '--pdfs' in args.other_args:
+        cc_bool = True
+        colourclasses_fields = _cc_names_( args.other_args)
+    else:
+        cc_bool = False
+        colourclasses_fields = []
+
     # args.features_file.write('#' + '\t'.join(map(str, feature_fields + opt_feature_fields)) + '\n')
 
     # Signal channel data table
@@ -781,19 +822,23 @@ def process_results(args):
         '`command` TEXT NOT NULL);')
     args.sq.execute(
         'CREATE TABLE IF NOT EXISTS `metadata` (`image_id` INTEGER PRIMARY KEY, `run_id` INTEGER NOT NULL, `' +
-        '` TEXT NOT NULL, `'.join(map(str, metadata_fields[2:])) + '` TEXT NOT NULL);')
+        '` TEXT NOT NULL, `'.join( map( str, metadata_fields[2:])) + '` TEXT NOT NULL);')
     args.sq.execute(
         'CREATE TABLE IF NOT EXISTS `features` (`image_id` INTEGER PRIMARY KEY, `' + '` TEXT NOT NULL, `'.join(
-            map(str, feature_fields + opt_feature_fields + marker_fields + watershed_fields + landmark_fields)
+            map( str, feature_fields + opt_feature_fields + marker_fields + watershed_fields + landmark_fields)
         ) + '` TEXT NOT NULL);')
     args.sq.execute(
         'CREATE TABLE IF NOT EXISTS `analysis_images` (`image_id` INTEGER NOT NULL, `type` TEXT NOT NULL, '
         '`image_path` TEXT NOT NULL);')
     args.sq.execute(
         'CREATE TABLE IF NOT EXISTS `signal` (`image_id` INTEGER NOT NULL, `' + '` TEXT NOT NULL, `'.join(
-            map(str, signal_fields)) + '` TEXT NOT NULL);')
+            map( str, signal_fields)) + '` TEXT NOT NULL);')
+    if cc_bool:
+        args.sq.execute(
+            'CREATE TABLE IF NOT EXISTS `colourclasses` (`image_id` INTEGER NOT NULL, `' + '` TEXT NOT NULL, `'.join(
+                map( str, colourclasses_fields)) + '` TEXT NOT NULL);')
 
-    # Walk through the image processing job directory and process data from each file
+            # Walk through the image processing job directory and process data from each file
     for (dirpath, dirnames, filenames) in os.walk(args.jobdir):
         for filename in filenames:
             # Make sure file is a text file
@@ -812,8 +857,11 @@ def process_results(args):
                 watershed_data = {}
                 landmark = []
                 landmark_data = {}
+                colourclasses = []
+                colourclasses_data = {}
+                
                 # Open results file
-                with open(os.path.join(dirpath, filename)) as results:
+                with open( os.path.join( dirpath, filename)) as results:
                     # For each line in the file
                     for row in results:
                         # Remove the newline character
@@ -830,14 +878,14 @@ def process_results(args):
                         elif cols[0] == 'HEADER_SHAPES':
                             features = cols
                         elif cols[0] == 'SHAPES_DATA':
-                            for i, datum in enumerate(cols):
+                            for i, datum in enumerate( cols):
                                 if i > 0:
                                     feature_data[features[i]] = datum
                         # If the data is of class histogram/signal, store in the signal dictionary
                         elif cols[0] == 'HEADER_HISTOGRAM':
                             signal = cols
                         elif cols[0] == 'HISTOGRAM_DATA':
-                            for i, datum in enumerate(cols):
+                            for i, datum in enumerate( cols):
                                 if i > 0:
                                     signal_data[signal[i]] = datum
                         # If the data is of class boundary (horizontal rule), store in the boundary dictionary
@@ -846,7 +894,7 @@ def process_results(args):
                             # Temporary hack
                             boundary_data['y-position'] = cols[0].replace('HEADER_BOUNDARY', '')
                         elif cols[0] == 'BOUNDARY_DATA':
-                            for i, datum in enumerate(cols):
+                            for i, datum in enumerate( cols):
                                 if i > 0:
                                     boundary_data[boundary[i]] = datum
                         elif 'HEADER_MARKER' in cols[0]:
@@ -854,22 +902,28 @@ def process_results(args):
                             # Temporary hack
                             marker[1] = 'marker_area'
                         elif 'MARKER_DATA' in cols[0]:
-                            for i, datum in enumerate(cols):
+                            for i, datum in enumerate( cols):
                                 if i > 0:
                                     marker_data[marker[i]] = datum
                         elif 'HEADER_WATERSHED' in cols[0]:
                             watershed = cols
                             watershed[1] = 'estimated_object_count'
                         elif 'WATERSHED_DATA' in cols[0]:
-                            for i, datum in enumerate(cols):
+                            for i, datum in enumerate( cols):
                                 if i > 0:
                                     watershed_data[watershed[i]] = datum
                         elif 'HEADER_LANDMARK' in cols[0]:
                             landmark = cols
                         elif 'LANDMARK_DATA' in cols[0]:
-                            for i, datum in enumerate(cols):
+                            for i, datum in enumerate( cols):
                                 if i > 0:
                                     landmark_data[landmark[i]] = datum
+                        elif 'HEADER_COLOURCLASSES' in cols[0]:
+                            colourclasses = cols
+                        elif 'COLOURCLASSES_DATA' in cols[0]:
+                            for i, datum in enumerate( cols):
+                                if i > 0:
+                                    colourclasses_data[colourclasses[i]] = datum
 
                 # Check to see if the image failed, if not continue
 
@@ -880,48 +934,61 @@ def process_results(args):
 
                 meta_table = []
                 for field in metadata_fields:
-                    meta_table.append(meta[field])
+                    meta_table.append( meta[field])
 
-                if len(feature_data) != 0:
-                    args.metadata_file.write('|'.join(map(str, meta_table)) + '\n')
+                if len( feature_data) != 0:
+                    args.metadata_file.write( '|'.join( map( str, meta_table)) + '\n')
 
                     # Print the image feature data to the aggregate output file
-                    feature_data['image_id'] = args.image_id
+#                    feature_data['image_id'] = args.image_id # redundant the image_id data is actually extracted directly 
 
                     # Boundary data is optional, if it's not there we need to add in placeholder data
-                    if len(boundary_data) == 0:
+                    if len( boundary_data) == 0:
                         for field in opt_feature_fields:
                             boundary_data[field] = 0
-                    feature_data.update(boundary_data)
+                    feature_data.update( boundary_data)
 
                     # Marker data is optional, if it's not there we need to add in placeholder data
                     if len(marker_data) == 0:
                         for field in marker_fields:
                             marker_data[field] = 0
-                    feature_data.update(marker_data)
+                    feature_data.update( marker_data)
 
                     # Watershed data is optional, if it's not there we need to add in placeholder data
-                    if len(watershed_data) == 0:
+                    if len( watershed_data) == 0:
                         for field in watershed_fields:
                             watershed_data[field] = 0
-                    feature_data.update(watershed_data)
+                    feature_data.update( watershed_data)
 
                     # Landmark data is optional, if it's not there we need to add in placeholder data
-                    if len(landmark_data) == 0:
+                    if len( landmark_data) == 0:
                         for field in landmark_fields:
                             landmark_data[field] = 0
-                    feature_data.update(landmark_data)
+                    feature_data.update( landmark_data)
+
+                    if len( colourclasses_data) == 0:
+                        for field in colourclasses_fields:
+                            colourclasses_data[field] = 0
+                    feature_data.update( colourclasses_data)
 
                     feature_table = [args.image_id]
                     for field in feature_fields + opt_feature_fields + marker_fields + watershed_fields + landmark_fields:
-                        feature_table.append(feature_data[field])
+                        feature_table.append( feature_data[field])
 
-                    args.features_file.write('|'.join(map(str, feature_table)) + '\n')
+                    args.features_file.write( '|'.join( map( str, feature_table)) + '\n')
+
+                    # Print the image colourclasses data to the aggregate output file
+                    if cc_bool:
+                        colourclasses_table = [args.image_id]
+                        for field in colourclasses_fields:
+                            colourclasses_table.append( colourclasses_data[field])
+
+                        args.colourclasses_file.write( '|'.join( map( str, colourclasses_table)) + '\n')
 
                     # Print the analysis image data to the aggregate output file
                     for img_type in images:
                         args.analysis_images_file.write(
-                            '|'.join(map(str, (args.image_id, img_type, images[img_type]))) + '\n')
+                            '|'.join( map( str, ( args.image_id, img_type, images[img_type]))) + '\n')
 
                     # Print the image signal data to the aggregate output file
                     for key in signal_data.keys():
@@ -930,18 +997,18 @@ def process_results(args):
                             signal_data[key] = signal_data[key].replace(']', '')
                             signal_table = [args.image_id, signal_data['bin-number'], key, signal_data[key],
                                             signal_data['bin-values']]
-                            args.signal_file.write('|'.join(map(str, signal_table)) + '\n')
+                            args.signal_file.write( '|'.join( map( str, signal_table)) + '\n')
                 else:
-                    args.fail_log.write('|'.join(map(str, meta_table)) + '\n')
+                    args.fail_log.write('|'.join( map( str, meta_table)) + '\n')
 
-                    args.metadata_file.write('|'.join(map(str, meta_table)) + '\n')
+                    args.metadata_file.write('|'.join( map( str, meta_table)) + '\n')
 
                     feature_table = [args.image_id]
 
                     for field in feature_fields + opt_feature_fields + marker_fields + watershed_fields + landmark_fields:
                         feature_table.append(0)
 
-                    args.features_file.write('|'.join(map(str, feature_table)) + '\n')
+                    args.features_file.write('|'.join( map( str, feature_table)) + '\n')
 
 ###########################################
 
