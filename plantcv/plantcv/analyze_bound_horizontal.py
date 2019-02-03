@@ -9,7 +9,7 @@ from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
 
-def analyze_bound_horizontal(img, obj, mask, line_position, filename=False):
+def analyze_bound_horizontal(img, obj, mask, line_position, filename = False):
     """User-input boundary line tool
 
     Inputs:
@@ -135,7 +135,7 @@ def analyze_bound_horizontal(img, obj, mask, line_position, filename=False):
             # Output images with boundary line, above/below bound area
             out_file = os.path.splitext(filename)[0] + '_boundary' + str(line_position) + '.jpg'
             print_image(ori_img, out_file)
-            analysis_images = ['IMAGE', 'boundary', out_file]
+            analysis_images = [['IMAGE', 'boundary', out_file]]
 
     if params.debug is not None:
         point3 = (0, y_coor - 4)
