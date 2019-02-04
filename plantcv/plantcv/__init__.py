@@ -85,6 +85,7 @@ from plantcv.plantcv import transform
 # add new functions to end of lists
 from plantcv.plantcv.PCVconstants import *
 from plantcv.plantcv.rgb2gray_rgb import rgb2gray_rgb
+from plantcv.plantcv.analyze_CC import analyze_CC
 
 
 __all__ = ['fatal_error', 'print_image', 'plot_image', 'color_palette', 'plot_colorbar', 'apply_mask', 'readimage', 'readbayer',
@@ -98,7 +99,7 @@ __all__ = ['fatal_error', 'print_image', 'plot_image', 'color_palette', 'plot_co
            'x_axis_pseudolandmarks', 'y_axis_pseudolandmarks', 'gaussian_blur', 'cluster_contours',
            'cluster_contour_splitimg', 'rotate', 'shift_img', 'output_mask', 'auto_crop',
            'background_subtraction', 'naive_bayes_classifier', 'acute', 'distance_transform', 'params',
-           'PCVconstants', 'rgb2gray_rgb']
+           'PCVconstants', 'rgb2gray_rgb', 'analyze_CC']
 
 from ._version import get_versions
 __version__ = get_versions()['version']
