@@ -96,20 +96,16 @@ def rectangle( dtuple, img):
 
 
 # Create a circular ROI
-def circle( dtuple, img):
+def circle(x, y, r, img):
     """Create a circular ROI.
-
-    Inputs: 
-    dtuple containing ( x, y, r) where
-        x             = The x-coordinate of the center of the circle.
-        y             = The y-coordinate of the center of the circle.
-        r             = The radius of the circle.
+    Inputs:
+    x             = The x-coordinate of the center of the circle.
+    y             = The y-coordinate of the center of the circle.
+    r             = The radius of the circle.
     img           = An RGB or grayscale image to plot the ROI on in debug mode.
-
     Outputs:
     roi_contour   = An ROI set of points (contour).
     roi_hierarchy = The hierarchy of ROI contour(s).
-
     :param x: int
     :param y: int
     :param r: int
@@ -119,7 +115,6 @@ def circle( dtuple, img):
     """
     # Autoincrement the device counter
     params.device += 1
-    x, y, r = dtuple
 
     # Get the height and width of the reference image
     height, width = np.shape(img)[:2]
