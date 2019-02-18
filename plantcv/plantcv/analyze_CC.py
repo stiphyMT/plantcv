@@ -90,19 +90,19 @@ def _pseudocoloured_image_( rgb_img, masks, ccnames, colours = None):
     false_coloured_image = cv2.merge( (l,l,l))
     
     # apply different colour for each channel mask to greyscale image
-    font = cv2.FONT_HERSHEY_DUPLEX
+    font = cv2.FONT_HERSHEY_PLAIN
     for ncc, tg in enumerate( zip(masks, colours)):
         # create an colour image, same size as original, with a solid colour
         temp = np.zeros(( x, y, 3), np.uint8)
         temp[:] = tg[1]
         # copy coloured pixels through mask to original image (now greyscale)
         false_coloured_image[ np.where( tg[0] == 255)] = temp[ np.where( tg[0] == 255)]
-        cv2.putText( false_coloured_image, ccnames[2 * ncc][:-8], ( 20, 100 + (ncc * 50)), font, 2, tg[1], 1, cv2.LINE_AA)
+        cv2.putText( false_coloured_image, ccnames[2 * ncc][:-8], ( 20, 50 + (ncc * 30)), font, 2, tg[1], 2, cv2.LINE_AA)
         
         
     
     
-    return [false_coloured_image] 
+    return false_coloured_image
 
 
 def analyze_CC( ori_img, plant_mask = None, pdfs = None, colours = None, filename = False):
@@ -173,10 +173,10 @@ def analyze_CC( ori_img, plant_mask = None, pdfs = None, colours = None, filenam
     colourclass_data.insert( 0, 'COLOURCLASSES_DATA')
 
     # create a false colour image of the colourclasses
-    out_images = _pseudocoloured_image_( ori_img, colourclass_masks, colourclass_header, colours)
+    [out_images] = _pseudocoloured_image_( ori_img, colourclass_masks, colourclass_header, colours)
     
     if filename:
-        # Output images with boundary line, above/below bound area
+        # Output 
         out_file = os.path.splitext( filename)[0] + '_colourclasses_' + str( len(cc_masks)) + '.jpg'
         print_image( out_images[0], out_file)
         analysis_images = [['IMAGE', 'colour_class', out_file]]
