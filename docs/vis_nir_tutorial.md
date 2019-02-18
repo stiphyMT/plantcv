@@ -12,6 +12,10 @@ with similar naming scheme), then functions are used to size and place the VIS i
 This allows two workflows to be done at once and also allows plant material to be identified in low-quality images.
 We do not recommend this approach if there is a lot of plant movement between capture of NIR and VIS images.
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/danforthcenter/plantcv-binder.git/master?filepath=notebooks/vis_nir_tutorial.ipynb) Check out our interactive VIS/NIR tutorial! 
+
+Also see [here](scripts/vis_nir_script.md) for the complete script. 
+
 **Workflow**
 
 1.  Optimize pipeline on individual image with debug set to 'print' (or 'plot' if using a Jupyter notebook).
@@ -247,21 +251,22 @@ The next step is to analyze the plant object for traits such as [horizontal heig
 ############### Analysis ################  
   
     # Find shape properties, output shape image (optional)
-    shape_header, shape_data, shape_img = pcv.analyze_object(img, obj, mask, args.outdir + '/' + filename)
+    shape_header, shape_data, shape_img = pcv.analyze_object(img, obj, mask)
     
     # Shape properties relative to user boundary line (optional)
-    boundary_header, boundary_data, boundary_img1 = pcv.analyze_bound_horizontal(img, obj, mask, 1680, args.outdir + '/' + filename)
+    boundary_header, boundary_data, boundary_img1 = pcv.analyze_bound_horizontal(img, obj, mask, 1680)
     
-    # Determine color properties: Histograms, Color Slices and Pseudocolored Images, output color analyzed images (optional)
-    color_header, color_data, color_img = pcv.analyze_color(img, kept_mask, 256, 'all', 'v', 'img', args.outdir + '/' + filename)
-    
+    # Determine color properties: Histograms, Color Slices, output color analyzed histogram (optional)
+    color_header, color_data, color_histogram = pcv.analyze_color(img, kept_mask, 256, 'all')
+
+    # Pseudocolor the grayscale image
+    pseudocolored_img = pcv.pseudocolor(gray_img=s, mask=kept_mask, cmap='jet')
+
     # Write shape and color data to results file
-    result=open(args.result,"a")
-    result.write('\t'.join(map(str,shape_header)))
-    result.write("\n")
-    result.write('\t'.join(map(str,shape_data)))
-    result.write("\n")
-    result.close()
+    pcv.print_results(filename=args.result)
+    
+    # Will will print out results again, so clear the outputs before running NIR analysis 
+    pcv.outputs.clear()
 ```
 
 **Figure 12.** Shape analysis output image.
@@ -319,12 +324,15 @@ The next step is to [get the matching NIR](get_nir.md) image, [resize](resize.md
 
 ```python
 
-    outfile1=False
-    if args.writeimg==True:
-        outfile1=args.outdir+"/"+filename1
+    nhist_header, nhist_data, nir_imgs = pcv.analyze_nir_intensity(nir2, nir_combinedmask, 256)
+    nshape_header, nshape_data, nir_hist = pcv.analyze_object(nir2, nir_combined, nir_combinedmask)
 
-    nhist_header, nhist_data, nir_imgs = pcv.analyze_nir_intensity(nir2, nir_combinedmask, 256, outfile1)
-    nshape_header, nshape_data, nir_shape = pcv.analyze_object(nir2, nir_combined, nir_combinedmask, outfile1)
+    # Plot out the NIR histogram
+    nir_hist
+
+    # Plot out the image with shape data
+    shape_image = nir_imgs[0]
+    pcv.plot_image(shape_image)
 ```
 
 **Figure 19.** NIR signal histogram.
@@ -339,21 +347,7 @@ Write co-result data out to a file.
 
 ```python
 
-    coresult=open(args.coresult,"a")
-    coresult.write('\t'.join(map(str,nhist_header)))
-    coresult.write("\n")
-    coresult.write('\t'.join(map(str,nhist_data)))
-    coresult.write("\n")
-    for row in nir_imgs:
-      coresult.write('\t'.join(map(str,row)))
-      coresult.write("\n")
-    coresult.write('\t'.join(map(str,nshape_header)))
-    coresult.write("\n")
-    coresult.write('\t'.join(map(str,nshape_data)))
-    coresult.write("\n")
-    coresult.write('\t'.join(map(str,nir_shape)))
-    coresult.write("\n")
-    coresult.close()
+    pcv.print_result(filename=args.coresult)
     
 if __name__ == '__main__':
   main()

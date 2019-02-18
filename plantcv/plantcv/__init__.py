@@ -14,15 +14,30 @@ class Params:
         self.debug_outdir = debug_outdir
 
 
-# Initialize an instance of the Params class with default values
-# params is available when plantcv is imported
+class Outputs:
+    """PlantCV outputs class
+        """
+    def __init__(self):
+        self.measurements = {}
+        self.images = []
+
+    # Add a method to clear out the
+    def clear(self):
+        self.measurements = {}
+        self.images = []
+
+
+# Initialize an instance of the Params and Outputs class with default values
+# params and outputs are available when plantcv is imported
 params = Params()
+outputs = Outputs()
+
 
 from plantcv.plantcv.fatal_error import fatal_error
 from plantcv.plantcv.print_image import print_image
 from plantcv.plantcv.plot_image import plot_image
 from plantcv.plantcv.color_palette import color_palette
-from plantcv.plantcv.plot_colorbar import plot_colorbar
+# from plantcv.plantcv.plot_colorbar import plot_colorbar
 from plantcv.plantcv.apply_mask import apply_mask
 from plantcv.plantcv.readimage import readimage
 from plantcv.plantcv.readbayer import readbayer
@@ -78,9 +93,11 @@ from plantcv.plantcv.background_subtraction import background_subtraction
 from plantcv.plantcv.naive_bayes_classifier import naive_bayes_classifier
 from plantcv.plantcv.acute import acute
 from plantcv.plantcv.distance_transform import distance_transform
+from plantcv.plantcv.pseudocolor import pseudocolor
 from plantcv.plantcv import roi
 from plantcv.plantcv import threshold
 from plantcv.plantcv import transform
+from plantcv.plantcv.canny_edge_detect import canny_edge_detect
 
 # add new functions to end of lists
 from plantcv.plantcv.PCVconstants import *
@@ -88,18 +105,19 @@ from plantcv.plantcv.rgb2gray_rgb import rgb2gray_rgb
 from plantcv.plantcv.analyze_CC import analyze_CC
 
 
-__all__ = ['fatal_error', 'print_image', 'plot_image', 'color_palette', 'plot_colorbar', 'apply_mask', 'readimage', 'readbayer',
-           'laplace_filter', 'sobel_filter', 'scharr_filter', 'hist_equalization', 'plot_hist', 'image_add',
-           'image_subtract', 'erode', 'dilate', 'watershed', 'rectangle_mask', 'rgb2gray_hsv', 'rgb2gray_lab',
+__all__ = ['fatal_error', 'print_image', 'plot_image', 'color_palette', 'apply_mask', 'readimage',
+           'readbayer', 'laplace_filter', 'sobel_filter', 'scharr_filter', 'hist_equalization', 'plot_hist', 'erode',
+           'image_add', 'image_subtract', 'dilate', 'watershed', 'rectangle_mask', 'rgb2gray_hsv', 'rgb2gray_lab',
            'rgb2gray', 'median_blur', 'fill', 'invert', 'logical_and', 'logical_or', 'logical_xor',
            'find_objects', 'roi_objects', 'transform', 'object_composition', 'analyze_object',
            'analyze_bound_horizontal', 'analyze_bound_vertical', 'analyze_color', 'analyze_nir_intensity',
            'fluor_fvfm', 'print_results', 'resize', 'flip', 'crop_position_mask', 'get_nir', 'report_size_marker_area',
-           'white_balance', 'acute_vertex', 'scale_features', 'landmark_reference_pt_dist',
+           'white_balance', 'acute_vertex', 'scale_features', 'landmark_reference_pt_dist', outputs,
            'x_axis_pseudolandmarks', 'y_axis_pseudolandmarks', 'gaussian_blur', 'cluster_contours',
-           'cluster_contour_splitimg', 'rotate', 'shift_img', 'output_mask', 'auto_crop',
-           'background_subtraction', 'naive_bayes_classifier', 'acute', 'distance_transform', 'params',
-           'PCVconstants', 'rgb2gray_rgb', 'analyze_CC']
+           'cluster_contour_splitimg', 'rotate', 'shift_img', 'output_mask', 'auto_crop', 'canny_edge_detect',
+           'background_subtraction', 'naive_bayes_classifier', 'acute', 'distance_transform', 'params', 'pseudocolor',
+	   'PCVconstants', 'rgb2gray_rgb', 'analyze_CC']
+
 
 from ._version import get_versions
 __version__ = get_versions()['version']

@@ -96,9 +96,10 @@ def rectangle( dtuple, img):
 
 
 # Create a circular ROI
-def circle(x, y, r, img):
+def circle( x, y, r, img):
     """Create a circular ROI.
-    Inputs:
+
+    Inputs: 
     x             = The x-coordinate of the center of the circle.
     y             = The y-coordinate of the center of the circle.
     r             = The radius of the circle.
@@ -115,7 +116,7 @@ def circle(x, y, r, img):
     """
     # Autoincrement the device counter
     params.device += 1
-
+    
     # Get the height and width of the reference image
     height, width = np.shape(img)[:2]
 

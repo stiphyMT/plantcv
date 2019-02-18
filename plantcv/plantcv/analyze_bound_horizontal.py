@@ -6,29 +6,29 @@ import numpy as np
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import params
+from plantcv.plantcv import outputs
 from plantcv.plantcv import PCVconstants as pcvc
 
 
-def analyze_bound_horizontal(img, obj, mask, line_position, filename = False):
+
+def analyze_bound_horizontal( img, obj, mask, line_position):
     """User-input boundary line tool
 
     Inputs:
     img             = RGB or grayscale image data for plotting
     obj             = single or grouped contour object
     mask            = Binary mask made from selected contours
-    line_position   = position of boundry line (a value of 0 would draw the line through the bottom of the image)
-    filename        = False or image name. If defined print image.
+    line_position   = position of boundary line (a value of 0 would draw the line through the bottom of the image)
 
     Returns:
     bound_header    = data table column headers
     bound_data      = boundary data table
-    analysis_images = output image filenames
+    analysis_images = list of output images
 
     :param img: numpy.ndarray
     :param obj: list
     :param mask: numpy.ndarray
     :param line_position: int
-    :param filename: str
     :return bound_header: tuple
     :return bound_data: tuple
     :return analysis_images: list
@@ -131,11 +131,9 @@ def analyze_bound_horizontal(img, obj, mask, line_position, filename = False):
                 cv2.line(ori_img, (int(cmx), y_coor - 2), (int(cmx), y_coor + height_below_bound), (0, 255, 0), 3)
                 cv2.line(wback, (int(cmx), y_coor - 2), (int(cmx), y_coor - height_above_bound), (255, 0, 0), 3)
                 cv2.line(wback, (int(cmx), y_coor - 2), (int(cmx), y_coor + height_below_bound), (0, 255, 0), 3)
-        if filename:
-            # Output images with boundary line, above/below bound area
-            out_file = os.path.splitext(filename)[0] + '_boundary' + str(line_position) + '.jpg'
-            print_image(ori_img, out_file)
-            analysis_images = [['IMAGE', 'boundary', out_file]]
+        # Output image with boundary line, above/below bound area
+        analysis_images.append(wback)
+        analysis_images.append(ori_img)
 
     if params.debug is not None:
         point3 = (0, y_coor - 4)
@@ -163,5 +161,19 @@ def analyze_bound_horizontal(img, obj, mask, line_position, filename = False):
         if params.debug == pcvc.DEBUG_PLOT:
             plot_image(wback)
             plot_image(ori_img)
+
+    # Store into global measurements
+    if not 'bound_horizontal' in outputs.measurements:
+        outputs.measurements['bound_horizontal'] = {}
+    outputs.measurements['bound_horizontal']['horizontal_line_position'] = line_position
+    outputs.measurements['bound_horizontal']['height_above_bound'] = height_above_bound
+    outputs.measurements['bound_horizontal']['height_below_bound'] = height_below_bound
+    outputs.measurements['bound_horizontal']['above_bound_area'] = above_bound_area
+    outputs.measurements['bound_horizontal']['percent_above_bound_area'] = percent_bound_area_above
+    outputs.measurements['bound_horizontal']['below_bound_area'] = below_bound_area
+    outputs.measurements['bound_horizontal']['percent_below_bound_area'] = percent_bound_area_below
+
+    # Store images
+    outputs.images.append(analysis_images)
 
     return bound_header, bound_data, analysis_images
