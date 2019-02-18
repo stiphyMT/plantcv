@@ -17,9 +17,9 @@ def plot_image( img, cmap = None):
 
     image_type = type(img)
 
-    dimensions = numpy.shape(img)
+    dimensions = np.shape(img)
 
-    if image_type == numpy.ndarray:
+    if image_type == np.ndarray:
         # If the image is color then OpenCV stores it as BGR, we plot it as RGB
         if len(dimensions) == 3:
             plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))

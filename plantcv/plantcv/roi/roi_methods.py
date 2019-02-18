@@ -44,7 +44,7 @@ def from_binary_image( bin_img, img):
 
 
 # Create a rectangular ROI
-def rectangle( dtuple, img):
+def rectangle( x, y, h, w, img):
     """Create a rectangular ROI.
 
     Inputs:
@@ -69,7 +69,6 @@ def rectangle( dtuple, img):
     """
     # Autoincrement the device counter
     params.device += 1
-    x, y, h, w = dtuple
 
     # Get the height and width of the reference image
     height, width = np.shape( img)[:2]
@@ -143,7 +142,7 @@ def circle( x, y, r, img):
 
 
 # Create an elliptical ROI
-def ellipse( dtuple, img):
+def ellipse( x, y, r1, r2, angle, img):
     """Create an elliptical ROI.
 
     Inputs:
@@ -170,7 +169,6 @@ def ellipse( dtuple, img):
     """
     # Autoincrement the device counter
     params.device += 1
-    x, y, r1, r2, angle = dtuple
 
     # Get the height and width of the reference image
     height, width = np.shape( img)[:2]

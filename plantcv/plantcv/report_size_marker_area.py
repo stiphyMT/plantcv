@@ -113,15 +113,15 @@ def report_size_marker_area( img, roi_contour, roi_hierarchy, marker = 'define',
     # Make a list to store output images
     analysis_image = []
     cv2.drawContours(ref_img, marker_contour, -1, (255, 0, 0), 5)
-    if filename:
-        out_file = os.path.splitext(filename)[0] + '_sizemarker.jpg'
-        print_image(ref_img, out_file)
-        analysis_images.append(['IMAGE', 'marker', out_file])
+    # out_file = os.path.splitext(filename)[0] + '_sizemarker.jpg'
+    # print_image(ref_img, out_file)
+    analysis_image.append(ref_img)
     if params.debug is pcvc.DEBUG_PRINT:
         print_image(ref_img, os.path.join(params.debug_outdir, str(params.device) + '_marker_shape.png'))
     elif params.debug is pcvc.DEBUG_PLOT:
         plot_image(ref_img)
 
+        
     marker_header = (
         'HEADER_MARKER',
         'marker_area',

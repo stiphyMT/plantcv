@@ -421,7 +421,7 @@ def test_plantcv_analyze_object_zero_slope():
     # Test with debug = None
     pcv.params.debug = None
     obj_header, obj_data, obj_images = pcv.analyze_object(img=img, obj=obj_contour, mask=mask)
-    assert obj_data[7] == 30
+    assert obj_data[8] == 30
 
 
 def test_plantcv_analyze_object_longest_axis_2d():
@@ -442,7 +442,7 @@ def test_plantcv_analyze_object_longest_axis_2d():
     # Test with debug = None
     pcv.params.debug = None
     obj_header, obj_data, obj_images = pcv.analyze_object(img=img, obj=obj_contour, mask=mask)
-    assert obj_data[7] == 186
+    assert obj_data[8] == 186
 
 
 def test_plantcv_analyze_object_longest_axis_2e():
@@ -468,7 +468,7 @@ def test_plantcv_analyze_object_longest_axis_2e():
     # Test with debug = None
     pcv.params.debug = None
     obj_header, obj_data, obj_images = pcv.analyze_object(img=img, obj=obj_contour, mask=mask)
-    assert obj_data[7] == 141
+    assert obj_data[8] == 141
 
 
 def test_plantcv_analyze_object_small_contour():
@@ -595,7 +595,7 @@ def test_plantcv_canny_edge_detect():
     _ = pcv.canny_edge_detect(img=rgb_img, mask=mask, mask_color='white')
     _ = pcv.canny_edge_detect(img=img, mask=mask, mask_color='black')
     # Test with debug = "plot"
-    pcv.params.debug = pcvc.DEBUG.PLOT
+    pcv.params.debug = pcvc.DEBUG_PLOT
     _ = pcv.canny_edge_detect(img=img, thickness=2)
     _ = pcv.canny_edge_detect(img=img)
     # Test with debug = None

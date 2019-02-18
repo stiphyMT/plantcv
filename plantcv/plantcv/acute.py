@@ -93,7 +93,6 @@ def acute(obj, win, thresh, mask):
             index.append(c)         # Append positions of acute links to index
 
     acute_pos = obj[[index]]            # Extract all island points blindly
-
     float(len(acute_pos)) / float(len(obj))  # Proportion of informative positions
 
     if len(index) != 0:

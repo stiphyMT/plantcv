@@ -153,7 +153,7 @@ def x_axis_pseudolandmarks(obj, mask, img):
             x = i[0, 0]
             y = i[0, 1]
             cv2.circle(img2, (int(x), int(y)), 10, (0, 79, 255), -1)
-        if params.debug == pcvc.DEBUG_PLOT::
+        if params.debug == pcvc.DEBUG_PLOT:
             plot_image(img2)
         elif params.debug == 'print':
             print_image(img2,
