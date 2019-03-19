@@ -11,6 +11,7 @@ from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
 from plantcv.plantcv import params
 from plantcv.plantcv import naive_bayes_classifier
+from plantcv.plantcv import outputs
 from plantcv.plantcv import PCVconstants as pcvc
 
 
@@ -60,13 +61,12 @@ def _pseudocoloured_image_( rgb_img, masks, ccnames, colours = None):
     FONT_ITALIC = 16
     }
     """
-    # remove first (ie header)
-    masks, ccnames = masks[1:], ccnames[1:]
+
     x, y = masks[0].shape
     colr_number = len( masks)
 
-    # there should be twice as many names due to Absolute and Relative calculations
-    if colr_number * 2 != len( ccnames):
+    # there should be equal number of class names and masks
+    if colr_number != len( ccnames):
         raise Exception( 'Number of masks is not equal to colour class names.')
     elif colours is not None and colr_number < len( colours):
         colours = None
@@ -97,7 +97,7 @@ def _pseudocoloured_image_( rgb_img, masks, ccnames, colours = None):
         temp[:] = tg[1]
         # copy coloured pixels through mask to original image (now greyscale)
         false_coloured_image[ np.where( tg[0] == 255)] = temp[ np.where( tg[0] == 255)]
-        cv2.putText( false_coloured_image, ccnames[2 * ncc][:-8], ( 20, 50 + (ncc * 30)), font, 2, tg[1], 2, cv2.LINE_AA)
+        cv2.putText( false_coloured_image, ccnames[ncc], ( 20, 50 + (ncc * 30)), font, 2, tg[1], 2, cv2.LINE_AA)
         
         
     
@@ -147,40 +147,50 @@ def analyze_CC( ori_img, plant_mask = None, pdfs = None, colours = None, filenam
 
     # mask the channel masks against the plant mask and copy them to a list
     colourclass_masks = [ cv2.bitwise_and( cc_masks[i], plant_mask) for i in cc_masks.keys()]
+    colourclass_names = [i for i in cc_masks.keys()]
     
     # find area of whole plant mask, for use in relative area calculations
     m = cv2.moments( plant_mask, binaryImage = True)
     total_area = m['m00']
     
     # calculate the white pixels (area) for each channel + original plant mask area
-    colourclass_data = []
-    for i in colourclass_masks:
-        m = cv2.moments( i[plant_mask == 255], binaryImage = True)
+    colourclass_area_absolute = []
+    colourclass_area_relative = []
+    for msk in colourclass_masks:
+        m = cv2.moments( msk[plant_mask == 255], binaryImage = True)
         area = m['m00']
-        colourclass_data.extend( [area, area / total_area])
-    #[np.sum( i[plant_mask == 255]) for i in colourclass_masks ]
+        colourclass_area_absolute.extend( [ area])
+        colourclass_area_relative.extend( [ area / total_area])
     
     # copy the names of the masks from the dictionary to a list
-    colourclass_header = []
-    for i in cc_masks.keys():
-        colourclass_header.extend( [i + ' Absolute', i + ' Relative'])
+    colourclass_header = ['HEADER_COLOURCLASS',
+                            'colour_class_names',
+                            'area_absolute',
+                            'area_relative']
+    colourclass_data = ['COLOURCLASS_DATA',
+                            colourclass_names,
+                            colourclass_area_absolute,
+                            colourclass_area_relative]
         
     # insert name for the colourclass masks list at position 0
-    colourclass_masks.insert( 0, 'COLOURCLASSES_MASKS')
+#    colourclass_masks.insert( 0, 'COLOURCLASSES_MASKS')
     # insert name for the colourclass channel names list at position 0
-    colourclass_header.insert( 0, 'HEADER_COLOURCLASSES')
+#    colourclass_header.insert( 0, 'HEADER_COLOURCLASS_NAMES')
     # insert name for the colourclass calculated area list at position 0
-    colourclass_data.insert( 0, 'COLOURCLASSES_DATA')
+#    colourclass_data_absolute.insert( 0, 'COLOURCLASSES_DATA_ABSOLUTE')
+    # insert name for the colourclass calculated area list at position 0
+#    colourclass_data_relative.insert( 0, 'COLOURCLASSES_DATA_RELATIVE')
 
+    analysis_images = []
     # create a false colour image of the colourclasses
-    [out_images] = _pseudocoloured_image_( ori_img, colourclass_masks, colourclass_header, colours)
-    
+    out_img = _pseudocoloured_image_( ori_img, colourclass_masks, colourclass_names, colours)
+    analysis_images = analysis_images.append( out_img)
     if filename:
         # Output 
         out_file = os.path.splitext( filename)[0] + '_colourclasses_' + str( len(cc_masks)) + '.jpg'
-        print_image( out_images[0], out_file)
-        analysis_images = [['IMAGE', 'colour_class', out_file]]
-        
+        print_image( out_img, out_file)
+
+#    analysis_images = [['IMAGE', 'colour_class', out_file]]
 
     if params.debug == pcvc.DEBUG_PRINT:
         print_image( out_img, os.path.join( params.debug_outdir, str( params.device) + '_' + str( len(cc_masks)) +'_cc.jpg'))
@@ -190,5 +200,16 @@ def analyze_CC( ori_img, plant_mask = None, pdfs = None, colours = None, filenam
         else:
             plot_image( out_img, cmap = pcvc.COLOUR_MAP_GREY)
 
+    # Store into global measurements
+    if not 'color_classes' in outputs.measurements:
+        outputs.measurements['color_classes'] = {}
+    outputs.measurements['color_classes']['cc_header'] = colourclass_header  
+    outputs.measurements['color_classes']['cc_names'] = colourclass_names
+    outputs.measurements['color_classes']['cc_area_absolute'] = colourclass_area_absolute  
+    outputs.measurements['color_classes']['cc_area_relative'] = colourclass_area_relative
+
+    # Store images
+    outputs.images.append(analysis_images)
+    
     return colourclass_header, colourclass_data, analysis_images
 
