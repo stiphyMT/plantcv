@@ -61,11 +61,12 @@ def _pseudocoloured_image_( rgb_img, masks, ccnames, colours = None):
     FONT_ITALIC = 16
     }
     """
-
+    # remove first (ie header)
+    # masks, ccnames = masks[1:], ccnames[1:]
     x, y = masks[0].shape
     colr_number = len( masks)
 
-    # there should be equal number of class names and masks
+     # there should be equal number of class names and masks
     if colr_number != len( ccnames):
         raise Exception( 'Number of masks is not equal to colour class names.')
     elif colours is not None and colr_number < len( colours):
@@ -74,13 +75,13 @@ def _pseudocoloured_image_( rgb_img, masks, ccnames, colours = None):
     elif colours is None:
         if colr_number == 4:
             # standard set of DarkGreen, Green, Yellow and Brown
-            colours = [[0,128,0],[0,255,0],[0,255,255],[0,64,128]]
+            colours = [ np.array( [0,128,0]), np.array( [0,255,0]), np.array( [0,255,255]), np.array( [0,64,128])]
         else:
             # create a list of colours for output
             h = np.arange( 0, 255, np.ceil( 255 / colr_number), np.uint8)
             v = np.repeat( 200, colr_number).astype( np.uint8)
             s = np.repeat( 200, colr_number).astype( np.uint8)
-            colours = cv2.merge([ h, s, v])
+            colours = cv2.merge( [h, s, v])
             colours = cv2.cvtColor( colours, cv2.COLOR_HSV2BGR)
     else:
         pass
@@ -91,13 +92,14 @@ def _pseudocoloured_image_( rgb_img, masks, ccnames, colours = None):
     
     # apply different colour for each channel mask to greyscale image
     font = cv2.FONT_HERSHEY_PLAIN
-    for ncc, tg in enumerate( zip(masks, colours)):
+    for ncc, mask_colour in enumerate( zip(masks, colours)):
         # create an colour image, same size as original, with a solid colour
         temp = np.zeros(( x, y, 3), np.uint8)
-        temp[:] = tg[1]
+        colourClassColour = tuple( map( int, mask_colour[1]))
+        temp[:] = colourClassColour
         # copy coloured pixels through mask to original image (now greyscale)
-        false_coloured_image[ np.where( tg[0] == 255)] = temp[ np.where( tg[0] == 255)]
-        cv2.putText( false_coloured_image, ccnames[ncc], ( 20, 50 + (ncc * 30)), font, 2, tg[1], 2, cv2.LINE_AA)
+        false_coloured_image[ np.where( mask_colour[0] == 255)] = temp[ np.where( mask_colour[0] == 255)]
+        cv2.putText( false_coloured_image, ccnames[ ncc], ( 20, 50 + (ncc * 30)), font, 2, colourClassColour, 2, cv2.LINE_AA)
         
         
     
@@ -148,19 +150,19 @@ def analyze_CC( ori_img, plant_mask = None, pdfs = None, colours = None, filenam
     # mask the channel masks against the plant mask and copy them to a list
     colourclass_masks = [ cv2.bitwise_and( cc_masks[i], plant_mask) for i in cc_masks.keys()]
     colourclass_names = [i for i in cc_masks.keys()]
-    
     # find area of whole plant mask, for use in relative area calculations
     m = cv2.moments( plant_mask, binaryImage = True)
     total_area = m['m00']
     
-    # calculate the white pixels (area) for each channel + original plant mask area
+    # calculate the area ( white pixels) and relative area for each channel
     colourclass_area_absolute = []
     colourclass_area_relative = []
-    for msk in colourclass_masks:
-        m = cv2.moments( msk[plant_mask == 255], binaryImage = True)
+    for i in colourclass_masks:
+        m = cv2.moments( i[plant_mask == 255], binaryImage = True)
         area = m['m00']
         colourclass_area_absolute.extend( [ area])
         colourclass_area_relative.extend( [ area / total_area])
+    #[np.sum( i[plant_mask == 255]) for i in colourclass_masks ]
     
     # copy the names of the masks from the dictionary to a list
     colourclass_header = ['HEADER_COLOURCLASS',
@@ -183,12 +185,13 @@ def analyze_CC( ori_img, plant_mask = None, pdfs = None, colours = None, filenam
 
     analysis_images = []
     # create a false colour image of the colourclasses
-    out_img = _pseudocoloured_image_( ori_img, colourclass_masks, colourclass_names, colours)
-    analysis_images = analysis_images.append( out_img)
+    out_img = _pseudocoloured_image_( ori_img, colourclass_masks, colourclass_header, colours)
+    analysis_images = analysis_images.append( out_img[0])
+
     if filename:
         # Output 
         out_file = os.path.splitext( filename)[0] + '_colourclasses_' + str( len(cc_masks)) + '.jpg'
-        print_image( out_img, out_file)
+        print_image( out_img[0], out_file)
 
 #    analysis_images = [['IMAGE', 'colour_class', out_file]]
 
