@@ -10,19 +10,19 @@ from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
 # Create an ROI from a binary mask
-def from_binary_image( bin_img, img):
+def from_binary_image(img, bin_img):
     """Create an ROI from a binary image
 
     Inputs:
-    bin_img       = Binary image to extract an ROI contour from.
     img           = An RGB or grayscale image to plot the ROI on.
+    bin_img       = Binary image to extract an ROI contour from.
 
     Outputs:
     roi_contour   = An ROI set of points (contour).
     roi_hierarchy = The hierarchy of ROI contour(s).
 
-    :param bin_img: numpy.ndarray
     :param img: numpy.ndarray
+    :param bin_img: numpy.ndarray
     :return roi_contour: list
     :return roi_hierarchy: numpy.ndarray
     """
@@ -44,26 +44,25 @@ def from_binary_image( bin_img, img):
 
 
 # Create a rectangular ROI
-def rectangle( x, y, h, w, img):
+def rectangle( img, x, y, h, w):
     """Create a rectangular ROI.
 
     Inputs:
-    dtuple containing ( x, y, h, w) where
-        x             = The x-coordinate of the upper left corner of the rectangle.
-        y             = The y-coordinate of the upper left corner of the rectangle.
-        h             = The height of the rectangle.
-        w             = The width of the rectangle.
     img           = An RGB or grayscale image to plot the ROI on in debug mode.
+    x             = The x-coordinate of the upper left corner of the rectangle.
+    y             = The y-coordinate of the upper left corner of the rectangle.
+    h             = The height of the rectangle.
+    w             = The width of the rectangle.
 
     Outputs:
     roi_contour   = An ROI set of points (contour).
     roi_hierarchy = The hierarchy of ROI contour(s).
 
+    :param img: numpy.ndarray
     :param x: int
     :param y: int
     :param h: int
     :param w: int
-    :param img: numpy.ndarray
     :return roi_contour: list
     :return roi_hierarchy: numpy.ndarray
     """
@@ -95,21 +94,23 @@ def rectangle( x, y, h, w, img):
 
 
 # Create a circular ROI
-def circle( x, y, r, img):
+def circle( img, x, y, r):
     """Create a circular ROI.
 
-    Inputs: 
+    Inputs:
+    img           = An RGB or grayscale image to plot the ROI on in debug mode.
     x             = The x-coordinate of the center of the circle.
     y             = The y-coordinate of the center of the circle.
     r             = The radius of the circle.
-    img           = An RGB or grayscale image to plot the ROI on in debug mode.
+
     Outputs:
     roi_contour   = An ROI set of points (contour).
     roi_hierarchy = The hierarchy of ROI contour(s).
+
+    :param img: numpy.ndarray
     :param x: int
     :param y: int
     :param r: int
-    :param img: numpy.ndarray
     :return roi_contour: list
     :return roi_hierarchy: numpy.ndarray
     """
@@ -142,28 +143,27 @@ def circle( x, y, r, img):
 
 
 # Create an elliptical ROI
-def ellipse( x, y, r1, r2, angle, img):
+def ellipse( img, x, y, r1, r2, angle):
     """Create an elliptical ROI.
 
     Inputs:
-    dtuple containing ( x, y, r1, r2, angle) where
-        x             = The x-coordinate of the center of the ellipse.
-        y             = The y-coordinate of the center of the ellipse.
-        r1            = The radius of the major axis.
-        r2            = The radius of the minor axis.
-        angle         = The angle of rotation of the major axis.
     img           = An RGB or grayscale image to plot the ROI on in debug mode.
+    x             = The x-coordinate of the center of the ellipse.
+    y             = The y-coordinate of the center of the ellipse.
+    r1            = The radius of the major axis.
+    r2            = The radius of the minor axis.
+    angle         = The angle of rotation in degrees of the major axis.
 
     Outputs:
     roi_contour   = An ROI set of points (contour).
     roi_hierarchy = The hierarchy of ROI contour(s).
 
+    :param img: numpy.ndarray
     :param x: int
     :param y: int
     :param r1: int
     :param r2: int
-    :param angle: int
-    :param img: numpy.ndarray
+    :param angle: double
     :return roi_contour: list
     :return roi_hierarchy: numpy.ndarray
     """
@@ -207,10 +207,106 @@ def _draw_roi( img, roi_contour):
     if len( np.shape( ref_img)) == 2:
         ref_img = cv2.cvtColor( ref_img, cv2.COLOR_GRAY2BGR)
     # Draw the contour on the reference image
-    cv2.drawContours( ref_img, roi_contour, -1, ( 255, 0, 0), 5)
+    cv2.drawContours(ref_img, roi_contour, -1, (255, 0, 0), params.line_thickness)
     if params.debug == pcvc.DEBUG_PRINT:
         # If debug is print, save the image to a file
-        print_image( ref_img, os.path.join( params.debug_outdir, str( params.device) + "_roi.png"))
+        print_image(ref_img, os.path.join(params.debug_outdir, str(params.device) + "_roi.png"))
     elif params.debug == pcvc.DEBUG_PLOT:
         # If debug is plot, print to the plotting device
         plot_image( ref_img)
+
+
+def multi( img, coord, radius, spacing=None, nrows=None, ncols=None):
+    """Create multiple circular ROIs on a single image
+    Inputs
+    img            = Input image data.
+    coord          = Two-element tuple of the center of the top left object (x,y) or a list of tuples identifying the center of each roi [(x1,y1),(x2,y2)]
+    radius         = A single radius for all ROIs.
+    spacing        = Two-element tuple of the horizontal and vertical spacing between ROIs, (x,y). Ignored if `coord` is a list and `rows` and `cols` are None.
+    nrows          = Number of rows in ROI layout. Should be missing or None if each center coordinate pair is listed.
+    ncols          = Number of columns in ROI layout. Should be missing or None if each center coordinate pair is listed.
+
+    Returns:
+    roi_contour           = list of roi contours
+    roi_hierarchy         = list of roi hierarchies
+
+    :param img: numpy.ndarray
+    :param coord: tuple, list
+    :param radius: int
+    :param spacing: tuple
+    :param nrows: int
+    :param ncols: int
+    :return mask: numpy.ndarray
+    """
+
+    # Autoincrement the device counter
+    params.device += 1
+
+    # Initialize ROI list
+    rois = []
+
+    # Store user debug
+    debug = params.debug
+
+    # Temporarily disable debug
+    params.debug = None
+
+    # Get the height and width of the reference image
+    height, width = np.shape( img)[:2]
+
+    # Initialize a binary image of the circle
+    bin_img = np.zeros(( height, width), dtype = np.uint8)
+    roi_contour = []
+    roi_hierarchy = []
+    # Grid of ROIs
+    if ( type( coord) == tuple) and (( nrows and ncols) is not None):
+        # Loop over each row
+        for i in range( 0, nrows):
+            # The upper left corner is the y starting coordinate + the ROI offset * the vertical spacing
+            y = coord[1] + i * spacing[1]
+            # Loop over each column
+            for j in range( 0, ncols):
+                # The upper left corner is the x starting coordinate + the ROI offset * the
+                # horizontal spacing between chips
+                x = coord[0] + j * spacing[0]
+                # Create a chip ROI
+                rois.append(circle( img = img, x = x, y = y, r = radius))
+                # Draw the circle on the binary image
+                cv2.circle( bin_img, ( x, y), radius, 255, -1)
+                # Make a list of contours and hierarchies
+                roi_contour.append( cv2.findContours( np.copy( bin_img), cv2.RETR_EXTERNAL,
+                                                    cv2.CHAIN_APPROX_NONE)[-2:][0])
+                roi_hierarchy.append( cv2.findContours( np.copy( bin_img), cv2.RETR_EXTERNAL,
+                                                      cv2.CHAIN_APPROX_NONE)[-2:][1])
+                # Create an array of contours and list of hierarchy for when debug is set to 'plot'
+                roi_contour1, roi_hierarchy1 = cv2.findContours( np.copy( bin_img), cv2.RETR_TREE,
+                                                                cv2.CHAIN_APPROX_NONE)[-2:]
+
+    # User specified ROI centers
+    elif (type(coord) == list) and ((nrows and ncols) is None):
+        for i in range(0, len(coord)):
+            y = coord[i][1]
+            x = coord[i][0]
+            rois.append(circle( img = img, x = x, y = y, r = radius))
+            # Draw the circle on the binary image
+            cv2.circle(bin_img, ( x, y), radius, 255, -1)
+            #  Make a list of contours and hierarchies
+            roi_contour.append( cv2.findContours( np.copy(bin_img), cv2.RETR_EXTERNAL,
+                                                cv2.CHAIN_APPROX_NONE)[-2:][0])
+            roi_hierarchy.append(cv2.findContours( np.copy( bin_img), cv2.RETR_EXTERNAL,
+                                                  cv2.CHAIN_APPROX_NONE)[-2:][1])
+            # Create an array of contours and list of hierarchy for when debug is set to 'plot'
+            roi_contour1, roi_hierarchy1 = cv2.findContours( np.copy( bin_img), cv2.RETR_TREE,
+                                                            cv2.CHAIN_APPROX_NONE)[-2:]
+
+    else:
+        fatal_error("Function can either make a grid of ROIs (user must provide nrows, ncols, spacing, and coord) "
+                    "or take custom ROI coordinates (user must provide a list of tuples to 'coord' parameter)")
+    # Reset debug
+    params.debug = debug
+
+    # Draw the ROIs if requested
+    if params.debug is not None:
+        _draw_roi( img = img, roi_contour = roi_contour1)
+
+    return roi_contour, roi_hierarchy

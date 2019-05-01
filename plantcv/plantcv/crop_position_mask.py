@@ -90,7 +90,7 @@ def crop_position_mask( img, mask, x, y, v_pos = "top", h_pos = "right"):
     # New mask shape
     mx, my = np.shape(mask)
 
-    if v_pos == "top":
+    if v_pos.upper() == "TOP":
         # Add rows to the top
         top = np.zeros((x, my), dtype=np.uint8)
 
@@ -117,11 +117,11 @@ def crop_position_mask( img, mask, x, y, v_pos = "top", h_pos = "right"):
                 rows2 = np.zeros((r2, my), dtype=np.uint8)
                 maskv = np.vstack((rows1, maskv, rows2))
         if params.debug == pcvc.DEBUG_PRINT:
-            print_image( maskv, os.path.join( params.debug_outdir, str( params.device) + "_push-top_.png"))
+            print_image(maskv, os.path.join(params.debug_outdir, str(params.device) + "_push-top.png"))
         elif params.debug == pcvc.DEBUG_PLOT:
             plot_image(maskv, cmap = pcvc.COLOR_MAP_GRAY)
 
-    if v_pos == "bottom":
+    elif v_pos.upper() == "BOTTOM":
         # Add rows to the bottom
         bottom = np.zeros( ( x, my), dtype = np.uint8)
 
@@ -156,7 +156,10 @@ def crop_position_mask( img, mask, x, y, v_pos = "top", h_pos = "right"):
         elif params.debug == pcvc.DEBUG_PLOT:
             plot_image( maskv, cmap = pcvc.COLOR_MAP_GRAY)
 
-    if h_pos == "left":
+    else:
+        fatal_error(str(v_pos) + ' is not valid, must be "top" or "bottom"!')
+
+    if h_pos.upper() == "LEFT":
         # # In line 57 the mask is spliced, so there will never be a case where 'maskv' will have a 3rd dimension
         # if len(np.shape(maskv)) == 3:
         #     mx, my, mz = np.shape(maskv)
@@ -185,16 +188,15 @@ def crop_position_mask( img, mask, x, y, v_pos = "top", h_pos = "right"):
             else:
                 c1 = int( math.ceil( c / 2.0))
                 c2 = c1 - 1
-                col1 = np.zeros(( mx, c1), dtype = np.uint8)
-                col2 = np.zeros(( mx, c2), dtype = np.uint8)
-                maskv = np.hstack(( col1, maskv, col2))
+                col1 = np.zeros((mx, c1), dtype=np.uint8)
+                col2 = np.zeros((mx, c2), dtype=np.uint8)
+                maskv = np.hstack((col1, maskv, col2))
         if params.debug == pcvc.DEBUG_PRINT:
-            print_image( maskv, ( str( params.device) + "_push-left.png"))
+            print_image(maskv, os.path.join(params.debug_outdir, str(params.device) + "_push-left.png"))
         elif params.debug == pcvc.DEBUG_PLOT:
             plot_image( maskv, cmap = pcvc.COLOR_MAP_GRAY)
 
-            
-    if h_pos == "right":
+    elif h_pos.upper() == "RIGHT":
         # # In line 57 the mask is spliced, so there will never be a case where 'maskv' will have a 3rd dimension
         # if len(np.shape(maskv)) == 3:
         #     mx, my, mz = np.shape(maskv)
@@ -224,16 +226,18 @@ def crop_position_mask( img, mask, x, y, v_pos = "top", h_pos = "right"):
             else:
                 c1 = int( math.ceil( c / 2.0))
                 c2 = c1 - 1
-                col1 = np.zeros(( mx, c1), dtype = np.uint8)
-                col2 = np.zeros(( mx, c2), dtype = np.uint8)
-                maskv = np.hstack(( col1, maskv, col2))
+                col1 = np.zeros((mx, c1), dtype=np.uint8)
+                col2 = np.zeros((mx, c2), dtype=np.uint8)
+                maskv = np.hstack((col1, maskv, col2))
         if params.debug == pcvc.DEBUG_PRINT:
-            print_image( maskv, ( str( params.device) + "_push-right.png"))
+            print_image(maskv, os.path.join(params.debug_outdir, str(params.device) + "_push-right.png"))
         elif params.debug == pcvc.DEBUG_PLOT:
-            plot_image( maskv, cmap = pcvc.COLOR_MAP_GRAY)
+            plot_image(maskv, cmap = pcvc.COLOR_MAP_GRAY)
 
+    else:
+        fatal_error(str(h_pos) + ' is not valid, must be "left" or "right"!')
 
-    newmask = np.array( maskv)
+    newmask = np.array(maskv)
     if params.debug is not None:
         if params.debug == pcvc.DEBUG_PRINT:
             print_image( newmask, ( str( params.device) + "_newmask.png"))

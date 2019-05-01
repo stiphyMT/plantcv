@@ -8,7 +8,7 @@ the images plot to the screen. Debug mode allows users to visualize and optimize
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/danforthcenter/plantcv-binder.git/master?filepath=notebooks/vis_tutorial.ipynb) Check out our interactive VIS tutorial! 
 
-Also see [here](scripts/vis_script.md) for the complete script. 
+Also see [here](#vis-script) for the complete script. 
 
 **Workflow**
 
@@ -38,6 +38,7 @@ Sample command to run a pipeline on a single image:
 
 ```
 ./pipelinename.py -i testimg.png -o ./output-images -r results.txt -w -D 'print'
+
 ```
 
 ### Walk Through A Sample Pipeline
@@ -64,6 +65,7 @@ def options():
     parser.add_argument("-D", "--debug", help="can be set to 'print' or None (or 'plot' if in jupyter) prints intermediate images.", default=None)
     args = parser.parse_args()
     return args
+    
 ```
 
 #### Start of the Main/Customizable portion of the pipeline.
@@ -80,8 +82,9 @@ def main():
     pcv.params.debug=args.debug #set debug mode
     pcv.params.debug_outdir=args.outdir #set output directory
     
-    # Read image
-    img, path, filename = pcv.readimage(args.image)
+    # Read image (readimage mode defaults to native but if image is RGBA then specify mode='rgb')
+    img, path, filename = pcv.readimage(args.image, mode='rgb')
+    
 ```
 
 **Figure 1.** Original image.
@@ -96,10 +99,10 @@ In order to perform a binary threshold on an image you need to select one of the
 Here we convert the [RGB image to HSV](rgb2hsv.md) color space then extract the 's' or saturation channel, but any channel can be selected based on user need.
 If some of the plant is missed or not visible then thresholded channels may be combined (a later step).
 
-```python
-        
+```python        
     # Convert RGB to HSV and extract the saturation channel
     s = pcv.rgb2gray_hsv(img, 's')
+    
 ```
 
 **Figure 2.** Saturation channel from original RGB image converted to HSV color space.
@@ -112,9 +115,9 @@ The [threshold](binary_threshold.md) can be on either light or dark objects in t
 Tip: This step is often one that needs to be adjusted depending on the lighting and configurations of your camera system.
 
 ```python
-
     # Threshold the saturation image
     s_thresh = pcv.threshold.binary(s, 85, 255, 'light')
+    
 ```
 
 **Figure 3.** Thresholded saturation channel image (Figure 2). Remaining objects are in white.
@@ -128,10 +131,10 @@ Tip: Fill and median blur type steps should be used as sparingly as possible.
 Depending on the plant type (esp. grasses with thin leaves that often twist) you can lose plant material with a blur that is too harsh.
 
 ```python
-
     # Median Blur
     s_mblur = pcv.median_blur(s_thresh, 5)
     s_cnt = pcv.median_blur(s_thresh, 5)
+    
 ```
 
 **Figure 4.** Thresholded saturation channel image with median blur.
@@ -143,7 +146,6 @@ The original image is converted from an [RGB image to LAB](rgb2lab.md) color spa
 This image is again thresholded and there is an optional [fill](fill.md) step that wasn't needed in this pipeline.
 
 ```python
-
     # Convert RGB to LAB and extract the Blue channel
     b = pcv.rgb2gray_lab(img, 'b')
     
@@ -151,8 +153,9 @@ This image is again thresholded and there is an optional [fill](fill.md) step th
     b_thresh = pcv.threshold.binary(b, 160, 255, 'light')
     b_cnt = pcv.threshold.binary(b, 160, 255, 'light')
     
-    # Fill small objects
+    # Fill small objects (optional)
     #b_fill = pcv.fill(b_thresh, 10)
+    
 ```
 
 **Figure 5.** (Top) Blue-yellow channel from LAB color space from original image. (Bottom) Thresholded blue-yellow channel image.
@@ -164,9 +167,9 @@ This image is again thresholded and there is an optional [fill](fill.md) step th
 Join the binary images from Figure 4 and Figure 5 with the [logical or](logical_or.md) function.
 
 ```python
-
     # Join the thresholded saturation and blue-yellow images
     bs = pcv.logical_or(s_mblur, b_cnt)
+    
 ```
 
 **Figure 6.** Joined binary images (Figure 4 and Figure 5).
@@ -177,9 +180,9 @@ Next, apply the binary image (Figure 6) as an image [mask](apply_mask.md) over t
 The purpose of this mask is to exclude as much background with simple thresholding without leaving out plant material.
 
 ```python
-
     # Apply Mask (for VIS images, mask_color=white)
     masked = pcv.apply_mask(img, bs, 'white')
+    
 ```
 
 **Figure 7.** Masked image with background removed.
@@ -193,7 +196,6 @@ The small objects are [filled](fill.md).
 The resulting binary image is used to mask the masked image from Figure 7.
 
 ```python
-
     # Convert RGB to LAB and extract the Green-Magenta and Blue-Yellow channels
     masked_a = pcv.rgb2gray_lab(masked, 'a')
     masked_b = pcv.rgb2gray_lab(masked, 'b')
@@ -212,6 +214,7 @@ The resulting binary image is used to mask the masked image from Figure 7.
     
     # Apply mask (for VIS images, mask_color=white)
     masked2 = pcv.apply_mask(masked, ab_fill, 'white')
+    
 ```
 
 The sample image used had very green leaves, but often (especially with stress treatments) 
@@ -250,9 +253,9 @@ that was previously masked (Figure 7).
 Now we need to [identify the objects](find_objects.md) (called contours in OpenCV) within the image.
 
 ```python
-
     # Identify objects
     id_objects, obj_hierarchy = pcv.find_objects(masked2, ab_fill)
+    
 ```
 
 **Figure 11.** Here the objects (purple) are identified from the image from Figure 10.
@@ -263,9 +266,9 @@ Even the spaces within an object are colored, but will have different hierarchy 
 Next a [rectangular region of interest](roi_rectangle.md) is defined (this can be made on the fly).
 
 ```python
-
     # Define ROI
-    roi1, roi_hierarchy= pcv.roi.rectangle(x=100, y=100, h=200, w=200, img=masked2)
+    roi1, roi_hierarchy= pcv.roi.rectangle(img=masked2, x=100, y=100, h=200, w=200)
+    
 ```
 
 **Figure 12.** Region of interest drawn onto image. 
@@ -277,9 +280,9 @@ or cut the objects to the shape of the region of interest.
 
 
 ```python
-
     # Decide which objects to keep
     roi_objects, hierarchy3, kept_mask, obj_area = pcv.roi_objects(img, 'partial', roi1, roi_hierarchy, id_objects, obj_hierarchy)
+
 ```
 
 **Figure 13.** Kept objects (green) drawn onto image.
@@ -293,9 +296,9 @@ shape analysis to perform properly the plant objects need to be combined into
 one object using the [combine objects](object_composition.md) function.
 
 ```python
-
     # Object combine kept objects
     obj, mask = pcv.object_composition(img, roi_objects, hierarchy3)
+    
 ```
 
 **Figure 14.** Outline (blue) of combined objects on the image. 
@@ -306,7 +309,6 @@ The next step is to analyze the plant object for traits such as [horizontal heig
 [shape](analyze_shape.md), or [color](analyze_color.md).
 
 ```python
-
 ############### Analysis ################
   
     outfile=False
@@ -320,16 +322,17 @@ The next step is to analyze the plant object for traits such as [horizontal heig
     boundary_header, boundary_data, boundary_img1 = pcv.analyze_bound_horizontal(img, obj, mask, 1680)
     
     # Determine color properties: Histograms, Color Slices, output color analyzed histogram (optional)
-    color_header, color_data, color_histogram = pcv.analyze_color(img, kept_mask, 256, 'all')
+    color_header, color_data, color_histogram = pcv.analyze_color(img, kept_mask, 'all')
 
     # Pseudocolor the grayscale image
-    pseudocolored_img = pcv.pseudocolor(gray_img=s, mask=kept_mask, cmap='jet')
+    pseudocolored_img = pcv.visualize.pseudocolor(gray_img=s, mask=kept_mask, cmap='jet')
 
     # Write shape and color data to results file
     pcv.print_results(filename=args.result)
   
 if __name__ == '__main__':
     main()
+    
 ```
 
 **Figure 15.** Shape analysis output image.
@@ -380,3 +383,134 @@ here are different species of plants captured with the same imaging setup
 
 To deploy a pipeline over a full image set please see tutorial on 
 [pipeline parallelization](pipeline_parallel.md).
+
+
+## VIS Script
+In the terminal:
+
+```
+./pipelinename.py -i testimg.png -o ./output-images -r results.txt -w -D 'print'
+
+```
+*  Always test pipelines (preferably with -D flag set to 'print') before running over a full image set
+
+Python script: 
+
+```python
+# !/usr/bin/python
+import sys, traceback
+import cv2
+import numpy as np
+import argparse
+import string
+from plantcv import plantcv as pcv
+
+
+### Parse command-line arguments
+def options():
+    parser = argparse.ArgumentParser(description="Imaging processing with opencv")
+    parser.add_argument("-i", "--image", help="Input image file.", required=True)
+    parser.add_argument("-o", "--outdir", help="Output directory for image files.", required=False)
+    parser.add_argument("-r", "--result", help="result file.", required=False)
+    parser.add_argument("-w", "--writeimg", help="write out images.", default=False, action="store_true")
+    parser.add_argument("-D", "--debug",
+                        help="can be set to 'print' or None (or 'plot' if in jupyter) prints intermediate images.",
+                        default=None)
+    args = parser.parse_args()
+    return args
+
+#### Start of the Main/Customizable portion of the pipeline.
+
+### Main pipeline
+def main():
+    # Get options
+    args = options()
+
+    pcv.params.debug = args.debug  # set debug mode
+    pcv.params.debug_outdir = args.outdir  # set output directory
+
+    # Read image
+    img, path, filename = pcv.readimage(args.image)
+
+    # Convert RGB to HSV and extract the saturation channel
+    s = pcv.rgb2gray_hsv(img, 's')
+
+    # Threshold the saturation image
+    s_thresh = pcv.threshold.binary(s, 85, 255, 'light')
+
+    # Median Blur
+    s_mblur = pcv.median_blur(s_thresh, 5)
+    s_cnt = pcv.median_blur(s_thresh, 5)
+
+    # Convert RGB to LAB and extract the Blue channel
+    b = pcv.rgb2gray_lab(img, 'b')
+
+    # Threshold the blue image
+    b_thresh = pcv.threshold.binary(b, 160, 255, 'light')
+    b_cnt = pcv.threshold.binary(b, 160, 255, 'light')
+
+    # Fill small objects
+    # b_fill = pcv.fill(b_thresh, 10)
+
+    # Join the thresholded saturation and blue-yellow images
+    bs = pcv.logical_or(s_mblur, b_cnt)
+
+    # Apply Mask (for VIS images, mask_color=white)
+    masked = pcv.apply_mask(img, bs, 'white')
+
+    # Convert RGB to LAB and extract the Green-Magenta and Blue-Yellow channels
+    masked_a = pcv.rgb2gray_lab(masked, 'a')
+    masked_b = pcv.rgb2gray_lab(masked, 'b')
+
+    # Threshold the green-magenta and blue images
+    maskeda_thresh = pcv.threshold.binary(masked_a, 115, 255, 'dark')
+    maskeda_thresh1 = pcv.threshold.binary(masked_a, 135, 255, 'light')
+    maskedb_thresh = pcv.threshold.binary(masked_b, 128, 255, 'light')
+
+    # Join the thresholded saturation and blue-yellow images (OR)
+    ab1 = pcv.logical_or(maskeda_thresh, maskedb_thresh)
+    ab = pcv.logical_or(maskeda_thresh1, ab1)
+
+    # Fill small objects
+    ab_fill = pcv.fill(ab, 200)
+
+    # Apply mask (for VIS images, mask_color=white)
+    masked2 = pcv.apply_mask(masked, ab_fill, 'white')
+
+    # Identify objects
+    id_objects, obj_hierarchy = pcv.find_objects(masked2, ab_fill)
+
+    # Define ROI
+    roi1, roi_hierarchy= pcv.roi.rectangle(img=masked2, x=100, y=100, h=200, w=200)
+
+    # Decide which objects to keep
+    roi_objects, hierarchy3, kept_mask, obj_area = pcv.roi_objects(img, 'partial', roi1, roi_hierarchy, id_objects, obj_hierarchy)
+
+    # Object combine kept objects
+    obj, mask = pcv.object_composition(img, roi_objects, hierarchy3)
+
+    ############### Analysis ################
+
+    outfile=False
+    if args.writeimg == True:
+        outfile = args.outdir + "/" + filename
+
+    # Find shape properties, output shape image (optional)
+    shape_header, shape_data, shape_imgs = pcv.analyze_object(img, obj, mask)
+
+    # Shape properties relative to user boundary line (optional)
+    boundary_header, boundary_data, boundary_img1 = pcv.analyze_bound_horizontal(img, obj, mask, 1680)
+
+    # Determine color properties: Histograms, Color Slices, output color analyzed histogram (optional)
+    color_header, color_data, color_histogram = pcv.analyze_color(img, kept_mask, 'all')
+
+    # Pseudocolor the grayscale image
+    pseudocolored_img = pcv.visualize.pseudocolor(gray_img=s, mask=kept_mask, cmap='jet')
+
+    # Write shape and color data to results file
+    pcv.print_results(filename=args.result)
+
+if __name__ == '__main__':
+    main()
+    
+```

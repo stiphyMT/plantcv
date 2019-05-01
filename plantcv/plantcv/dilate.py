@@ -9,29 +9,32 @@ from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
 
-def dilate(gray_img, kernel, i):
+def dilate(gray_img, ksize, i):
     """Performs morphological 'dilation' filtering. Adds pixel to center of kernel if conditions set in kernel are true.
 
     Inputs:
     gray_img = Grayscale (usually binary) image data
-    kernel   = Kernel size (int). A k x k kernel will be built. Must be greater than 1 to have an effect.
+    ksize   = Kernel size (int). A k x k kernel will be built. Must be greater than 1 to have an effect.
     i        = iterations, i.e. number of consecutive filtering passes
 
     Returns:
     dil_img = dilated image
 
     :param gray_img: numpy.ndarray
-    :param kernel: int
+    :param ksize: int
     :param i: int
     :return dil_img: numpy.ndarray
     """
 
-    kernel1 = int(kernel)
+    if ksize <= 1:
+        raise ValueError('ksize needs to be greater than 1 for the function to have an effect')
+
+    kernel1 = int(ksize)
     kernel2 = np.ones((kernel1, kernel1), np.uint8)
     dil_img = cv2.dilate(src = gray_img, kernel = kernel2, iterations = i)
     params.device += 1
     if params.debug == pcvc.DEBUG_PRINT:
-        print_image( dil_img, "{0}_dil_image_itr{1}.png".format( params.device, i))
+        print_image(dil_img, os.path.join(params.debug_outdir, str(params.device) + '_dil_image' + str(ksize) + '_itr' + str(i) + '.png'))
     elif params.debug == pcvc.DEBUG_PLOT:
-        plot_image(dil_img, cmap='gray')
+        plot_image(dil_img, cmap = pcvc.COLOR_MAP_GRAY)
     return dil_img

@@ -2,8 +2,11 @@
 import os
 import cv2
 import numpy as np
-from plantcv.plantcv import PCVconstants as pcvc
+import matplotlib
+from plantcv.plantcv import params
+from matplotlib import pyplot as plt
 from plantcv.plantcv import fatal_error
+from plantcv.plantcv import PCVconstants as pcvc
 
 def plot_image( img, cmap = None):
     """Plot an image to the screen.
@@ -12,14 +15,13 @@ def plot_image( img, cmap = None):
     :param cmap: str
     :return:
     """
-    import matplotlib
-    from matplotlib import pyplot as plt
 
     image_type = type(img)
 
     dimensions = np.shape(img)
 
     if image_type == np.ndarray:
+        matplotlib.rcParams['figure.dpi'] = params.dpi
         # If the image is color then OpenCV stores it as BGR, we plot it as RGB
         if len(dimensions) == 3:
             plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))

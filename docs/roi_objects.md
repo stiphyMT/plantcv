@@ -12,7 +12,7 @@ completely within the image.
 
 - **Parameters:**
     - img = RGB or grayscale image data to display kept objects on
-    - roi_type = 'cutto' or 'partial' (include objects that are partially inside or overlapping with ROI)
+    - roi_type = 'cutto', 'partial' (for partially inside), or 'largest' (keep only the largest contour)
     - roi_contour = contour of roi, output from one of the pcv.roi subpackage functions
     - roi_hierarchy = contour of roi, output from one of the pcv.roi subpackage functions
     - object_contour = contours of objects, output from "find_objects" function 
@@ -20,20 +20,26 @@ completely within the image.
     
 - **Context:**
     - Used to find objects within a region of interest and decide which ones to keep.
+- **Warning:** 
+    - Using `roi_type='largest` will only return the largest outer contour. All child contours are left behind. 
 - **Example use:**
     - [Use In VIS Tutorial](vis_tutorial.md)
     - [Use In NIR Tutorial](nir_tutorial.md)
     - [Use In PSII Tutorial](psII_tutorial.md) 
 
+
 ```python
 
 from plantcv import plantcv as pcv
 
-# Set global debug behavior to None (default), "print" (to file), or "plot" (Jupyter Notebooks or X11)
+# Set global debug behavior to None (default), "print" (to file), 
+# or "plot" (Jupyter Notebooks or X11)
 pcv.params.debug = "print"
 
 # ROI objects allows the user to define if objects partially inside ROI are included or if objects are cut to ROI.
-roi_objects, hierarchy, kept_mask, obj_area = pcv.roi_objects(img, 'partial', roi, roi_hierarchy, objects, obj_hierarchy)
+roi_objects, hierarchy, kept_mask, obj_area = pcv.roi_objects(img, 'partial', roi, roi_hierarchy, 
+                                                              objects, obj_hierarchy)
+
 ```
 
 **Object (green) that is identified as partially inside ROI**

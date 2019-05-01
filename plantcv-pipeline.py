@@ -795,12 +795,15 @@ def process_results(args):
     opt_feature_fields = ['horizontal_line_position', 'height_above_bound', 'height_below_bound',
                           'above_bound_area', 'percent_above_bound_area', 'below_bound_area',
                           'percent_below_bound_area']
+    hue_feature_fields = ['hue_circular_mean', 'hue_circular_std', 'hue_median']
     marker_fields = ['marker_area', 'marker_major_axis_length', 'marker_minor_axis_length', 'marker_eccentricity']
     watershed_fields = ['estimated_object_count']
     landmark_fields = ['tip_points', 'tip_points_r', 'centroid_r', 'baseline_r', 'tip_number', 'vert_ave_c',
                        'hori_ave_c', 'euc_ave_c', 'ang_ave_c', 'vert_ave_b', 'hori_ave_b', 'euc_ave_b', 'ang_ave_b',
                        'left_lmk', 'right_lmk', 'center_h_lmk', 'left_lmk_r', 'right_lmk_r', 'center_h_lmk_r',
                        'top_lmk', 'bottom_lmk', 'center_v_lmk', 'top_lmk_r', 'bottom_lmk_r', 'center_v_lmk_r']
+    morphology_fields = ['num_cycles', 'segment_angles', 'segment_curvature', 'segment_insertion_angles'
+                          'segment_eu_lengths', 'segment_tan_angles', 'segment_path_lengths']
 
     if args.other_args is not None and '--pdfs' in args.other_args:
         cc_bool = True
@@ -812,9 +815,7 @@ def process_results(args):
     # args.features_file.write('#' + '\t'.join(map(str, feature_fields + opt_feature_fields)) + '\n')
 
     # Signal channel data table
-    signal_fields = ['bin-number', 'channel_name', 'values', 'bin_values']
-
-    # bin-number	blue	green	red	lightness	green-magenta	blue-yellow	hue	saturation	value
+    signal_fields = ['channel_name', 'frequency', 'signal_values']
 
     # Initialize the database with the schema template if create is true
     args.sq.execute(
@@ -825,7 +826,7 @@ def process_results(args):
         '` TEXT NOT NULL, `'.join( map( str, metadata_fields[2:])) + '` TEXT NOT NULL);')
     args.sq.execute(
         'CREATE TABLE IF NOT EXISTS `features` (`image_id` INTEGER PRIMARY KEY, `' + '` TEXT NOT NULL, `'.join(
-            map( str, feature_fields + opt_feature_fields + marker_fields + watershed_fields + landmark_fields)
+            map(str, feature_fields + opt_feature_fields + marker_fields + watershed_fields + landmark_fields + hue_feature_fields + morphology_fields)
         ) + '` TEXT NOT NULL);')
     args.sq.execute(
         'CREATE TABLE IF NOT EXISTS `analysis_images` (`image_id` INTEGER NOT NULL, `type` TEXT NOT NULL, '
@@ -848,7 +849,7 @@ def process_results(args):
                 features = []
                 feature_data = {}
                 signal = []
-                signal_data = {}
+                signal_data = []
                 boundary = []
                 boundary_data = {}
                 marker = []
@@ -857,9 +858,13 @@ def process_results(args):
                 watershed_data = {}
                 landmark = []
                 landmark_data = {}
+                hue = []
+                hue_data = {}
+                morphology_data = {}
                 colourclasses = []
                 colourclasses_data = {}
-                
+
+
                 # Open results file
                 with open( os.path.join( dirpath, filename)) as results:
                     # For each line in the file
@@ -885,9 +890,18 @@ def process_results(args):
                         elif cols[0] == 'HEADER_HISTOGRAM':
                             signal = cols
                         elif cols[0] == 'HISTOGRAM_DATA':
-                            for i, datum in enumerate( cols):
+                            signal_measurements = {}
+                            for i, datum in enumerate(cols):
                                 if i > 0:
-                                    signal_data[signal[i]] = datum
+                                    signal_measurements[signal[i]] = datum
+                            signal_data.append(signal_measurements)
+                        # If the data is of the class color features, store in the hue features dictinoary
+                        elif cols[0] == 'HEADER_COLOR_FEATURES':
+                            hue = cols
+                        elif cols[0] == 'COLOR_FEATURES_DATA':
+                            for i, datum in enumerate(cols):
+                                if i > 0:
+                                    hue_data[hue[i]] = datum
                         # If the data is of class boundary (horizontal rule), store in the boundary dictionary
                         elif 'HEADER_BOUNDARY' in cols[0]:
                             boundary = cols
@@ -916,12 +930,48 @@ def process_results(args):
                             for i, datum in enumerate( cols):
                                 if i > 0:
                                     landmark_data[landmark[i]] = datum
+                        # Morphology sub-package data
+                        elif cols[0] == 'CYCLE_DATA':
+                            morphology_data['num_cycles'] = cols[1]
+
+                        elif cols[0] == 'ANGLE_DATA':
+                            morphology_data['segment_angles'] = []
+                            for i, datum in enumerate(cols):
+                                if i > 0:
+                                    morphology_data['segment_angles'].append(datum)
+
+                        elif cols[0] == 'CURVATURE_DATA':
+                            morphology_data['segment_curvature'] = []
+                            for i, datum in enumerate(cols):
+                                if i > 0:
+                                    morphology_data['segment_curvature'].append(datum)
+                        elif cols[0] == 'EU_LENGTH_DATA':
+                            morphology_data['segment_eu_lengths'] = []
+                            for i, datum in enumerate(cols):
+                                if i > 0:
+                                    morphology_data['segment_eu_lengths'].append(datum)
+                        elif cols[0] == 'PATH_LENGTH_DATA':
+                            morphology_data['segment_path_lengths'] = []
+                            for i, datum in enumerate(cols):
+                                if i > 0:
+                                    morphology_data['segment_path_lengths'].append(datum)
+                        elif cols[0] == 'TAN_ANGLE_DATA':
+                            morphology_data['segment_tan_angles'] = []
+                            for i, datum in enumerate(cols):
+                                if i > 0:
+                                    morphology_data['segment_tan_angles'].append(datum)
+                        elif cols[0] == 'INSERTION_ANGLE_DATA':
+                            morphology_data['segment_insertion_angles'] = []
+                            for i, datum in enumerate(cols):
+                                if i > 0:
+                                    morphology_data['segment_insertion_angles'].append(datum)
                         elif 'HEADER_COLOURCLASSES' in cols[0]:
                             colourclasses = cols
                         elif 'COLOURCLASSES_DATA' in cols[0]:
                             for i, datum in enumerate( cols):
                                 if i > 0:
                                     colourclasses_data[colourclasses[i]] = datum
+
 
                 # Check to see if the image failed, if not continue
 
@@ -940,26 +990,26 @@ def process_results(args):
                     # Print the image feature data to the aggregate output file
 #                    feature_data['image_id'] = args.image_id # redundant the image_id data is actually extracted directly 
 
-                    # Boundary data is optional, if it's not there we need to add in placeholder data
-                    if len( boundary_data) == 0:
+                    # Boundary data are optional, if it's not there we need to add in placeholder data
+                    if len(boundary_data) == 0:
                         for field in opt_feature_fields:
                             boundary_data[field] = 0
                     feature_data.update( boundary_data)
 
-                    # Marker data is optional, if it's not there we need to add in placeholder data
+                    # Marker data are optional, if it's not there we need to add in placeholder data
                     if len(marker_data) == 0:
                         for field in marker_fields:
                             marker_data[field] = 0
                     feature_data.update( marker_data)
 
-                    # Watershed data is optional, if it's not there we need to add in placeholder data
-                    if len( watershed_data) == 0:
+                    # Watershed data are optional, if it's not there we need to add in placeholder data
+                    if len(watershed_data) == 0:
                         for field in watershed_fields:
                             watershed_data[field] = 0
                     feature_data.update( watershed_data)
 
-                    # Landmark data is optional, if it's not there we need to add in placeholder data
-                    if len( landmark_data) == 0:
+                    # Landmark data are optional, if it's not there we need to add in placeholder data
+                    if len(landmark_data) == 0:
                         for field in landmark_fields:
                             landmark_data[field] = 0
                     feature_data.update( landmark_data)
@@ -969,11 +1019,24 @@ def process_results(args):
                             colourclasses_data[field] = 0
                     feature_data.update( colourclasses_data)
 
-                    feature_table = [args.image_id]
-                    for field in feature_fields + opt_feature_fields + marker_fields + watershed_fields + landmark_fields:
-                        feature_table.append( feature_data[field])
+                    # Hue feature data are optional, if it's not there we need to add in placeholder data
+                    if len(hue_data) == 0:
+                        for field in hue_feature_fields:
+                            hue_data[field] = 0
+                    feature_data.update(hue_data)
+                    
+                    # Morphology data is optional, if it's not there we need to add in the placeholder data
+                    if len(morphology_data) == 0:
+                        for field in morphology_fields:
+                            morphology_data[field] = 0
+                    feature_data.update(morphology_data)
 
-                    args.features_file.write( '|'.join( map( str, feature_table)) + '\n')
+                    feature_table = [args.image_id]
+                    for field in feature_fields + opt_feature_fields + marker_fields + watershed_fields + \
+                                 landmark_fields + morphology_fields + hue_feature_fields:
+                        feature_table.append(feature_data[field])
+
+                    args.features_file.write('|'.join(map(str, feature_table)) + '\n')
 
                     # Print the image colourclasses data to the aggregate output file
                     if cc_bool:
@@ -989,13 +1052,14 @@ def process_results(args):
                             '|'.join( map( str, ( args.image_id, img_type, images[img_type]))) + '\n')
 
                     # Print the image signal data to the aggregate output file
-                    for key in signal_data.keys():
-                        if key != 'bin-number' and key != 'bin-values':
-                            signal_data[key] = signal_data[key].replace('[', '')
-                            signal_data[key] = signal_data[key].replace(']', '')
-                            signal_table = [args.image_id, signal_data['bin-number'], key, signal_data[key],
-                                            signal_data['bin-values']]
-                            args.signal_file.write( '|'.join( map( str, signal_table)) + '\n')
+                    for channel in signal_data:
+                        signal_table = [args.image_id]
+                        for key in signal_fields:
+                            channel[key] = channel[key].replace('[', '')
+                            channel[key] = channel[key].replace(']', '')
+                            signal_table.append(channel[key])
+                        args.signal_file.write('|'.join(map(str, signal_table)) + '\n')
+
                 else:
                     args.fail_log.write('|'.join( map( str, meta_table)) + '\n')
 
@@ -1003,7 +1067,8 @@ def process_results(args):
 
                     feature_table = [args.image_id]
 
-                    for field in feature_fields + opt_feature_fields + marker_fields + watershed_fields + landmark_fields:
+                    for field in feature_fields + opt_feature_fields + marker_fields + watershed_fields + \
+                                 landmark_fields + morphology_fields + hue_feature_fields:
                         feature_table.append(0)
 
                     args.features_file.write('|'.join( map( str, feature_table)) + '\n')
@@ -1030,6 +1095,7 @@ def check_date_range(args, img_time):
     else:
         return True
 ###########################################
+
 
 if __name__ == '__main__':
     main()

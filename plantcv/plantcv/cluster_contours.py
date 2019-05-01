@@ -8,7 +8,7 @@ from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
 
-def cluster_contours(img, roi_objects, roi_obj_hierarchy, nrow=1, ncol=1):
+def cluster_contours(img, roi_objects, roi_obj_hierarchy, nrow=1, ncol=1, show_grid = False):
 
     """
     This function take a image with multiple contours and clusters them based on user input of rows and columns
@@ -21,8 +21,7 @@ def cluster_contours(img, roi_objects, roi_obj_hierarchy, nrow=1, ncol=1):
                               in the entire image (even if there isn't a literal row of plants)
     ncol                    = number of columns to cluster (this should be the approximate number of desired columns
                               in the entire image (even if there isn't a literal row of plants)
-    file                    = output of filename from read_image function
-    filenames               = input txt file with list of filenames in order from top to bottom left to right
+    show_grid               = if True then the grid will get plot to show how plants are being clustered
 
     Returns:
     grouped_contour_indexes = contours grouped
@@ -32,6 +31,7 @@ def cluster_contours(img, roi_objects, roi_obj_hierarchy, nrow=1, ncol=1):
     :param roi_objects: list
     :param nrow: int
     :param ncol: int
+    :param show_grid: bool
     :return grouped_contour_indexes: list
     :return contours: list
     :return roi_obj_hierarchy: list
@@ -62,10 +62,11 @@ def cluster_contours(img, roi_objects, roi_obj_hierarchy, nrow=1, ncol=1):
     # categorize what bin the center of mass of each contour
 
     def digitize(a, step):
-        if isinstance(step, int):
-            i = step
-        else:
-            i = len(step)
+        # The way cbreaks and rbreaks are calculated, step will never be an integer
+        # if isinstance(step, int):
+        #     i = step
+        # else:
+        i = len(step)
         for x in range(0, i):
             if x == 0:
                 if a >= 0 and a < step[x + 1]:
@@ -123,7 +124,7 @@ def cluster_contours(img, roi_objects, roi_obj_hierarchy, nrow=1, ncol=1):
 
     # Debug image is rainbow printed contours
 
-    if params.debug == pcvc.DEBUG_PRINT:
+    if params.debug is not None:
         if len(np.shape(img)) == 3:
             img_copy = np.copy(img)
         else:
@@ -137,22 +138,14 @@ def cluster_contours(img, roi_objects, roi_obj_hierarchy, nrow=1, ncol=1):
                     pass
                 else:
                     cv2.drawContours(img_copy, roi_objects, a, rand_color[i], -1, hierarchy=roi_obj_hierarchy)
-        print_image(img_copy, os.path.join( params.debug_outdir, str( params.device) + '_clusters.png'))
-
-    elif params.debug == pcvc.DEBUG_PLOT:
-        if len(np.shape(img)) == 3:
-            img_copy = np.copy(img)
-        else:
-            iy, ix = np.shape(img)
-            img_copy = np.zeros((iy, ix, 3), dtype=np.uint8)
-
-        rand_color = color_palette(len(coordlist))
-        for i, x in enumerate(coordlist):
-            for a in x:
-                if roi_obj_hierarchy[0][a][3] > -1:
-                    pass
-                else:
-                    cv2.drawContours(img_copy, roi_objects, a, rand_color[i], -1, hierarchy=roi_obj_hierarchy)
-        plot_image(img_copy)
+        if show_grid:
+            for y in rbreaks:
+                cv2.line( img_copy, (0, y), (ix, y), (255, 0, 0), params.line_thickness)
+            for x in cbreaks:
+                cv2.line( img_copy, (x, 0), (x, iy), (255, 0, 0), params.line_thickness)
+        if params.debug == pcvc.DEBUG_PRINT:
+            print_image( img_copy, os.path.join( params.debug_outdir, str( params.device) + '_clusters.png'))
+        elif params.debug == pcvc.DEBUG_PLOT:
+            plot_image( img_copy)
 
     return grouped_contour_indexes, contours, roi_obj_hierarchy

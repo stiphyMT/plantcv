@@ -9,7 +9,7 @@ from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
 
-def gaussian_blur( img, ksize, sigmax=0, sigmay=None):
+def gaussian_blur( img, ksize, sigma_x = 0, sigma_y = None):
     """Applies a Gaussian blur filter.
 
     Inputs:
@@ -28,7 +28,7 @@ def gaussian_blur( img, ksize, sigmax=0, sigmay=None):
     :return img_gblur: numpy.ndarray
     """
 
-    img_gblur = cv2.GaussianBlur(img, ksize, sigmax, sigmay)
+    img_gblur = cv2.GaussianBlur(img, ksize, sigma_x, sigma_y)
 
     params.device += 1
     if params.debug == pcvc.DEBUG_PRINT:

@@ -10,25 +10,25 @@ from plantcv.plantcv import outputs
 from plantcv.plantcv import fatal_error
 from plantcv.plantcv import PCVconstants as pcvc
 
-def x_axis_pseudolandmarks(obj, mask, img):
+def x_axis_pseudolandmarks(img, obj, mask):
     """Divide up object contour into 20 equidistance segments and generate landmarks for each
 
     Inputs:
+    img      = This is a copy of the original plant image generated using np.copy if debug is true it will be drawn on
     obj      = a contour of the plant object (this should be output from the object_composition.py fxn)
     mask     = this is a binary image. The object should be white and the background should be black
-    img      = This is a copy of the original plant image generated using np.copy if debug is true it will be drawn on
 
     Returns:
-    top      =
-    bottom   =
-    center_v =
+    top      = List of landmark points within 'top' portion
+    bottom   = List of landmark points within the 'bottom' portion
+    center_v = List of landmark points within the middle portion
 
+    :param img: numpy.ndarray
     :param obj: list
     :param mask: numpy.ndarray
-    :param img: numpy.ndarray
-    :return top:
-    :return bottom:
-    :return center_v:
+    :return top: list
+    :return bottom: list
+    :return center_v: list
     """
 
     # Lets get some landmarks scanning along the x-axis
@@ -144,15 +144,15 @@ def x_axis_pseudolandmarks(obj, mask, img):
         for i in top:
             x = i[0, 0]
             y = i[0, 1]
-            cv2.circle(img2, (int(x), int(y)), 10, (255, 0, 0), -1)
+            cv2.circle(img2, (int(x), int(y)), params.line_thickness, (255, 0, 0), -1)
         for i in bottom:
             x = i[0, 0]
             y = i[0, 1]
-            cv2.circle(img2, (int(x), int(y)), 10, (255, 0, 255), -1)
+            cv2.circle(img2, (int(x), int(y)), params.line_thickness, (255, 0, 255), -1)
         for i in center_v:
             x = i[0, 0]
             y = i[0, 1]
-            cv2.circle(img2, (int(x), int(y)), 10, (0, 79, 255), -1)
+            cv2.circle(img2, (int(x), int(y)), params.line_thickness, (0, 79, 255), -1)
         if params.debug == pcvc.DEBUG_PLOT:
             plot_image(img2)
         elif params.debug == 'print':
@@ -195,18 +195,18 @@ def x_axis_pseudolandmarks(obj, mask, img):
         for i in top:
             x = i[0, 0]
             y = i[0, 1]
-            cv2.circle(img2, (int(x), int(y)), 10, (255, 0, 0), -1)
+            cv2.circle(img2, (int(x), int(y)), params.line_thickness, (255, 0, 0), -1)
         for i in bottom:
             x = i[0, 0]
             y = i[0, 1]
-            cv2.circle(img2, (int(x), int(y)), 10, (255, 0, 255), -1)
+            cv2.circle(img2, (int(x), int(y)), params.line_thickness, (255, 0, 255), -1)
         for i in center_v:
             x = i[0, 0]
             y = i[0, 1]
-            cv2.circle(img2, (int(x), int(y)), 10, (0, 79, 255), -1)
+            cv2.circle(img2, (int(x), int(y)), params.line_thickness, (0, 79, 255), -1)
         if params.debug == pcvc.DEBUG_PLOT:
                 plot_image(img2)
-        elif params.debug == 'print':
+        elif params.debug == pcvc.DEBUG_PRINT:
                 print_image(img2,
                             os.path.join(params.debug_outdir, (str(params.device) + '_x_axis_pseudolandmarks.png')))
 

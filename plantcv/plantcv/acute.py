@@ -6,21 +6,18 @@ import cv2
 from plantcv.plantcv import params
 from plantcv.plantcv import PCVconstants as pcvc
 
-def acute(obj, win, thresh, mask):
+def acute(obj, mask, win, thresh):
     """acute: identify landmark positions within a contour for morphometric analysis
 
     Inputs:
     obj         = An opencv contour array of interest to be scanned for landmarks
+    mask        = binary mask used to generate contour array (necessary for ptvals)
     win         = maximum cumulative pixel distance window for calculating angle
                   score; 1 cm in pixels often works well
     thresh      = angle score threshold to be applied for mapping out landmark
                   coordinate clusters within each contour
-    mask        = binary mask used to generate contour array (necessary for ptvals)
-==== BASE ====
-    device      = device number. Used to count steps in the pipeline
-    debug       = None, print, or plot. Print = save to file, Plot = print to screen.
 
-==== BASE ====
+
     Outputs:
     homolog_pts = pseudo-landmarks selected from each landmark cluster
     start_pts   = pseudo-landmark island starting position; useful in parsing homolog_pts in downstream analyses
@@ -34,9 +31,9 @@ def acute(obj, win, thresh, mask):
                   in troubleshooting.
 
     :param obj: ndarray
+    :param mask: ndarray
     :param win: int
     :param thresh: int
-    :param mask: ndarray
     :return homolog_pts:
     """
 
@@ -79,10 +76,11 @@ def acute(obj, win, thresh, mask):
         P23 = np.sqrt((ptA[0][0]-ptB[0][0])*(ptA[0][0]-ptB[0][0])+(ptA[0][1]-ptB[0][1])*(ptA[0][1]-ptB[0][1]))
         dot = (P12*P12 + P13*P13 - P23*P23)/(2*P12*P13)
 
-        if dot > 1:              # If float exceeds 1 prevent arcos error and force to equal 1
-            dot = 1
-        elif dot < -1:           # If float exceeds -1 prevent arcos error and force to equal -1
-            dot = -1      
+        # Used a random number generator to test if either of these cases were possible but neither is possible
+        # if dot > 1:              # If float exceeds 1 prevent arcos error and force to equal 1
+        #     dot = 1
+        # elif dot < -1:           # If float exceeds -1 prevent arcos error and force to equal -1
+        #     dot = -1
         ang = math.degrees(math.acos(dot))
         chain.append(ang)
 
@@ -92,7 +90,8 @@ def acute(obj, win, thresh, mask):
         if float(chain[c]) <= thresh:
             index.append(c)         # Append positions of acute links to index
 
-    acute_pos = obj[(index)]            # Extract all island points blindly
+    acute_pos = obj[index]            # Extract all island points blindly
+
     float(len(acute_pos)) / float(len(obj))  # Proportion of informative positions
 
     if len(index) != 0:
@@ -120,11 +119,13 @@ def acute(obj, win, thresh, mask):
         if len(isle) > 1:
             if (isle[0][0] == 0) & (isle[-1][-1] == (len(chain)-1)):
                 print('Fusing contour edges')
-                island = range(-(len(chain)-isle[-1][0]), 0)+isle[0]  # Fuse overlapping ends of contour
+
+                # Cannot add a range and a list (or int)
+                # island = range(-(len(chain)-isle[-1][0]), 0)+isle[0]  # Fuse overlapping ends of contour
                 # Delete islands to be spliced if start-end fusion required
                 del isle[0]
                 del isle[-1]
-                isle.insert(0, island)      # Prepend island to isle
+                # isle.insert(0, island)      # Prepend island to isle
         else:
             print('Microcontour...')
 
@@ -173,8 +174,8 @@ def acute(obj, win, thresh, mask):
                 # print pt
             else:                           # If landmark is multiple points (distance scan for position)
                 # print 'route C'
-                SS = obj[(isle[x])][0]          # Store isle "x" start site
-                TS = obj[(isle[x])][-1]         # Store isle "x" termination site
+                SS = obj[[isle[x]]][0]          # Store isle "x" start site
+                TS = obj[[isle[x]]][-1]         # Store isle "x" termination site
                 dist_1 = 0
                 for d in range(len(isle[x])):   # Scan from SS to TS within isle "x"
                     site = obj[[isle[x][d]]]

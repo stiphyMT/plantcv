@@ -33,7 +33,7 @@ def _max( img, hmax, mask, x, y, h, w, type):
     return corrected
 
 
-def white_balance( img, mode = 'hist', roi = None):
+def white_balance( img, mode = pcvc.WHITE_BALANCE_HIST, roi = None):
     """Corrects the exposure of an image based on its histogram.
 
     Inputs:
@@ -56,7 +56,7 @@ def white_balance( img, mode = 'hist', roi = None):
     ori_img = np.copy( img)
 
     if roi is not None:
-        roiint = all(isinstance(item, (list, int)) for item in roi)
+        roiint = all( isinstance( item, ( list, int)) for item in roi)
 
         if len(roi) != 4:
             fatal_error('If ROI is used ROI must have 4 elements as a list and all must be integers')
@@ -92,35 +92,37 @@ def white_balance( img, mode = 'hist', roi = None):
         w = roi[2]
         h = roi[3]
 
-    if len( np.shape(img)) == 3:
-        cv2.rectangle( ori_img, (x, y), (x + w, y + h), (0, 255, 0), 3)
+    if len( np.shape( img)) == 3:
+        cv2.rectangle( ori_img, ( x, y), ( x + w, y + h), ( 0, 255, 0), 3)
         c1 = img[:, :, 0]
         c2 = img[:, :, 1]
         c3 = img[:, :, 2]
-        if mode == 'hist':
+        if mode.upper() == pcvc.WHITE_BALANCE_HIST:
             channel1 = _hist( c1, hmax, x, y, h, w, type)
             channel2 = _hist( c2, hmax, x, y, h, w, type)
             channel3 = _hist( c3, hmax, x, y, h, w, type)
-        else:
+        elif mode.upper() == pcvc.WHITE_BALANCE_MAX:
             channel1 = _max( c1, hmax, mask, x, y, h, w, type)
             channel2 = _max( c2, hmax, mask, x, y, h, w, type)
             channel3 = _max( c3, hmax, mask, x, y, h, w, type)
+        else:
+            fatal_error('Mode must be either "hist" or "max" but ' + mode + ' was input.')
 
         finalcorrected = np.dstack(( channel1, channel2, channel3))
 
     else:
-        cv2.rectangle( ori_img, ( x, y), ( x + w, y + h), ( 255, 255, 255), 3)
-        if mode == pcvc.WHITE_BALANCE_HIST:
+        cv2.rectangle(ori_img, (x, y), (x + w, y + h), (255, 255, 255), 3)
+        if mode.upper() == pcvc.WHITE_BALANCE_HIST:
             finalcorrected = _hist( img, hmax, x, y, h, w, type)
-        elif mode == pcvc.WHITE_BALANCE_MAX:
+        elif mode.upper() == pcvc.WHITE_BALANCE_MAX:
             finalcorrected = _max( img, hmax, mask, x, y, h, w, type)
 
     if params.debug == pcvc.DEBUG_PRINT:
-        print_image( ori_img, ( str( params.device) + '_whitebalance_roi.png'))
-        print_image( finalcorrected, ( str( params.device) + '_whitebalance.png'))
+        print_image( ori_img, os.path.join(params.debug_outdir, str( params.device) + '_whitebalance_roi.png'))
+        print_image( finalcorrected, os.path.join(params.debug_outdir, str( params.device) + '_whitebalance.png'))
 
     elif params.debug == pcvc.DEBUG_PLOT:
-        plot_image( ori_img, cmap = pcvc.COLOUR_MAP_GREY)
-        plot_image( finalcorrected, cmap = pcvc.COLOUR_MAP_GREY)
+        plot_image(ori_img, cmap = pcvc.COLOR_MAP_GRAY)
+        plot_image(finalcorrected, cmap = pcvc.COLOR_MAP_GRAY)
 
     return finalcorrected

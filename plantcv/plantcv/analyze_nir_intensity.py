@@ -4,6 +4,7 @@ import os
 import cv2
 import numpy as np
 import pandas as pd
+from plotnine import ggplot, aes, geom_line, scale_x_continuous
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv.threshold import binary as binary_threshold
@@ -22,9 +23,9 @@ def analyze_nir_intensity(gray_img, mask, bins, histplot=False):
     histplot     = if True plots histogram of intensity values
 
     Returns:
-    hist_header  = NIR histogram data table headers
-    hist_data    = NIR histogram data table values
-    nir_hist     = NIR histogram image
+    hist_header     = NIR histogram data table headers
+    hist_data       = NIR histogram data table values
+    analysis_images = NIR histogram image
 
     :param gray_img: numpy array
     :param mask: numpy array
@@ -32,12 +33,8 @@ def analyze_nir_intensity(gray_img, mask, bins, histplot=False):
     :param histplot: bool
     :return hist_header: list
     :return hist_data: list
-    :return nir_hist: str
+    :return analysis_images: list
     """
-    import matplotlib
-    matplotlib.use('Agg', warn=False)
-    from plotnine import ggplot, aes, geom_line, scale_x_continuous
-    # from matplotlib import pyplot as plt
 
     params.device += 1
 
@@ -55,10 +52,10 @@ def analyze_nir_intensity(gray_img, mask, bins, histplot=False):
     # Make a pseudo-RGB image
     rgbimg = cv2.cvtColor(gray_img, cv2.COLOR_GRAY2BGR)
 
-    hist_nir, hist_bins = np.histogram(masked, bins, (1, maxval), False, None, None)
+    hist_nir, hist_bins = np.histogram(masked, bins, (1, maxval))
 
     hist_bins1 = hist_bins[:-1]
-    hist_bins2 = [l for l in hist_bins1]
+    hist_bins2 = [round(l, 2) for l in hist_bins1]
 
     hist_nir1 = [l for l in hist_nir]
 
@@ -112,18 +109,16 @@ def analyze_nir_intensity(gray_img, mask, bins, histplot=False):
                     + scale_x_continuous(breaks=list(range(0, bins, 25))))
 
         analysis_images.append(fig_hist)
-        if params.debug is not None:
-            if params.debug == "print":
-                fig_hist.save(os.path.join(params.debug_outdir, str(params.device) + '_nir_hist.png'))
-            if params.debug == "plot":
-                print(fig_hist)
+        if params.debug == "print":
+            fig_hist.save(os.path.join(params.debug_outdir, str(params.device) + '_nir_hist.png'))
+        elif params.debug == "plot":
+            print(fig_hist)
 
     # Store into global measurements
     if not 'nir_histogram' in outputs.measurements:
         outputs.measurements['nir_histogram'] = {}
-    outputs.measurements['nir_histogram']['bin-number'] = bins
-    outputs.measurements['nir_histogram']['bin-values'] = hist_bins2
-    outputs.measurements['nir_histogram']['nir'] = hist_nir1
+    outputs.measurements['nir_histogram']['signal_values'] = hist_bins2
+    outputs.measurements['nir_histogram']['frequency'] = hist_nir1
 
     # Store images
     outputs.images.append(analysis_images)

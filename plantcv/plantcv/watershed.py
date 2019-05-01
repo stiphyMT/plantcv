@@ -38,11 +38,12 @@ def watershed_segmentation(rgb_img, mask, distance = 10):
     :return watershed_data: list
     :return analysis_images: list
     """
-
+    params.device += 1
     if pcvc.CV2MAJOR >= 3:
         dist_transform, _ = cv2.distanceTransformWithLabels( mask, cv2.DIST_L2, maskSize = 0)
     else:
         dist_transform = cv2.distanceTransform( mask, cv2.cv.CV_DIST_L2, maskSize = 0)
+==== BASE ====
 
     localMax = peak_local_max( dist_transform, indices = False, min_distance = distance, labels = mask)
 

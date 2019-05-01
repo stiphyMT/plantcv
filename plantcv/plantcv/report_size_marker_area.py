@@ -64,7 +64,7 @@ def report_size_marker_area( img, roi_contour, roi_hierarchy, marker = 'define',
     marker_contour = []
 
     # If the marker type is "detect" then we will use the ROI to isolate marker contours from the input image
-    if marker == pcvc.REPORT_SIZE_MARKER_DETECT:
+    if marker.upper() == pcvc.REPORT_SIZE_MARKER_DETECT:
         # We need to convert the input image into an one of the HSV channels and then threshold it
         if thresh_channel is not None and thresh is not None:
             # Mask the input image
@@ -87,7 +87,7 @@ def report_size_marker_area( img, roi_contour, roi_hierarchy, marker = 'define',
                                                              hierarchy = kept_hierarchy)
         else:
             fatal_error('thresh_channel and thresh must be defined in detect mode')
-    elif marker == pcvc.REPORT_SIZE_MARKER_DEFINE:
+    elif marker.upper() == pcvc.REPORT_SIZE_MARKER_DEFINE:
         # Identify contours in the masked image
         contours, hierarchy = find_objects( img = ref_img, mask = roi_mask)
         # If there are more than one contour detected, combine them into one
@@ -121,7 +121,6 @@ def report_size_marker_area( img, roi_contour, roi_hierarchy, marker = 'define',
     elif params.debug is pcvc.DEBUG_PLOT:
         plot_image(ref_img)
 
-        
     marker_header = (
         'HEADER_MARKER',
         'marker_area',

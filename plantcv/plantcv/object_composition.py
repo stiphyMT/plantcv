@@ -51,14 +51,14 @@ def object_composition( img, contours, hierarchy):
         cv2.drawContours( mask, contours, -1, 255, -1, hierarchy = hierarchy)
 
         if params.debug is not None:
-            cv2.drawContours( ori_img, group, -1, ( 255, 0, 0), 4)
+            cv2.drawContours(ori_img, group, -1, (255, 0, 0), params.line_thickness)
             for cnt in contours:
-                cv2.drawContours( ori_img, cnt, -1, ( 255, 0, 0), 4)
+                cv2.drawContours(ori_img, cnt, -1, (255, 0, 0), params.line_thickness)
             if params.debug == pcvc.DEBUG_PRINT:
-                print_image(ori_img, ( str( params.device) + '_objcomp.png'))
-                print_image(ori_img, ( str( params.device) + '_objcomp_mask.png'))
+                print_image(ori_img, os.path.join(params.debug_outdir, str(params.device) + '_objcomp.png'))
+                print_image(ori_img, os.path.join(params.debug_outdir, str(params.device) + '_objcomp_mask.png'))
             elif params.debug == pcvc.DEBUG_PLOT:
-                plot_image( ori_img)
+                plot_image(ori_img)
         return group, mask
     else:
         print( "Warning: Invalid contour.")
