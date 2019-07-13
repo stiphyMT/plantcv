@@ -10,7 +10,7 @@ from plantcv.plantcv import params
 from plantcv.plantcv import outputs
 from plantcv.plantcv import PCVconstants as pcvc
 
-def acute_vertex(img, obj, win, thresh, sep):
+def acute_vertex( img, obj, win, thresh, sep):
     """acute_vertex: identify corners/acute angles of an object
 
     For each point in contour, get a point before (pre) and after (post) the point of interest,
@@ -33,10 +33,10 @@ def acute_vertex(img, obj, win, thresh, sep):
     """
     params.device += 1
     chain = []
-    if not np.any(obj):
-        acute = ('NA', 'NA')
+    if not np.any( obj):
+        acute = ( 'NA', 'NA')
         return acute
-    for i in range(len(obj) - win):
+    for i in range( len( obj) - win):
         x, y = obj[i].ravel()
         pre_x, pre_y = obj[i - win].ravel()
         post_x, post_y = obj[i + win].ravel()
@@ -45,13 +45,13 @@ def acute_vertex(img, obj, win, thresh, sep):
         # print "Here are the pre values: " + str(pre_x) + " " + str(pre_y)
         # print "Here are the post values: " + str(post_x) + " " + str(post_y)
         # Angle in radians derived from Law of Cosines, converted to degrees
-        P12 = np.sqrt((x-pre_x)*(x-pre_x)+(y-pre_y)*(y-pre_y))
-        P13 = np.sqrt((x-post_x)*(x-post_x)+(y-post_y)*(y-post_y))
-        P23 = np.sqrt((pre_x-post_x)*(pre_x-post_x)+(pre_y-post_y)*(pre_y-post_y))
-        if (2*P12*P13) > 0.001:
-            dot = (P12*P12 + P13*P13 - P23*P23)/(2*P12*P13)
-        elif (2*P12*P13) < 0.001:
-            dot = (P12*P12 + P13*P13 - P23*P23)/0.001
+        P12 = np.sqrt( (x-pre_x)*(x-pre_x)+(y-pre_y)*(y-pre_y))
+        P13 = np.sqrt( (x-post_x)*(x-post_x)+(y-post_y)*(y-post_y))
+        P23 = np.sqrt( (pre_x-post_x)*(pre_x-post_x)+(pre_y-post_y)*(pre_y-post_y))
+        if ( 2 * P12 * P13) > 0.001:
+            dot = ( P12 * P12 + P13 * P13 - P23 * P23) / ( 2 * P12 * P13)
+        elif ( 2 * P12 * P13) < 0.001:
+            dot = (P12 * P12 + P13 * P13 - P23 * P23) / 0.001
         # Used a random number generator to test if either of these cases were possible but couldn't find a solution in
         # 5 million iterations
         # if dot > 1:                            # If float excedes 1 prevent arcos error and force to equal 1
@@ -59,29 +59,29 @@ def acute_vertex(img, obj, win, thresh, sep):
 
         if dot < -1:                     # If float excedes -1 prevent arcos error and force to equal -1
             dot = -1
-        ang = math.degrees(math.acos(dot))
+        ang = math.degrees( math.acos( dot))
         # print "Here is the angle: " + str(ang)
-        chain.append(ang)
+        chain.append( ang)
         
     # Select points in contour that have an angle more acute than thresh
     index = []
-    for c in range(len(chain)):         
-        if float(chain[c]) <= thresh:
-            index.append(c)
+    for c in range( len( chain)):         
+        if float( chain[c]) <= thresh:
+            index.append( c)
     # There oftentimes several points around tips with acute angles
     # Here we try to pick the most acute angle given a set of contiguous point
     # Sep is the number of points to evaluate the number of verticies
     out = []
     tester = []
-    for i in range(len(index)-1):
+    for i in range( len( index)-1):
         # print str(index[i])
         if index[i+1] - index[i] < sep:
             tester.append(index[i])
         if index[i+1] - index[i] >= sep:
             tester.append(index[i])
             # print(tester)
-            angles = ([chain[d] for d in tester])
-            keeper = angles.index(min(angles))
+            angles = ( [chain[d] for d in tester])
+            keeper = angles.index( min( angles))
             t = tester[keeper]
             # print str(t)
             out.append(t)
@@ -89,7 +89,7 @@ def acute_vertex(img, obj, win, thresh, sep):
         
     # Store the points in the variable acute
     flag = 0
-    acute = obj[[out]]
+    acute = obj[(out)]
     # If no points found as acute get the largest point
     # if len(acute) == 0:
         # acute = max(obj, key=cv2.contourArea)
@@ -104,21 +104,22 @@ def acute_vertex(img, obj, win, thresh, sep):
     # cv2.imwrite('tip_points_centroid_and_base.png', img2)
     if params.debug == pcvc.DEBUG_PRINT:
         # Lets make a plot of these values on the
-        img2 = np.copy(img)
+        img2 = np.copy( img)
         # Plot each of these tip points on the image
         for i in acute:
             x, y = i.ravel()
-            cv2.circle(img2, (x, y), params.line_thickness, (255, 204, 255), -1)
-        print_image(img2, os.path.join(params.debug_outdir, str(params.device) + '_acute_vertices.png'))
+            cv2.circle( img2, ( x, y), params.line_thickness, ( 255, 204, 255), -1)
+        print_image( img2, os.path.join( params.debug_outdir, str( params.device) + '_acute_vertices.png'))
     elif params.debug == pcvc.DEBUG_PLOT:
+
         # Lets make a plot of these values on the
-        img2 = np.copy(img)
+        img2 = np.copy( img)
         # Plot each of these tip points on the image
         for i in acute:
             x, y = i.ravel()
             # cv2.circle(img2,(x,y),15,(255,204,255),-1)
-            cv2.circle(img2, (x, y), params.line_thickness, (0, 0, 255), -1)
-        plot_image(img2)
+            cv2.circle( img2, ( x, y), params.line_thickness, ( 0, 0, 255), -1)
+        plot_image( img2)
     # If flag was true (no points found as acute) reformat output appropriate type
     # if flag == 1:
     #     acute = np.asarray(acute)

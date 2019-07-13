@@ -63,6 +63,8 @@ def landmark_reference_pt_dist(points_r, centroid_r, bline_r):
         # cv2.line(scaled_img, (int((cx*1000)+250), int((cy*1000)+250)), (int((x*1000)+250),
         #                                                                 int((y*1000)+250)), (0,165,255), 5)
         # a = (h*h + v*v - e*e)/(2*h*v)
+        print( 'A - h: {0}\t e: {1}\t v: {2}'.format( h, e, v))
+        print( 'A - Types h: {0}\t e: {1}\t v: {2}'.format( type(h), type(e), type(v)))
         a = (h * h + e * e - v * v) / (2 * h * e)
         # Used a random number generator to test if either of these cases were possible but neither is possible
         # if a > 1:              # If float excedes 1 prevent arcos error and force to equal 1
@@ -105,6 +107,8 @@ def landmark_reference_pt_dist(points_r, centroid_r, bline_r):
         # cv2.line(scaled_img, (int((bx*1000)+250), int((by*1000)+250)), (int((x*1000)+250),
         #                                                                 int((y*1000)+250)), (255,178,102), 5)
         # a = (h*h + v*v - e*e)/(2*h*v)
+        print( 'B - h: {0}\t e: {1}\t v: {2}'.format( h, e, v))
+        print( 'B - Types h: {0}\t e: {1}\t v: {2}'.format( type(h), type(e), type(v)))
         a = (h * h + e * e - v * v) / (2 * h * e)
 
         # Used a random number generator to test if either of these cases were possible but neither is possible

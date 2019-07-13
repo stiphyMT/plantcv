@@ -17,7 +17,7 @@ class Params:
     :param line_thickness: numeric
     :param dpi: int
     """
-    def __init__( self, device = 0, debug = None, debug_outdir = "."):
+    def __init__(self, device = 0, debug = None, debug_outdir = ".", line_thickness = 5, dpi = 100):
         self.device = device
         self.debug = debug
         self.debug_outdir = debug_outdir

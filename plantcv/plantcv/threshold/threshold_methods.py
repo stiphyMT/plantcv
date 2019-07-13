@@ -40,7 +40,7 @@ def binary( gray_img, threshold, max_value, object_type = pcvc.THRESHOLD_OBJ_LIG
     threshold_method = ""
     if object_type.upper() == pcvc.THRESHOLD_OBJ_LIGHT:
         threshold_method = cv2.THRESH_BINARY
-    elif object_type.upper() == pcvc.THRESHOLD_OBJ_DAR:
+    elif object_type.upper() == pcvc.THRESHOLD_OBJ_DARK:
         threshold_method = cv2.THRESH_BINARY_INV
     else:
         fatal_error('Object type ' + str(object_type) + ' is not "light" or "dark"!')

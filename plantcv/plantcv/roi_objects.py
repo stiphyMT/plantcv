@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import os
+import re
 from plantcv.plantcv import print_image
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
@@ -56,10 +57,13 @@ def roi_objects( img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_
             keep = False
 
             # Test if the contours are within the ROI
-            for i in range(0, length):
-                pptest = cv2.pointPolygonTest( roi_contour[0], ( stack[i][0], stack[i][1]), False)
-                if int(pptest) != -1:
-                    keep = True
+            for r, rcnt in enumerate( roi_contour):
+                if keep:
+                    break
+                for i in range(0, length):
+                    pptest = cv2.pointPolygonTest( rcnt, ( stack[i][0], stack[i][1]), False)
+                    if int(pptest) != -1:
+                        keep = True
             if keep:
                 # Color the "gap contours" white
                 if obj_hierarchy[0][c][3] > -1:
@@ -128,8 +132,9 @@ def roi_objects( img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_
         background1 = np.zeros(np.shape(img)[:2], dtype=np.uint8)
         background2 = np.zeros(np.shape(img)[:2], dtype=np.uint8)
         cv2.drawContours( background1, object_contour, -1, ( 255), -1, lineType = 8, hierarchy = obj_hierarchy)
-        roi_points = np.vstack( roi_contour[0])
-        cv2.fillPoly( background2, [roi_points], ( 255))
+        # roi_points = np.vstack( roi_contour[0])
+        # cv2.fillPoly( background2, [roi_points], ( 255))
+        cv2.drawContours( background2, roi_contour, -1, (255), cv2.FILLED, lineType = 8, hierarchy = roi_hierarchy)
         mask = cv2.multiply(background1, background2)
         obj_area = cv2.countNonZero( mask)
         kept_cnt, kept_hierarchy = cv2.findContours(np.copy(mask), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[-2:]
@@ -137,12 +142,53 @@ def roi_objects( img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_
         cv2.drawContours( ori_img, roi_contour, -1, ( 255, 0, 0), params.line_thickness, lineType = 8,
                          hierarchy=roi_hierarchy)
 
+    elif 'PCT' in roi_type.upper():
+        roi_type = re.sub('PCT$', '', roi_type)
+        try:
+            roi_type = int(roi_type)
+        except ValueError:
+            roi_type = 50
+        finally:
+            if  0 < roi_type < 100:
+                pct_cutoff = roi_type / 100
+            else:
+                pct_cutoff = 0.5
+        background1 = np.zeros(np.shape(img)[:2], dtype=np.uint8)
+        background2 = np.zeros(np.shape(img)[:2], dtype=np.uint8)
+        roi_points = np.vstack( roi_contour[0])
+        cv2.drawContours( background2, roi_contour, -1, (255), cv2.FILLED, lineType = 8, hierarchy = roi_hierarchy)
+        for c, cnt in enumerate( object_contour):
+            back_obj = np.copy( background1)
+            # Test if the contours are within the ROI
+            cv2.drawContours( back_obj, object_contour, c, (255), cv2.FILLED, lineType = 8, hierarchy = obj_hierarchy)
+            comb = cv2.multiply( back_obj, background2)
+            try:
+                frac = cv2.countNonZero( comb) / cv2.countNonZero( back_obj)
+            except ZeroDivisionError:
+                frac = 0
+            if frac > pct_cutoff:
+                # Color the "gap contours" white
+                if obj_hierarchy[0][c][3] > -1:
+                    cv2.drawContours( mask, object_contour, c, (0), -1, lineType = 8, hierarchy = obj_hierarchy)
+                else:
+                    # Color the plant contour parts black
+                    cv2.drawContours( mask, object_contour, c, (255), -1, lineType = 8, hierarchy = obj_hierarchy)
+            else:
+                # If the contour isn't overlapping with the ROI, color it black
+                cv2.drawContours(mask, object_contour, c, (0), -1, lineType=8, hierarchy = obj_hierarchy)
+        # Find the kept contours and area
+        kept_cnt, kept_hierarchy = cv2.findContours(np.copy(mask), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[-2:]
+        obj_area = cv2.countNonZero(mask)
+
+
+
     # Cuts off objects that do not have their center of mass inside the ROI
     elif roi_type == pcvc.ROI_OBJECTS_TYPE_MASSC:
+        # p_cnt = 
         for c, cnt in enumerate( object_contour):
-            stack = np.vstack( cnt)
-            test = []
-            keep = False
+            # stack = np.vstack( cnt)
+            # test = []
+            # keep = False
             # calculate objects Moments
             obj_moment = cv2.moments( cnt)
             # calculate object/contour center of mass position from Moments dictionary
@@ -152,35 +198,38 @@ def roi_objects( img, roi_type, roi_contour, roi_hierarchy, object_contour, obj_
                 pptest = -1
             else:
                 # determine whether the center of mass in in or outside the roi
-                pptest = cv2.pointPolygonTest( roi_contour[0], ( cx, cy), False)
+                for r, rcnt in enumerate( roi_contour):
+                    pptest = cv2.pointPolygonTest( rcnt, ( cx, cy), False)
+                    if pptest > -1:
+                        break
             # pptest = -1 if it is outside the roi
             if int( pptest) != -1:
                 if obj_hierarchy[ 0][ c][ 3] > -1:
-                    cv2.drawContours( w_back, object_contour, c, ( 255, 255, 255), -1, lineType = 8, hierarchy = obj_hierarchy)
+                    cv2.drawContours( mask, object_contour, c, ( 0, 0, 0), -1, lineType = 8, hierarchy = obj_hierarchy)
                 else:  
-                    cv2.drawContours( w_back, object_contour, c, ( 0, 0, 0), -1, lineType = 8, hierarchy = obj_hierarchy)
+                    cv2.drawContours( mask, object_contour, c, ( 255, 255, 255), -1, lineType = 8, hierarchy = obj_hierarchy)
             else:
-                cv2.drawContours( w_back, object_contour, c, ( 255, 255, 255), -1, lineType = 8, hierarchy = obj_hierarchy)
+                cv2.drawContours( mask, object_contour, c, ( 0, 0, 0), -1, lineType = 8, hierarchy = obj_hierarchy)
      
-        kept = cv2.cvtColor( w_back, cv2.COLOR_RGB2GRAY )
-        kept_obj = cv2.bitwise_not( kept)
-        mask = np.copy( kept_obj)
-        obj_area = cv2.countNonZero( kept_obj)
+        # kept = cv2.cvtColor( mask, cv2.COLOR_RGB2GRAY )
+        # kept_obj = cv2.bitwise_not( kept)
+        # mask = np.copy( kept_obj)
+        obj_area = cv2.countNonZero( mask)
         if pcvc.CV2MAJOR >= 3 and pcvc.CV2MINOR >= 1:
-            _, kept_cnt, hierarchy = cv2.findContours( kept_obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+            _, kept_cnt, kept_hierarchy = cv2.findContours( mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         else:
-            kept_cnt, hierarchy = cv2.findContours( kept_obj, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-        cv2.drawContours( ori_img, kept_cnt, -1, ( 0, 255, 0), -1, lineType = 8, hierarchy = hierarchy)
+            kept_cnt, kept_hierarchy = cv2.findContours( mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        cv2.drawContours( ori_img, kept_cnt, -1, ( 0, 255, 0), -1, lineType = 8, hierarchy = kept_hierarchy)
         cv2.drawContours( ori_img, roi_contour, -1, ( 255, 0, 0), 5, lineType = 8, hierarchy = roi_hierarchy)
 
     else:
-        fatal_error( 'ROI Type {0} is not "cutto", "largest", "partial" or "massc"!'.format( roi_type))
+        fatal_error( 'ROI Type {0} is not "cutto", "largest", "partial", "XXpct" or "massc"!'.format( roi_type))
 
     if params.debug == pcvc.DEBUG_PRINT:
         print_image( ori_img, os.path.join( params.debug_outdir, str( params.device) + '_obj_on_img.png'))
         print_image( mask, os.path.join( params.debug_outdir, str( params.device) + '_roi_mask.png'))
     elif params.debug == pcvc.DEBUG_PLOT:
         plot_image( ori_img)
-        plot_image( mask, cmap = COLOR_MAP_GRAY)
+        plot_image( mask, cmap = pcvc.COLOR_MAP_GRAY)
 
     return kept_cnt, kept_hierarchy, mask, obj_area

@@ -174,8 +174,8 @@ def acute(obj, mask, win, thresh):
                 # print pt
             else:                           # If landmark is multiple points (distance scan for position)
                 # print 'route C'
-                SS = obj[[isle[x]]][0]          # Store isle "x" start site
-                TS = obj[[isle[x]]][-1]         # Store isle "x" termination site
+                SS = obj[(isle[x])][0]          # Store isle "x" start site
+                TS = obj[(isle[x])][-1]         # Store isle "x" termination site
                 dist_1 = 0
                 for d in range(len(isle[x])):   # Scan from SS to TS within isle "x"
                     site = obj[[isle[x][d]]]

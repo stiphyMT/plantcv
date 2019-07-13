@@ -162,7 +162,7 @@ def analyze_bound_vertical(img, obj, mask, line_position):
                          params.line_thickness)
                 cv2.line(wback, (x_coor + 2, int(cmy)), (x_coor - width_right_bound, int(cmy)), (0, 255, 0),
                          params.line_thickness)
-        if params.debug == pcvc.DEBUG_PRIN:
+        if params.debug == pcvc.DEBUG_PRINT:
             print_image(wback, os.path.join(params.debug_outdir, str(params.device) + '_boundary_on_white.jpg'))
             print_image(ori_img, os.path.join(params.debug_outdir, str(params.device) + '_boundary_on_img.jpg'))
         if params.debug == pcvc.DEBUG_PLOT:

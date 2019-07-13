@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from plantcv.plantcv import params
 from plantcv.plantcv import plot_image
 from plantcv.plantcv import fatal_error
-
+from plantcv.plantcv import PCVconstants as pcvc
 
 def pseudocolor(gray_img, obj = None, mask = None, cmap = None, background = pcvc.VISUALIZE_BACKGROUND_GREY, min_value = 0, max_value = 255,
                 axes = True, colorbar = True):

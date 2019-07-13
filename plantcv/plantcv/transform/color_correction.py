@@ -555,7 +555,7 @@ def find_color_card(rgb_img, threshold_type =  pcvc.TRANSFORM_FIND_CC_AGAUSS, th
         fatal_error('Background parameter ' + str(background) + ' is not "light" or "dark"!')
 
     # Thresholding
-    if threshold_type == pcvs.TRANSFORM_FIND_CC_OTSU:
+    if threshold_type == pcvc.TRANSFORM_FIND_CC_OTSU:
         # Blur slightly so defects on card squares and background patterns are less likely to be picked up
         gaussian = cv2.GaussianBlur(gray_img, (5, 5), 0)
         ret, threshold = cv2.threshold(gaussian, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)

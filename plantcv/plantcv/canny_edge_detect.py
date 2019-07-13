@@ -5,14 +5,15 @@ from plantcv.plantcv import plot_image
 from plantcv.plantcv import dilate
 from plantcv.plantcv import params
 from plantcv.plantcv import fatal_error
+from plantcv.plantcv import PCVconstants as pcvc
 from skimage import feature
 import numpy as np
 import cv2
 import os
 
 
-def canny_edge_detect(img, mask = None, sigma=1.0, low_thresh=None, high_thresh=None, thickness=1,
-                      mask_color=None, use_quantiles=False):
+def canny_edge_detect(img, mask = None, sigma = 1.0, low_thresh = None, high_thresh = None, thickness = 1,
+                      mask_color = None, use_quantiles = False):
     """Edge filter an image using the Canny algorithm.
 
     Inputs:
@@ -55,34 +56,34 @@ def canny_edge_detect(img, mask = None, sigma=1.0, low_thresh=None, high_thresh=
     params.device += 1
 
     # Check if the image is grayscale; if color img then make it grayscale
-    dimensions = np.shape(img)
-    if len(dimensions) == 3:
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    dimensions = np.shape( img)
+    if len( dimensions) == 3:
+        img = cv2.cvtColor( img, cv2.COLOR_BGR2GRAY)
 
     # skimage needs a bool mask
     if mask is not None:
-        if mask_color.upper() == 'WHITE':
+        if mask_color.upper() == pcvc.COLOR_WHITE:
             mask = np.array(mask, bool)
-        elif mask_color.upper() == 'BLACK':
-            mask = cv2.bitwise_not(mask)
-            mask = np.array(mask, bool)
+        elif mask_color.upper() == pcvc.COLOR_BLACK:
+            mask = cv2.bitwise_not( mask)
+            mask = np.array( mask, bool)
         else:
-            fatal_error('Mask was provided but mask_color ' + str(mask_color) + ' is not "white" or "black"!')
+            fatal_error( 'Mask was provided but mask_color ' + str( mask_color) + ' is not "white" or "black"!')
 
     # Run Canny edge detection on the grayscale image
-    bool_img = feature.canny(img, sigma, low_thresh, high_thresh, mask, use_quantiles)
+    bool_img = feature.canny( img, sigma, low_thresh, high_thresh, mask, use_quantiles)
 
     # skimage returns a bool image so convert it
-    bin_img = np.copy(bool_img.astype(np.uint8) * 255)
+    bin_img = np.copy( bool_img.astype( np.uint8) * 255)
 
     # Adjust line thickness
     if thickness != 1:
-        bin_img = dilate(bin_img, thickness, 1)
+        bin_img = dilate( bin_img, thickness, 1)
     else:
         # Print or plot the binary image
-        if params.debug == 'print':
-            print_image(bin_img, os.path.join(params.debug_outdir, (str(params.device) + '_canny_edge_detect.png')))
-        elif params.debug == 'plot':
-            plot_image(bin_img, cmap='gray')
+        if params.debug == pcvc.DEBUG_PRINT:
+            print_image( bin_img, os.path.join(params.debug_outdir, ( str( params.device) + '_canny_edge_detect.png')))
+        elif params.debug == pcvc.DEBUG_PLOT:
+            plot_image( bin_img, cmap = pcvc.COLOR_MAP_GRAY)
 
     return bin_img
